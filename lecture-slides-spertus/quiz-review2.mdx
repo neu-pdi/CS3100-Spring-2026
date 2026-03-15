@@ -6,6 +6,7 @@ title: "Quiz 2 Review"
 import RevealJS, { Slide } from '@site/src/components/RevealJS';
 import Img from '@site/src/components/Img';
 import PollSlide from '@site/src/components/PollSlide';
+import QuoteSlide from '@site/src/components/QuoteSlide';
 import QuizSlide from '@site/src/components/QuizSlide';
 
 <style>
@@ -149,6 +150,23 @@ We can't maximize every metric so need to make trade-offs:
 * architectural qualities [Lectures 19, 21]
 * usability measures [Lecture 24, not on quiz]
 
+
+</Slide>
+
+<Slide>
+### Good, fast, cheap: Choose two
+
+<Img src='/img/lectures/web/qr2-good-fast-cheap-top.png'
+  width={700}
+  alt=''
+/>
+
+<div className='fragment'>
+<Img src='/img/lectures/web/qr2-good-fast-cheap-bottom.png'
+  width={700}
+  alt=''
+/>
+</div>
 
 </Slide>
 
@@ -786,6 +804,1293 @@ flowchart LR
 
 </Slide>
 
+<Slide>
+## Question 7: Test Doubles
+<div style={{ fontSize: '.6em' }}>
+Consider this test for a `ThermostatController`:
+```java
+@Test
+public void activatesHeatingWhenBelowTarget() {
+  TemperatureSensor mockSensor = mock(TemperatureSensor.class);
+  HVACService mockHVAC = mock(HVACService.class);
+  NotificationService mockNotifier = mock(NotificationService.class);
+
+  when(mockSensor.readTemperature("livingRoom")).thenReturn(65.0);
+
+  ThermostatController controller = new ThermostatController(
+    mockSensor, mockHVAC, mockNotifier);
+  controller.adjustToTargetTemperature(72.0, "livingRoom");
+  verify(mockHVAC).setMode(HVACMode.HEATING, "livingRoom");
+  verify(mockHVAC).activate("livingRoom");
+}
+```
+In this test, mockSensor is acting as an (A) stub, (B) mock, (C) integration test fixture, or (D) spy.
+</div>
+
+</Slide>
+
+<Slide>
+
+### Test Doubles: Stand-Ins for Real Dependencies
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Stubs return canned answers; fakes work simply; spies record calls.</p>
+
+<div
+  style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1em', marginTop: '0.5em' }}>
+  <div style={{ textAlign: 'center' }}>
+    <p style={{ fontSize: '1.1em', color: '#9370DB' }}>
+      <strong>Stubs</strong>
+    </p>
+    <p style={{ fontSize: '0.8em' }}>Return canned answers</p>
+  </div>
+  <div style={{ textAlign: 'center' }}>
+    <p style={{ fontSize: '1.1em', color: '#9370DB' }}>
+      <strong>Fakes</strong>
+    </p>
+    <p style={{ fontSize: '0.8em' }}>Simplified implementations</p>
+  </div>
+  <div style={{ textAlign: 'center' }}>
+    <p style={{ fontSize: '1.1em', color: '#9370DB' }}>
+      <strong>Spies</strong>
+    </p>
+    <p style={{ fontSize: '0.8em' }}>Record what happened</p>
+  </div>
+</div>
+
+<p style={{ marginTop: '1.5em', fontSize: '0.9em', color: '#666' }}>
+  From simplest to most sophisticated
+</p>
+
+<div className='fragment' style={{ fontSize: '.8em' }}>
+*What about mocks?* We'll get there.
+</div>
+
+<div style={{ fontSize: '.7em' }}>Lecture 15: Test Doubles and Isolation</div>
+</Slide>
+
+<Slide>
+
+### Stubs: Return Canned Answers
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Ignore details you don't care about; return what you need.</p>
+
+```java
+class StubGitHubService implements GitHubService {
+    private final CodeSnapshot fixedCode;
+
+    public StubGitHubService(CodeSnapshot code) {
+        this.fixedCode = code;
+    }
+
+    @Override
+    public CodeSnapshot fetchCode(String repoUrl) {
+        return fixedCode;  // Always returns the same code
+    }
+}
+```
+
+<p style={{ marginTop: '0.5em', fontSize: '0.85em' }}>
+  Ignores the repo URL, always returns sample code — <strong>that's fine!</strong>
+</p>
+
+<br/><br/><div style={{ fontSize: '.7em' }}>Lecture 15: Test Doubles and Isolation</div>
+
+</Slide>
+
+<Slide>
+
+### Fakes: When You Need Real Behavior
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>When you need save-then-retrieve, use a working in-memory implementation.</p>
+
+```java
+class FakeUserRepository implements UserRepository {
+    private final Map<String, User> users = new HashMap<>();
+
+    @Override
+    public void save(User user) {
+        users.put(user.getId(), user);
+    }
+
+    @Override
+    public User findById(String id) {
+        return users.get(id);
+    }
+
+    @Override
+    public List<User> findAll() {
+        return new ArrayList<>(users.values());
+    }
+}
+```
+
+<p style={{ marginTop: '0.5em', fontSize: '0.85em' }}>
+  A working implementation — just simpler than the real database
+</p>
+
+<br/><br/><div style={{ fontSize: '.7em' }}>Lecture 15: Test Doubles and Isolation</div>
+</Slide>
+
+<Slide>
+
+### Spies: Record What Happened (Decorator Pattern)
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Wrap, record, delegate—verify interactions after the fact.</p>
+
+```java
+class SpyDatabase implements Database {
+    private final Database delegate;  // Wraps a real implementation
+    private boolean saveGradeCalled = false;
+    private String savedStudentId = null;
+
+    public SpyDatabase(Database realDatabase) {
+        this.delegate = realDatabase;  // Decorator pattern!
+    }
+
+    @Override
+    public void saveGrade(String studentId, int score) {
+        this.saveGradeCalled = true;       // Record the call
+        this.savedStudentId = studentId;
+        delegate.saveGrade(studentId, score);  // Delegate to real impl
+    }
+
+    // Query methods for tests
+    public boolean wasSaveGradeCalled() { return saveGradeCalled; }
+    public String getSavedStudentId() { return savedStudentId; }
+}
+```
+
+<br/><br/><div style={{ fontSize: '.7em' }}>Lecture 15: Test Doubles and Isolation</div>
+
+</Slide>
+
+<Slide>
+### Where Do Mocks Fit In?
+
+These describe the *behavior* of the test double:
+
+* stub: returns canned answer
+* fake: simplified implementation
+* spy: records how methods were called
+
+<div className='fragment'>
+
+Test doubles can be created
+
+* as ordinary classes (as shown on previous slides)
+* at run-time by a mocking framework, such as Mockito
+</div>
+
+</Slide>
+
+<Slide>
+
+### Mockito: Create, Configure, Verify
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>mock(), when().thenReturn(), verify()—the three operations you'll use most.</p>
+
+<table style={{ margin: '0 auto', fontSize: '0.85em' }}>
+  <tbody>
+    <tr>
+      <td style={{ padding: '0.5em 0.8em' }}>
+        <code>mock(Class.class)</code>
+      </td>
+      <td style={{ padding: '0.5em 0.8em' }}>Create a test double</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '0.5em 0.8em' }}>
+        <code>when(...).thenReturn(...)</code>
+      </td>
+      <td style={{ padding: '0.5em 0.8em' }}>Configure stub behavior</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '0.5em 0.8em' }}>
+        <code>verify(mock).method(...)</code>
+      </td>
+      <td style={{ padding: '0.5em 0.8em' }}>Check spy recordings</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '0.5em 0.8em' }}>
+        <code>when(...).thenThrow(...)</code>
+      </td>
+      <td style={{ padding: '0.5em 0.8em' }}>Simulate exceptions</td>
+    </tr>
+  </tbody>
+</table>
+
+<p style={{ marginTop: '1em', fontSize: '0.85em', color: '#666' }}>
+  Mockito uses reflection to generate implementations at runtime
+</p>
+
+<br/><br/><div style={{ fontSize: '.7em' }}>Lecture 15: Test Doubles and Isolation</div>
+
+</Slide>
+
+
+<Slide>
+### Question 7 Answer
+<div style={{ fontSize: '.6em' }}>
+Consider this test for a `ThermostatController`:
+```java
+@Test
+public void activatesHeatingWhenBelowTarget() {
+  TemperatureSensor mockSensor = mock(TemperatureSensor.class);
+  HVACService mockHVAC = mock(HVACService.class);
+  NotificationService mockNotifier = mock(NotificationService.class);
+
+  when(mockSensor.readTemperature("livingRoom")).thenReturn(65.0);
+
+  ThermostatController controller = new ThermostatController(
+    mockSensor, mockHVAC, mockNotifier);
+
+  controller.adjustToTargetTemperature(72.0, "livingRoom");
+
+  verify(mockHVAC).setMode(HVACMode.HEATING, "livingRoom");
+  verify(mockHVAC).activate("livingRoom");
+}
+```
+<div className='fragment'>
+In this test, mockSensor is acting as an (A) stub, (B) mock, (C) integration test fixture, or **(D) spy — it records method calls for later verification**.
+</div>
+</div>
+
+</Slide>
+
+<Slide>
+
+## Question 8: Test Double Tradeoffs
+
+<QuizSlide
+  question='What is the primary risk of relying exclusively on test doubles (mocks and stubs) for all testing?'
+  answers={[
+    'Test doubles are slower than real implementations',
+    'Test doubles violate the Open/Closed Principle',
+    'Test doubles are not supported by modern testing frameworks, which require real object instances to correctly measure code coverage',
+    'Test doubles can give false confidence — tests pass even when real components don\'t integrate correctly',
+  ]}/>
+
+</Slide>
+
+<Slide>
+
+### Choices
+<div style={{ fontSize: '.8em' }}>
+Test doubles are slower than real implementations?
+<div className='fragment'>
+* They're often faster, but we don't care about little speed improvements.
+</div>
+
+<div className='fragment'>
+Test doubles violate the Open/Closed Principle?
+</div>
+<div className='fragment'>
+* They have nothing to do with classes being open for extension and closed for modification.
+</div>
+
+<div className='fragment'>
+Test doubles are not supported by modern testing frameworks, which require real object instances to correctly measure code coverage?
+</div>
+<div className='fragment'>
+* Test doubles are real objects (just not production objects). Test frameworks *support* measuring code coverage but don't *require* it.
+</div>
+
+<div className='fragment'>
+Test doubles can give false confidence — tests pass even when real components don't integrate correctly?
+</div>
+<div className='fragment'>
+🎯
+</div>
+</div>
+</Slide>
+
+<Slide>
+### How could a test double give false confidence?
+
+```java
+@Test
+public void thrusterFiresForCorrectDuration() {
+  // Create a double of Lockheed Martin's thruster.
+  ThrusterController mockThruster = mock(ThrusterController.class);
+
+  // Verify that the NavigationSystem calls the thruster's
+  // fire method with 4.45 Newtons.
+  NavigationSystem nav = new NavigationSystem(mockThruster);
+  nav.fireThruster(4.45);
+  verify(mockThruster).fire(4.45);
+}
+```
+
+<div className='fragment' style={{ fontSize: '.8em' }}>
+The test passes but the Mars Climate Orbiter fails. Why?
+</div>
+
+</Slide>
+
+<Slide>
+
+### The Mars Climate Orbiter Disaster
+
+<Img src="/img/lectures/web/l15-mars-climate-orbiter.jpg"
+  alt="Comic-style illustration of the Mars Climate Orbiter disaster. Top panel shows the spacecraft burning up in Mars' atmosphere while a green alien thinks 'They should have done integration testing.' Bottom left panel labeled 'Jet Propulsion Lab' shows horrified engineers with a whiteboard displaying 'Force: 4.45 N, kg·m/s²'. Bottom right panel labeled 'Lockheed Martin' shows equally distressed engineers with their whiteboard showing 'Force: 1 lbf, pound-force-seconds'."
+  prompt="A dramatic cartoon illustration split into three sections. The main central panel shows the Mars Climate Orbiter breaking apart and burning up in the orange-red Martian atmosphere, with flames and debris trailing behind it. On the rocky red surface below, a small green alien with big eyes looks up at the destruction, with a thought bubble containing the text 'They should have done integration testing.' In the bottom left corner, an inset panel labeled 'Jet Propulsion Lab' shows JPL engineers staring in horror at monitors, hands on their heads or covering their mouths in disbelief. A whiteboard behind them displays calculations in metric units: 'Force: 4.45 N' and 'kg·m/s²'. In the bottom right corner, a matching inset panel labeled 'Lockheed Martin' shows their engineers equally horrified, some standing frozen, others gesturing in panic. Their whiteboard shows the same calculations in imperial units: 'Force: 1 lbf' and 'pound-force-seconds'. The style should be a humorous editorial cartoon with bold labels clearly identifying each engineering team."
+/>
+
+</Slide>
+
+<Slide>
+
+### Question 8 Answer
+
+<QuizSlide
+  question='What is the primary risk of relying exclusively on test doubles (mocks and stubs) for all testing?'
+  correct={3}
+  answers={[
+    'Test doubles are slower than real implementations',
+    'Test doubles violate the Open/Closed Principle',
+    'Test doubles are not supported by modern testing frameworks, which require real object instances to correctly measure code coverage',
+    'Test doubles can give false confidence — tests pass even when real components don\'t integrate correctly',
+  ]}/>
+
+</Slide>
+
+<Slide>
+
+## Question 9: Hexagonal Architecture
+
+```java
+// code omitted
+```
+<QuizSlide
+  question='In an IoT EnergyOptimizer, EnergyPricePort is a port and GridPriceApiAdapter (which calls a real pricing API) is an adapter. In Hexagonal Architecture, what is the main benefit of this separation?'
+  answers={[
+    'Adapters are faster than direct method calls',
+    'The application core can be tested and reused without depending on any specific external system',
+    'Ports automatically generate REST API endpoints',
+    'The Java compiler requires interfaces for external dependencies involving I/O',
+  ]}/>
+
+</Slide>
+
+<Slide>
+
+### Hexagonal Architecture (Ports and Adapters)
+
+<p style={{fontSize: '0.9em'}}>
+  The solution is called <strong>Hexagonal Architecture</strong>, proposed by Alistair Cockburn (2005)
+</p>
+
+<Img
+  src="/img/lectures/web/l16-simpler-hexagonal-architecture.jpg"
+  width={1200}
+  alt="Hexagonal Architecture diagram for an IoT Smart Home. A central golden hexagon labeled 'Application Core / Domain Logic' contains 'EnergyOptimizer' with the rule 'if (price > threshold) reducePower()' and the caption 'Pure business rules. No technology.' Two ports sit on the hexagon's edges as electrical outlet sockets. On the left, EnergyPricePort has two adapters plugged in: GridPriceApiAdapter (blue, connecting to an Energy Grid API cloud) and StubPriceAdapter (green, labeled 'returns $0.35'). On the right, DeviceControlPort has ZigbeeDeviceAdapter (blue, connecting to a smart thermostat) and SpyDeviceControlAdapter (green, labeled 'records calls'). A callout reads 'Tests plug in here! Same ports, different adapters.' Blue adapters represent production; green adapters represent test doubles."
+    prompt="Technical diagram: Hexagonal Architecture (Ports and Adapters) for IoT Smart Home.
+CENTER - THE HEXAGON (warm golden glow):
+A hexagonal shape labeled 'APPLICATION CORE' at top, 'Domain Logic' below. Inside the hexagon, show clean text:
+
+'EnergyOptimizer'
+'if (price > threshold) reducePower()'
+'Pure business rules. No technology.'
+EDGES - TWO PORTS (shown as electrical outlet sockets on left and right edges of hexagon):
+
+Left edge: 'EnergyPricePort' with small label 'interface'
+Right edge: 'DeviceControlPort' with small label 'interface'
+OUTSIDE LEFT - EnergyPricePort connections:
+Production adapter (solid blue cable): 'GridPriceApiAdapter' connects via blue plug to EnergyPricePort, cable runs to a cloud icon labeled 'Energy Grid API'
+Test adapter (dashed green cable): 'StubPriceAdapter' with green plug near the same port, labeled 'returns $0.35'
+OUTSIDE RIGHT - DeviceControlPort connections:
+Production adapter (solid blue cable): 'ZigbeeDeviceAdapter' connects via blue plug to DeviceControlPort, cable runs to a smart thermostat icon
+Test adapter (dashed green cable): 'SpyDeviceControlAdapter' with green plug near the same port, labeled 'records calls'
+BOTTOM RIGHT CALLOUT BOX (green background): 'Tests plug in here! Same ports, different adapters.'
+STYLE: Clean technical diagram, light gray background. Hexagon glows warm amber. Production adapters and cables in blue. Test adapters and cables in dashed green. External systems in gray. Electrical outlet/plug metaphor for ports and adapters. Uncluttered with plenty of whitespace."
+/>
+
+<br/><br/><div style={{ fontSize: '.7em' }}>Lecture 16: Designing for Testability</div>
+</Slide>
+
+<Slide>
+
+### The Three Layers
+
+```mermaid
+graph LR
+    API["Energy Grid API"]
+    HW["Smart Thermostat"]
+
+    subgraph Adapters["Adapters"]
+        AA["GridPriceApiAdapter"]
+        HA["ZigbeeDeviceAdapter"]
+        SA["StubPriceAdapter (test)"]
+        SD["SpyDeviceControlAdapter (test)"]
+    end
+
+    subgraph Ports["Ports (Interfaces)"]
+        EP["EnergyPricePort"]
+        DP["DeviceControlPort"]
+    end
+
+    subgraph Core["Core (Domain)"]
+        BL["EnergyOptimizer"]
+    end
+
+    API --> AA --> EP --> BL
+    HW --> HA --> DP --> BL
+    SA --> EP
+    SD --> DP
+
+    style Core fill:#f5f5f5,stroke:#ccc
+    style Ports fill:#f5f5f5,stroke:#ccc
+    style Adapters fill:#f5f5f5,stroke:#ccc
+```
+
+<div style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+  <strong>Core:</strong> Knows nothing about databases, APIs, or hardware—only the domain.<br/><br/>
+  <strong>Ports:</strong> Interfaces that describe *what* the domain needs, not *how* to get it.<br/><br/>
+  <strong>Adapters:</strong> Implementations of the interfaces to talk to specific technologies
+</div>
+
+<br/><br/><div style={{ fontSize: '.7em' }}>Lecture 16: Designing for Testability</div>
+
+</Slide>
+
+<Slide>
+
+### Now let's look at the code
+
+```mermaid
+graph LR
+    API["Energy Grid API"]
+    HW["Smart Thermostat"]
+
+    subgraph Adapters["Adapters"]
+        AA["GridPriceApiAdapter"]
+        HA["ZigbeeDeviceAdapter"]
+        SA["StubPriceAdapter (test)"]
+        SD["SpyDeviceControlAdapter (test)"]
+    end
+
+    subgraph Ports["Ports (Interfaces)"]
+        EP["EnergyPricePort"]
+        DP["DeviceControlPort"]
+    end
+
+    subgraph Core["Core (Domain)"]
+        BL["EnergyOptimizer"]
+    end
+
+    API --> AA --> EP --> BL
+    HW --> HA --> DP --> BL
+    SA --> EP
+    SD --> DP
+
+    style Core fill:#f5f5f5,stroke:#ccc
+    style Ports fill:#e8f0fa,stroke:#68a,stroke-width:2px
+    style Adapters fill:#f5f5f5,stroke:#ccc
+```
+
+```java
+public class EnergyOptimizer {
+  private final EnergyPricePort priceService;
+  private final DeviceControlPort deviceControl;
+  private final UserPreferencesPort preferences;
+
+  public EnergyOptimizer(EnergyPricePort priceService, DeviceControlPort deviceControl,
+      UserPreferencesPort preferences) {
+    this.priceService = priceService;
+    this.deviceControl = deviceControl;
+    this.preferences = preferences;
+    }
+}
+```
+
+</Slide>
+
+
+<Slide>
+
+### Question 9 Answer
+
+<QuizSlide
+  question='In an IoT EnergyOptimizer, EnergyPricePort is a port and GridPriceApiAdapter (which calls a real pricing API) is an adapter. In Hexagonal Architecture, what is the main benefit of this separation?'
+  correct={1}
+  answers={[
+    'Adapters are faster than direct method calls',
+    'The application core can be tested and reused without depending on any specific external system',
+    'Ports automatically generate REST API endpoints',
+    'The Java compiler requires interfaces for external dependencies involving I/O',
+  ]}/>
+
+</Slide>
+
+<Slide>
+
+## Question 10: Testability Anti-Patterns
+
+<QuizSlide
+  question='Which of the following is an anti-pattern that makes code difficult to test?'
+  answers={[
+    'Accepting dependencies through the constructor',
+    'Defining behavior behind interfaces',
+    'Using new to directly instantiate collaborators inside a method, hiding the dependency',
+    'Separating domain logic from infrastructure code',
+  ]}/>
+
+<aside className="notes">
+→ What's an anti-pattern?
+</aside>
+
+</Slide>
+
+<Slide>
+
+### What's an anti-pattern?
+<div className='fragment'>
+* A **pattern** is a positive example that should be applied where appropriate.
+</div>
+<div className='fragment'>
+* An **anti-pattern** is a negative example that should be avoided.
+</div>
+
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+<Slide>
+### Hardcoding dependencies vs. dependency injection
+
+<div style={{display: 'flex', gap: '1rem', fontSize: '0.7em'}}>
+
+<div style={{flex: 1}}>
+```java
+// Hard-coded dependency
+public class ImportService {
+
+
+  public ImportService() {
+
+  }
+
+  public void importRecipe(Path file) {
+    Recipe recipe = parseRecipe(file);
+    new LibraryServiceImpl().addRecipe(recipe);
+  }
+}
+```
+
+<span style={{color: 'red'}}>✗</span> Using `new` to directly instantiate collaborators inside a method, hiding the dependency
+</div>
+
+<div style={{flex: 1}}>
+```java
+// Dependency injection
+public class ImportService {
+  private final LibraryService libraryService;
+
+  public ImportService(LibraryService libraryService) {
+    this.libraryService = libraryService;
+  }
+
+  public void importRecipe(Path file) {
+    Recipe recipe = parseRecipe(file);
+    libraryService.addRecipe(recipe);
+  }
+}
+```
+
+<span style={{color: 'green'}}>✓</span> Accepting dependencies through the constructor
+</div>
+
+</div>
+
+</Slide>
+
+<Slide>
+
+### Question 10 Answer
+
+<QuizSlide
+  question='Which of the following is an anti-pattern that makes code difficult to test?'
+  correct={2}
+  answers={[
+    'Accepting dependencies through the constructor',
+    'Defining behavior behind interfaces',
+    'Using new to directly instantiate collaborators inside a method, hiding the dependency',
+    'Separating domain logic from infrastructure code',
+  ]}/>
+
+</Slide>
+
+
+<Slide>
+
+## Question 11: Hidden Dependencies
+
+```java
+// code omitted
+```
+
+<QuizSlide
+  question='In an ImportService, the method importRecipe() calls LibraryService.getInstance().addRecipe(recipe). What problem does the LibraryService.getInstance() call introduce?'
+  answers={[
+    'It makes ImportService slower by calling a static method',
+    'It causes a NullPointerException at runtime',
+    'It creates a hidden dependency that cannot be replaced for testing or reuse',
+    'It violates the Single Responsibility Principle because ImportService now manages library instances',
+  ]}/>
+
+</Slide>
+<Slide>
+
+### Now let's look at the code
+<div style={{ fontSize: '.8em' }}>
+```java
+public class ImportService {
+  public void importRecipe(Path file) {
+    Recipe recipe = parseRecipe(file);
+    LibraryService.getInstance().addRecipe(recipe);
+  }
+}
+```
+
+<div className='fragment'>
+This has exactly the same problem as in the previous question.
+</div>
+</div>
+</Slide>
+
+<Slide>
+### Hardcoding dependencies vs. dependency injection
+
+<div style={{display: 'flex', gap: '1rem', fontSize: '0.7em'}}>
+
+<div style={{flex: 1}}>
+```java
+// Hard-coded dependency
+public class ImportService {
+
+
+  public ImportService() {
+
+  }
+
+  public void importRecipe(Path file) {
+    Recipe recipe = parseRecipe(file);
+    // two bad options, hardcoding dependencies
+    new LibraryServiceImpl().addRecipe(recipe);
+    LibraryService.getInstance().addRecipe(recipe);
+  }
+}
+```
+
+<span style={{color: 'red'}}>✗</span> Hardcoding dependency with `new`
+
+<span style={{color: 'red'}}>✗</span> Hardcoding dependency with static method call
+</div>
+
+<div style={{flex: 1}}>
+```java
+// Dependency injection
+public class ImportService {
+  private final LibraryService libraryService;
+
+  public ImportService(LibraryService libraryService) {
+    this.libraryService = libraryService;
+  }
+
+  public void importRecipe(Path file) {
+    Recipe recipe = parseRecipe(file);
+    // Use LibraryService injected through constructor
+    libraryService.addRecipe(recipe);
+
+  }
+}
+```
+
+<span style={{color: 'green'}}>✓</span> Accepting dependencies through the constructor
+</div>
+
+</div>
+
+</Slide>
+
+<Slide>
+
+### Question 11 Answer
+
+<QuizSlide
+  question='In an ImportService, the method importRecipe() calls LibraryService.getInstance().addRecipe(recipe). What problem does the LibraryService.getInstance() call introduce?'
+  correct={2}
+  answers={[
+    'It makes ImportService slower by calling a static method',
+    'It causes a NullPointerException at runtime',
+    'It creates a hidden dependency that cannot be replaced for testing or reuse',
+    'It violates the Single Responsibility Principle because ImportService now manages library instances',
+  ]}/>
+
+</Slide>
+
+<Slide>
+
+## Question 12: Dependency Injection
+
+<QuizSlide
+  question='A developer refactors ImportService so that LibraryService is passed in through the constructor rather than looked up via getInstance(). This refactoring applies which pattern?'
+  answers={[
+    'Strategy Pattern — the algorithm for importing is swappable',
+    'Dependency Injection — the dependency is provided externally rather than looked up internally',
+    'Service Locator — ImportService looks up its dependency from a central registry rather than receiving it from the outside',
+    'Builder Pattern — the ImportService is constructed step by step',
+  ]}/>
+
+</Slide>
+
+<Slide>
+
+### Question 12 Answer
+
+<QuizSlide
+  question='A developer refactors ImportService so that LibraryService is passed in through the constructor rather than looked up via getInstance(). This refactoring applies which pattern?'
+  correct={1}
+  answers={[
+    'Strategy Pattern — the algorithm for importing is swappable',
+    'Dependency Injection — the dependency is provided externally rather than looked up internally',
+    'Service Locator — ImportService looks up its dependency from a central registry rather than receiving it from the outside',
+    'Builder Pattern — the ImportService is constructed step by step',
+  ]}/>
+
+</Slide>
+
+<Slide>
+
+## Question 13: Architecture Decision Records
+
+<QuizSlide
+  question='What is an Architecture Decision Record (ADR)?'
+  answers={[
+    'A log file generated by the build system that records compilation decisions, dependency resolutions, and warnings for later auditing',
+    'A UML diagram showing all classes in the system',
+    'A performance benchmark comparing different architectural approaches',
+    'A short document that captures the context, decision, and consequences of a significant architectural choice',
+  ]}/>
+
+</Slide>
+
+<Slide>
+
+### Architecture Decision Records (ADRs)
+
+<p style={{fontSize: '0.78em'}}>
+Diagrams show <em>what</em>. <strong>ADRs capture <em>why</em></strong>. An ADR documents: <strong>Context</strong>, <strong>Decision</strong>, and <strong>Consequences</strong>.
+</p>
+
+<div style={{fontSize: '0.58em', padding: '0.75em', backgroundColor: 'rgba(147, 112, 219, 0.1)', borderRadius: '8px', border: '1px solid rgba(147, 112, 219, 0.3)'}}>
+
+**ADR-001: Centralized Feed Algorithm vs. Per-Server Algorithm**
+
+**Context:** We need to rank posts for each user's feed. We could rank centrally using global engagement signals, or let each server (or user) choose their own algorithm.
+
+**Decision:** Chirp will **rank feeds centrally** using a shared EngagementStrategy. The RankingStrategy interface is retained to allow A/B testing of algorithms internally.
+
+**Consequences:**
+- ✅ **Consistency:** All users get a coherent, optimized experience
+- ✅ **Changeability:** New algorithms can be tested without touching the Feed Service
+- ✅ **Scalability:** Ranking infrastructure can be optimized centrally
+- ⚠️ **Autonomy:** Users cannot opt out of the platform's ranking choices
+- ⚠️ **Coupling:** Feed quality is tied to the platform's data — if engagement data degrades, all feeds degrade
+
+</div>
+
+<div style={{ fontSize: '.7em' }}>Lecture 18: Thinking Architecturally</div>
+
+</Slide>
+
+<Slide>
+
+### ADR-001: Patron Service Boundaries
+<div style={{ fontSize: '.7em' }}>
+**Context**: The client used by the Patron needs to be able to make requests of
+a service layer that applies business logic to repositories. We were
+constrained to prioritize the Actor service boundary heuristic.
+
+**Decision**: We will have these separate service interfaces supporting these commands:
+* `HoldService`
+  * `hold book`
+  * `holds`
+
+[remainder omitted]
+
+We separated `HoldService` from other services, such as `AccountService` because of the former's greater rate of change.
+
+**Consequences**:
+* ✅ Decoupling: Changes to hold policy affect only `HoldService` and its implementations,
+not other services, such as `AccountService`.
+* ⚠️ Testability: We need to mock `BookRepository` to test the method `isPermittedToPlaceHold()`,
+even though that method does not reference `BookRepository`.
+</div>
+
+<br/><div style={{ fontSize: '.7em' }}>Lecture 23: Open Source Frameworks</div>
+
+</Slide>
+
+<Slide>
+
+### Question 13 Answer
+
+<QuizSlide
+  question='What is an Architecture Decision Record (ADR)?'
+  correct={3}
+  answers={[
+    'A log file generated by the build system that records compilation decisions, dependency resolutions, and warnings for later auditing',
+    'A UML diagram showing all classes in the system',
+    'A performance benchmark comparing different architectural approaches',
+    'A short document that captures the context, decision, and consequences of a significant architectural choice',
+  ]}/>
+
+</Slide>
+
+<Slide>
+
+## Question 14: Service Boundary Heuristics
+
+<QuizSlide
+  question='When determining where to draw service boundaries in a system, which of the following is a valid heuristic discussed in class?'
+  answers={[
+    'Group code that changes together and for the same reasons; separate code that changes independently or for different actors',
+    'Each service should contain exactly one class',
+    'Service boundaries should follow alphabetical ordering of class names',
+    'All database access should be in a single service to minimize connection pooling overhead and ensure a consistent data access layer across the system',
+  ]}/>
+
+</Slide>
+
+<Slide>
+
+### Service Boundary Heuristics
+<div style={{ fontSize: '.8em' }}>
+1. **Actor**: Things used by different actors should be separate.
+
+2. **Rate of Change**: Things that change at different speeds should be separate. [This is about code, not data.]
+
+3. **Interface Segregation**: Clients that need different things should get different interfaces. [Clients aren't people. They are classes, microservices, and GUIs.]
+
+4. **Testability**: Things that need independent testing should be separable.
+</div>
+</Slide>
+
+<Slide>
+
+### Question 14 Answer
+
+<QuizSlide
+  question='When determining where to draw service boundaries in a system, which of the following is a valid heuristic discussed in class?'
+  correct={0}
+  answers={[
+    'Group code that changes together and for the same reasons; separate code that changes independently or for different actors',
+    'Each service should contain exactly one class',
+    'Service boundaries should follow alphabetical ordering of class names',
+    'All database access should be in a single service to minimize connection pooling overhead and ensure a consistent data access layer across the system',
+  ]}/>
+
+</Slide>
+
+<Slide>
+
+## Question 15: How Team Structure Shapes Architecture
+
+<QuizSlide
+  question="A company has three teams: a frontend team, a backend team, and a database team. They build a system with three layers: a presentation layer, an application layer, and a data access layer. According to Conway's Law, why is this architecture unsurprising?"
+  answers={[
+    'Three-layer architectures are the best design for web applications because they cleanly separate presentation, business logic, and data concerns',
+    'The company chose the best architecture for performance reasons',
+    'Organizations tend to produce system designs that mirror their own communication structures',
+    'The Java language specification requires layered architectures',
+  ]}/>
+
+</Slide>
+
+<Slide>
+### Conway's Law: Teams Shape Architecture
+
+<QuoteSlide
+  quote="Organizations which design systems are constrained to produce designs which are copies of the communication structures of these organizations."
+  author="Melvin Conway, 1967"
+/>
+
+<div style={{marginTop: '1em'}}>
+
+**Translation:** Your software's architecture will mirror your team's structure—whether you plan for it or not.
+
+</div>
+
+<div style={{backgroundColor: 'rgba(255,100,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
+
+**Example:** Three teams working on one app → three separate services that need integration
+
+</div>
+
+<br/><div style={{ fontSize: '.7em' }}>Lecture 22: Teams and Collaboration</div>
+
+</Slide>
+
+<Slide>
+
+### Question 15 Answer
+
+<QuizSlide
+  question="A company has three teams: a frontend team, a backend team, and a database team. They build a system with three layers: a presentation layer, an application layer, and a data access layer. According to Conway's Law, why is this architecture unsurprising?"
+  correct={2}
+  answers={[
+    'Three-layer architectures are the best design for web applications because they cleanly separate presentation, business logic, and data concerns',
+    'The company chose the best architecture for performance reasons',
+    'Organizations tend to produce system designs that mirror their own communication structures',
+    'The Java language specification requires layered architectures',
+  ]}/>
+
+</Slide>
+
+<Slide>
+
+## Question 16: Fallacies of Distributed Computing
+
+<QuizSlide
+  question='"The network is reliable" is the first of the Eight Fallacies of Distributed Computing. A developer writes code that calls a remote recipe-sharing API without any error handling. When the network is temporarily unavailable, the application crashes. Which design strategy would address this fallacy?'
+  answers={[
+    'Increase the server\'s RAM to handle more requests, since network failures are often caused by servers running out of memory under load',
+    'Implement timeouts, retries with exponential backoff, and graceful degradation',
+    'Switch from HTTP to a faster protocol',
+    'Cache all data locally and never use the network',
+  ]}/>
+
+</Slide>
+
+
+<Slide>
+
+### The Fallacies of Distributed Computing
+
+<Img
+  src="/img/lectures/web/l20-fallacies.webp"
+    style={{marginBottom: '0'}}
+  prompt="An educational illustration in a clean, modern flat-art style (NOT pixel art). No title text.
+
+Eight warning signs arranged in a grid (2 rows × 4 columns), each containing a crossed-out assumption. Each sign has an icon and bold text:
+
+1. A green checkmark crossed out with red X — 'The network is reliable' — icon: a broken wifi symbol
+2. A speedometer at zero crossed out — 'Latency is zero' — icon: a snail on a network cable
+3. An infinite symbol crossed out — 'Bandwidth is infinite' — icon: a pipe that's too small for the data flowing through it
+4. A shield with a padlock crossed out — 'The network is secure' — icon: a shadowy figure listening at a wire
+5. A static network diagram crossed out — 'Topology doesn't change' — icon: map with roads rerouting
+6. A single crown/administrator crossed out — 'There is one administrator' — icon: multiple conflicting admin figures from different organizations
+7. A free price tag ($0) crossed out — 'Transport cost is zero' — icon: a dollar bill burning from the heat of servers
+8. A uniform grid of same-colored tiles crossed out — 'The network is homogeneous' — icon: a patchwork of different technologies
+
+The overall aesthetic: clean educational poster, suitable for a university lecture. Teals, blues, purples (#9370DB), and red (#f44336) warning accents. The message: these are WRONG assumptions that lead to bugs."
+  alt="Eight warning signs arranged in a grid, each crossing out a wrong assumption about distributed systems: The network is reliable, Latency is zero, Bandwidth is infinite, The network is secure, Topology doesn't change, There is one administrator, Transport cost is zero, The network is homogeneous. Clean flat illustration style with warning colors."
+  width={1200}
+/>
+
+<br/><div style={{ fontSize: '.7em' }}>Lecture 20: Distributed Architecture: Networks, Microservices, and Security</div>
+
+</Slide>
+
+<Slide>
+
+### Question 16 Answer
+
+<QuizSlide
+  question='"The network is reliable" is the first of the Eight Fallacies of Distributed Computing. A developer writes code that calls a remote recipe-sharing API without any error handling. When the network is temporarily unavailable, the application crashes. Which design strategy would address this fallacy?'
+  correct={1}
+  answers={[
+    'Increase the server\'s RAM to handle more requests, since network failures are often caused by servers running out of memory under load',
+    'Implement timeouts, retries with exponential backoff, and graceful degradation',
+    'Switch from HTTP to a faster protocol',
+    'Cache all data locally and never use the network',
+  ]}/>
+
+</Slide>
+
+<Slide>
+
+## Question 17: CIA Triad
+
+<QuizSlide
+  question='In the CIA Triad for security, what do Confidentiality, Integrity, and Availability mean?'
+  answers={[
+    'Confidentiality means data is only accessible to authorized parties; Integrity means data is not tampered with; Availability means the system is accessible when needed',
+    'Confidentiality means fast response times; Integrity means code compiles; Availability means 24/7 customer support',
+    'Confidentiality means using encryption everywhere; Integrity means using checksums; Availability means using load balancers',
+    'These are three types of software testing methodologies',
+  ]}/>
+
+</Slide>
+
+<Slide>
+
+### Security Decisions Trade Off Confidentiality, Integrity, and Availability
+
+<Img
+  src="/img/lectures/web/l20-cia-triad.webp"
+  prompt="An educational illustration in a clean, modern flat-art style for a university lecture. No title text.
+
+A large equilateral triangle centered in the image. Each vertex has a large icon and label:
+
+TOP VERTEX — CONFIDENTIALITY: A padlock icon. Label: 'CONFIDENTIALITY — Sensitive data accessible only to authorized parties'. Below: small examples in a thought bubble: 'Student grades are private', 'Solution code hidden from students', 'API tokens kept secret'.
+
+BOTTOM-LEFT VERTEX — INTEGRITY: A checkmark shield icon. Label: 'INTEGRITY — Data is accurate and untampered'. Below: examples: 'Grades reflect real test results', 'Submissions unchanged in transit', 'Grader tarball matches what instructor uploaded'.
+
+BOTTOM-RIGHT VERTEX — AVAILABILITY: A clock/uptime icon. Label: 'AVAILABILITY — Systems accessible when needed'. Below: examples: 'Students can submit before deadlines', 'Grading completes in time', 'Resilient to denial-of-service'.
+
+At the CENTER of the triangle: 'CIA TRIAD' in bold text with a small lock symbol.
+
+Around the outside of the triangle, three threat labels point inward with red arrows:
+- 'DATA BREACH' → threatens Confidentiality
+- 'TAMPERING / MANIPULATION' → threatens Integrity
+- 'DENIAL OF SERVICE' → threatens Availability
+
+The style is clean and clear, like a security textbook diagram. Blues and teals for the triangle, green (#4CAF50) for Confidentiality, purple (#9370DB) for Integrity, orange (#FF9800) for Availability."
+  alt="The CIA Security Triad: an equilateral triangle with Confidentiality (padlock), Integrity (shield checkmark), and Availability (clock) at each vertex. Threat labels point inward: Data Breach threatens Confidentiality, Tampering threatens Integrity, Denial of Service threatens Availability. Center: CIA TRIAD."
+/>
+
+
+</Slide>
+
+
+<Slide>
+
+### Question 17 Answer
+
+<QuizSlide
+  question='In the CIA Triad for security, what do Confidentiality, Integrity, and Availability mean?'
+  correct={0}
+  answers={[
+    'Confidentiality means data is only accessible to authorized parties; Integrity means data is not tampered with; Availability means the system is accessible when needed',
+    'Confidentiality means fast response times; Integrity means code compiles; Availability means 24/7 customer support',
+    'Confidentiality means using encryption everywhere; Integrity means using checksums; Availability means using load balancers',
+    'These are three types of software testing methodologies',
+  ]}/>
+
+</Slide>
+
+
+<Slide>
+
+## Question 18: Graceful Degradation
+
+<QuizSlide
+  question='A CookYourBooks developer adds a feature that calls a remote nutrition API. During testing, the API occasionally takes 30 seconds to respond. The developer adds a 5-second timeout and returns cached nutrition data when the API is slow, along with a warning that the data may not be up-to-date. This design applies which distributed systems concept?'
+  answers={[
+    'Horizontal scaling — adding more servers to handle the load',
+    'The CIA Triad — ensuring confidentiality of nutrition data',
+    "Conway's Law — the team structure determines the API design",
+    'Graceful degradation — providing reduced but functional service when a dependency is unavailable',
+  ]}/>
+
+</Slide>
+
+
+<Slide>
+
+### Vertical and Horizontal Scaling (Servers)
+
+<p style={{fontSize: '0.82em'}}>
+How does the system handle growth in load, data, or users?
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.65em', marginTop: '0.75em'}}>
+
+<div style={{padding: '0.25em', border: '2px solid #FF9800', borderRadius: '8px'}}>
+
+**Vertical Scaling**
+
+<Img src='/img/lectures/web/l19-vertical-scaling.png'
+  alt='Image showing (from left to right) a small computer, a large arrow pointing up, a big computer'
+/>
+</div>
+
+<div style={{padding: '0.25em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+
+**Horizontal Scaling**
+
+<Img src='/img/lectures/web/l19-horizontal-scaling.png'
+  alt='Image showing (from left to right) a single computer, a large arrow pointing right, two identical computers'
+/>
+
+</div>
+
+</div>
+
+<br/><div style={{ fontSize: '.7em' }}>Lecture 19: Architectural Styles</div>
+
+</Slide>
+
+<Slide>
+
+### Vertical and Horizontal Scaling (People)
+
+<Img
+  src="/img/lectures/web/l22-10x-myth-v2.png"
+  prompt="An illustration debunking the '10x Engineer' myth. On the left, a lone superhero programmer sits at a desk with ten monitors, cape flowing, looking exhausted and surrounded by mountains of code, bugs, deployment issues, UX mockups, and support tickets all piling up. The superhero is trying to juggle all these tasks simultaneously and dropping most of them. On the right, a team of 5 diverse people each handling one area expertly: one does architecture (whiteboard), one does UX (wireframe), one does testing (green checkmarks), one does deployment (server icon), one does code review (laptop with comments). They look calm and effective. A big red X crosses out '10x' above the lone hero, and a green checkmark appears above the team with '5 x 2x = better'. The message: people scale horizontally, not vertically."
+  alt="Left: an exhausted lone 'superhero' programmer juggling architecture, UX, testing, deployment, and support tickets simultaneously, dropping most of them. Right: a calm team of 5, each handling one area expertly. A red X crosses out '10x' over the hero; a green checkmark appears over the team."
+/>
+<div style={{ fontSize: '.7em' }}>Lecture 22: Teams and Collaboration</div>
+
+</Slide>
+
+<Slide>
+
+### Question 18 Answer
+
+<QuizSlide
+  question='A CookYourBooks developer adds a feature that calls a remote nutrition API. During testing, the API occasionally takes 30 seconds to respond. The developer adds a 5-second timeout and returns cached nutrition data when the API is slow, along with a warning that the data may not be up-to-date. This design applies which distributed systems concept?'
+  correct={3}
+  answers={[
+    'Horizontal scaling — adding more servers to handle the load',
+    'The CIA Triad — ensuring confidentiality of nutrition data',
+    'Conway\'s Law — the team structure determines the API design',
+    'Graceful degradation — providing reduced but functional service when a dependency is unavailable',
+  ]}/>
+
+</Slide>
+
+<Slide>
+
+## Question 19: Brooks' Law
+
+<QuizSlide
+  question="According to Brooks' Law, what happens when you add more developers to a late software project?"
+  answers={[
+    'The project gets even later because communication overhead grows quadratically with team size',
+    'The project gets back on schedule because there are more people working',
+    'The project speed is unaffected because individual productivity stays the same and new developers can immediately work on independent tasks',
+    'The project finishes faster but with lower quality code',
+  ]}/>
+
+</Slide>
+
+<Slide>
+### Brooks' Law
+
+<Img
+  src="/img/lectures/web/l22-brooks-law.webp"
+  prompt="An illustration of Brooks' Law showing how communication overhead grows with team size. Show four panels arranged left to right:
+
+Panel 1: 2 people with 1 line connecting them. Label: '2 people = 1 path'. Clean, simple.
+
+Panel 2: 4 people with 6 lines connecting every pair. Label: '4 people = 6 paths'. Getting busy.
+
+Panel 3: 8 people with 28 lines connecting every pair. Label: '8 people = 28 paths'. A tangled web of lines, people looking stressed.
+
+Panel 4: 16 people with 120 lines. Label: '16 people = 120 paths'. Complete chaos, lines everywhere like a plate of spaghetti, people drowning in communication.
+
+Below all panels, show the formula n(n-1)/2 and a quote bubble from Fred Brooks: 'Adding manpower to a late software project makes it later.' (1975)"
+  alt="Four panels showing communication paths growing quadratically: 2 people with 1 path (clean), 4 people with 6 paths (busy), 8 people with 28 paths (tangled web), 16 people with 120 paths (total chaos). Formula: n(n-1)/2. Brooks quote: Adding manpower to a late software project makes it later."
+/>
+</Slide>
+
+<Slide>
+
+### Question 19 Answer
+
+<QuizSlide
+  question="According to Brooks' Law, what happens when you add more developers to a late software project?"
+  correct={0}
+  answers={[
+    'The project gets even later because communication overhead grows quadratically with team size',
+    'The project gets back on schedule because there are more people working',
+    'The project speed is unaffected because individual productivity stays the same and new developers can immediately work on independent tasks',
+    'The project finishes faster but with lower quality code',
+  ]}/>
+
+</Slide>
+
+<Slide>
+
+## Question 20: Open Source Licensing
+
+<QuizSlide
+  question='A startup is considering including open-source libraries in their proprietary (closed-source) commercial product. Should the specific licenses of the libraries affect their decision?'
+  answers={[
+    'No, they should make the decision purely based on the library quality',
+    'No, all open-source licenses forbid inclusion in commercial code, so they cannot use any of them',
+    'Yes, some open-source libraries require derivative works to also share their source code',
+    'Yes, some open-source licenses provide quality guarantees, which will make their product more reliable',
+  ]}/>
+
+<div className='fragment'>
+💡Be skeptical of answers that say "all", "always", or "never".
+</div>
+
+</Slide>
+
+<Slide>
+
+### Two Philosophies: Maximize Adoption vs. Protect the Commons
+
+<Img
+  src="/img/lectures/web/l23-license-workshop.webp"
+  prompt="An educational illustration showing two maker spaces in a shared warehouse, representing two open-source licensing philosophies. No title.
+
+LEFT BENCH — PERMISSIVE (labeled 'BSD / MIT / Apache'):
+A casual, welcoming workbench with tools and blueprints freely available. A person takes a blueprint from the shared rack, builds a product, and carries it through a door labeled 'Proprietary Product' that closes behind them. No one objects — that's allowed here. A small sign reads: 'Use it however you want. Just don't blame us.' The bench is busy with diverse makers building different things.
+
+RIGHT BENCH — COPYLEFT (labeled 'GPL'):
+A well-organized workbench with four workshop rules prominently posted on the wall like shop safety rules:
+Rule 0: 'Use any tool for any project'
+Rule 1: 'Take apart any machine to learn how it works'
+Rule 2: 'Make copies of blueprints for friends'
+Rule 3: 'Share your improved designs'
+A prominent sign reads: 'Free as in free speech, not as in free beer.'
+A figure resembling Richard Stallman (long hair, full beard, casual clothing) stands near the sign, gesturing toward the rules proudly. Anything built from shared blueprints must keep its blueprints public — a maker pins their improved blueprint back on the shared rack.
+
+BOTH benches are busy, productive, and full of happy makers building cool things. Neither side is portrayed negatively.
+
+BOTTOM: A small note: 'Different rules, same workshop. Neither is wrong.'
+
+Style: Warm educational illustration, clear visual contrast between the two benches, no judgment about which is better. Clean, readable text on signs and rules."
+  alt="Two maker spaces in a shared warehouse. Left bench (BSD/MIT): blueprints freely available, someone takes one into a closed Proprietary Product door. Right bench (GPL): four workshop rules posted (use any tool, take apart machines, copy blueprints, share improvements) with a sign reading 'Free as in free speech, not as in free beer' and a Stallman-like figure gesturing proudly. Both benches are busy and productive."
+/>
+
+<br/><div style={{ fontSize: '.7em' }}>Lecture 23: Open Source Frameworks</div>
+
+</Slide>
+
+<Slide>
+
+### Question 20 Answer
+
+<QuizSlide
+  question='A startup is considering including open-source libraries in their proprietary (closed-source) commercial product. Should the specific licenses of the libraries affect their decision?'
+  correct={2}
+  answers={[
+    'No, they should make the decision purely based on the library quality',
+    'No, all open-source licenses forbid inclusion in commercial code, so they cannot use any of them',
+    'Yes, some open-source libraries require derivative works to also share their source code',
+    'Yes, some open-source licenses provide quality guarantees, which will make their product more reliable',
+  ]}/>
+
+</Slide>
+
+<Slide>
+## Conclusion
+<div style={{ fontSize: '.8em' }}>
+Quizmanship
+* Remember what we are emphasizing in this class: scalable software, not:
+   * optimizing performance
+   * Java details
+* Be skeptical of answers with "always", "all", or "never".
+
+Topics
+* We've reviwed many important topics from Lecture 9 to Lecture 24.
+* There are other important topics I did not review, including (but not limited to)
+  * Domain Modeling
+  * REST APIs
+  * Teams & Collaboration
+* I am happy to do so in the remaining time.
+
+</div>
+
+</Slide>
 
 <Slide>
 ## Bonus Slide
