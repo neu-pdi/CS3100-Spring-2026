@@ -183,7 +183,7 @@ Then complete **Section 3: Reflection** together:
 ---
 
 :::info Check-in #2
-**Is your `REFLECTION.md` complete?** Make sure you have at least 6 issues across at least 4 heuristics, and that each issue has all five fields filled in. Pick the 1–2 most interesting issues to share with the class.
+**Is your `REFLECTION.md` complete?** Make sure you have at least 6 issues across at least 4 heuristics, and that each issue has all six fields filled in. Pick the 1–2 most interesting issues to share with the class.
 :::
 
 ---
