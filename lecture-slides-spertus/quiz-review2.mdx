@@ -158,13 +158,14 @@ We can't maximize every metric so need to make trade-offs:
 
 <Img src='/img/lectures/web/qr2-good-fast-cheap-top.png'
   width={700}
-  alt=''
+  alt="Top two panels of a workchronicles.com cartoon, in which someone explains to a client: 'We can be good. fast. cheap but you can only pick tw...'"
 />
 
 <div className='fragment'>
 <Img src='/img/lectures/web/qr2-good-fast-cheap-bottom.png'
   width={700}
-  alt=''
+  alt="Bottom two panels of a workchronicles.com cartoon, in which the client seizes 'GOOD', 'FAST', and 'CHEAP' and says: 'Let's get started?', causing the original speaker to put their head in their hands."
+
 />
 </div>
 
@@ -735,8 +736,7 @@ Is it safer to use a popular library or write your own? <strong>Almost always us
   In the first panel, a developer sits at a laptop with a rubber duck on the desk and says 'I can't figure out what's up. I take each transaction then apply the filters in this order and ... hang on ...' In the second panel, the developer turns toward the duck with a smile and exclaims 'Of course! What was I thinking?! Thank you, rubber duck!'"
 />
 
-<div style={{ fontSize: '.7em' }}>CC-BY-NC [sketchplanations](https://sketchplanations.com/rubberducking)</div>
-
+<div style={{ fontSize: '.7em' }}>CC-BY-NC <a href="https://sketchplanations.com/rubberducking">sketchplanations</a></div>
 </Slide>
 
 <Slide>
@@ -824,7 +824,7 @@ public void activatesHeatingWhenBelowTarget() {
   verify(mockHVAC).activate("livingRoom");
 }
 ```
-In this test, mockSensor is acting as an (A) stub, (B) mock, (C) integration test fixture, or (D) spy.
+In this test, mockSensor is acting as a (A) stub, (B) mock, (C) integration test fixture, or (D) spy.
 </div>
 
 </Slide>
@@ -1030,7 +1030,6 @@ Test doubles can be created
 <Slide>
 ### Question 7 Answer
 <div style={{ fontSize: '.6em' }}>
-Consider this test for a `ThermostatController`:
 ```java
 @Test
 public void activatesHeatingWhenBelowTarget() {
@@ -1050,7 +1049,13 @@ public void activatesHeatingWhenBelowTarget() {
 }
 ```
 <div className='fragment'>
-In this test, mockSensor is acting as an (A) stub, (B) mock, (C) integration test fixture, or **(D) spy — it records method calls for later verification**.
+In this test, `mockSensor` is acting as a:<br/>
+   (A) stub  — it returns a pre-configured value without real behavior<br/>
+   (B) Mock object verified with `verify()`  — its primary role here is to assert method calls<br/>
+   (C) Integration text fixture — it connects to real hardware<br/>
+ **(D) spy — it records method calls for later verification**
+
+(A) is arguably also correct, and (B) is kind of misleading.
 </div>
 </div>
 
@@ -2081,7 +2086,7 @@ Quizmanship
 * Be skeptical of answers with "always", "all", or "never".
 
 Topics
-* We've reviwed many important topics from Lecture 9 to Lecture 24.
+* We've reviewed many important topics from Lecture 9 to Lecture 24.
 * There are other important topics I did not review, including (but not limited to)
   * Domain Modeling
   * REST APIs
