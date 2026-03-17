@@ -4,11 +4,6 @@ sidebar_position: 12
 image: /img/assignments/web/final.png
 ---
 
-:::warning Preliminary Content
-
-This assignment is preliminary content and is subject to change until the release date of the assignment.
-
-:::
 
 ## Overview
 
@@ -19,6 +14,10 @@ The final project report is your opportunity to document the complete CookYourBo
 The final report is worth **50 points** and serves as the capstone submission for the group project. Infographics will be compiled into a gallery for peer learning across teams.
 
 **Due:** Monday, April 20, 2026 at 11:59 PM Boston Time
+
+:::note Start Early
+The final report is something you should work on **throughout the group project**, not just in the last few days. Architecture decisions, team reflections, and "Our Feature" design work happen during GA1 and GA2 — capture them as you go. The Apr 20 deadline gives you a few extra days after the GA2 checkpoint (Apr 16) to finalize and polish, but this is not meant to be written from scratch in that window.
+:::
 
 ## Deliverables
 
@@ -192,7 +191,7 @@ Give us specific, actionable feedback on the group project: what worked well and
 
 ## Submission
 
-Submit to the course website (team deliverables):
+Merge to `main` (team deliverables — automatically submitted to Pawtograder):
 
 1. **Written Report** (PDF, 3-4 pages)
 2. **Infographic Poster** (PDF or PNG, single landscape page)

@@ -4,11 +4,6 @@ sidebar_position: 9
 image: /img/assignments/web/ga0.png
 ---
 
-:::warning Preliminary Content
-
-This assignment is preliminary content and is subject to change until the release date of the assignment.
-
-:::
 
 ## Overview
 
@@ -44,7 +39,7 @@ Before starting individual work, your team must assign ownership of the four cor
 
 - **Library View** (Owner: _____): Browse and manage recipe collections
 - **Recipe Editor** (Owner: _____): View and edit recipe content
-- **Import Interface** (Owner: _____): Import recipes from images using the Gemini API or copy/paste from text
+- **Import Interface** (Owner: _____): Import recipes from images using the Gemini API 
 - **Search & Filter** (Owner: _____): Find recipes across collections
 
 Each team member owns **one** feature and is responsible for the individual deliverables for that feature.
@@ -56,7 +51,7 @@ Each team member creates the following for **their assigned core feature**:
 
 ### 1. User Persona
 
-A **persona** is a fictional but realistic representation of a target user. Rather than designing for "everyone," personas help you focus on specific user needs, behaviors, and goals. See [L27: User-Centered Design](/lecture-notes/l27-ucd) for examples and templates.
+A **persona** is a fictional but realistic representation of a target user. Rather than designing for "everyone," personas help you focus on specific user needs, behaviors, and goals. See [L24: Usability (Slides 14-16)](/lecture-slides/l24-usability) for examples and templates.
 
 Create a realistic persona (1 page) for a user who primarily uses your feature. Include:
 - Name, background, technical comfort level
@@ -98,6 +93,8 @@ Combine individual wireframes into a single document (`design/integrated-wirefra
 - How navigation flows between the features your team is implementing (four features, or three if you are a 3-person team that dropped Search & Filter)
 - Shared UI elements (header, navigation, common buttons)
 - Any design decisions that affect multiple features
+
+Add your graphics to the repository, and embed them in this document. Confirm that they are visible in the GitHub preview or Pawtograder submission view.
 
 **3-person teams:** You may exclude the omitted feature (Search & Filter) from the combined wireframe, but the document must explicitly state which feature was omitted (e.g., "Our team is implementing Library View, Recipe Editor, and Import Interface; Search & Filter is not in scope.").
 
@@ -203,6 +200,8 @@ This is your chance to exercise full UCD creativity without implementation const
 **Total: 30 points**
 
 ## Submission
+
+All deliverables should be merged to `main` in your team repository following the [Git Workflow for Team Projects](/assignments/git-workflow). Your `main` branch is automatically submitted to Pawtograder.
 
 1. **Feature assignments:** Update your Team Charter with feature ownership
 2. **Individual deliverables:** Each member adds their persona, wireframes, and accessibility plan to `design/{username}/` folder

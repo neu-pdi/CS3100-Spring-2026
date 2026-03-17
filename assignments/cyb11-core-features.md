@@ -4,19 +4,14 @@ sidebar_position: 10
 image: /img/assignments/web/ga1.png
 ---
 
-:::warning Preliminary Content
-
-This assignment is preliminary content and is subject to change until the release date of the assignment.
-
-:::
 
 ## Overview
 
-In this assignment, your team implements the four core GUI features for CookYourBooks. Each team member owns one feature and is individually accountable for their ViewModel implementation, which must pass the provided automated test suite. Teams collaborate on shared infrastructure, integration, and code review. **Teams of three** may omit the "Search & Filter" feature (as in GA0); the omitted feature is not reassigned—each of the remaining three core features must have one owner, and grading applies only to the features you implement.
+In this assignment, your team implements the four core GUI features for CookYourBooks. Each team member owns one feature and is individually accountable for their ViewModel and View implementation, which will be manually evaluated by course staff. Teams collaborate on shared infrastructure, integration, and code review. **Teams of three** may omit the "Search & Filter" feature (as in GA0); the omitted feature is not reassigned—each of the remaining three core features must have one owner, and grading applies only to the features you implement.
 
 ![8-bit lo-fi pixel art illustration for a programming assignment cover. Kitchen/bakery setting with warm wooden cabinets and countertops in browns and tans. Scene composition divided into four distinct workstation quadrants, each staffed by a diverse pixel art developer (varying gender, skin tone, and hair style) building one core GUI feature of the CookYourBooks recipe app. TOP-LEFT QUADRANT "Library View": A developer browses a tall pixel art bookshelf filled with cookbooks, a navigation tree panel on a monitor shows expandable folders for "My Cookbooks", "Personal Collection", "Web Imports". Small cookbook icons with colored spines line the shelf. TOP-RIGHT QUADRANT "Recipe Editor": A developer works at a monitor showing a recipe detail form with editable fields — title, ingredients list with quantity/unit/name columns, instruction steps, and a validation checkmark icon. A recipe card on the desk shows red underlines for invalid fields. BOTTOM-LEFT QUADRANT "Import Interface": A developer holds a physical cookbook page up to a pixel art camera/scanner. The monitor shows an OCR progress bar at 60%, a spinning loader, and a preview of extracted text. An error dialog box floats nearby with a friendly retry button. BOTTOM-RIGHT QUADRANT "Search & Filter": A developer types in a search box on their monitor, tag filter chips ("vegetarian", "quick", "Italian") are visible below the search bar, and a filtered results list shows matching recipe cards with highlighted keyword matches. A keyboard shortcut hint floats nearby. CENTER - Where all four quadrants meet, a glowing cyan hub labeled "ViewModel Interface" connects to each quadrant via cyan arrows, representing the shared contract. Above the hub, a small test suite icon shows green checkmarks. POST-IT NOTES: "Own your feature. Trust your team." and "ViewModel = testable brains". TOP BANNER: Metallic blue banner with white pixel text "GA1: Core Features". BOTTOM TEXT: "CS 3100: Program Design & Implementation 2". Color palette: Warm browns/tans for kitchen, cyan/teal for ViewModel connections and data flow, each quadrant has a subtle accent color (blue, green, orange, purple) to distinguish features. 8-bit lo-fi pixel art style, clean outlines, retro game aesthetic with subtle CRT screen texture, 16:9 aspect ratio.](/img/assignments/web/ga1.png)
 
-The key architectural insight of this assignment is that **ViewModels are the testable "brains" of GUI features**. By implementing against provided ViewModel interfaces, your individual work is independently gradeable while still requiring integration with your team's shared codebase.
+The key architectural insight of this assignment is that **ViewModels are the testable "brains" of GUI features**. By implementing against provided ViewModel interfaces, your individual work is independently evaluable while still requiring integration with your team's shared codebase.
 
 **Due:** Thursday, April 9, 2026 at 11:59 PM Boston Time
 
@@ -51,15 +46,35 @@ Throughout GA1, your team will have **weekly 30-minute meetings** with your assi
 - **Collaboration verification:** Is the team working well together?
 - **Debugging support:** Your TA can help unblock technical issues
 
-These meetings are also an opportunity to demonstrate your understanding of your code. If you used AI tools to help with implementation, you should still be able to explain how the code works and why you made certain design decisions.
+**Meeting schedule for GA1:**
+
+| Meeting | Target Dates | Focus |
+|---------|-------------|-------|
+| 1 | Mar 23–24 | Design sprint check-in — team introductions, progress review, workflow setup (ungraded) |
+| 2 | Mar 30–31 | Core features kickoff — early code, first graded code walk |
+| 3 | Apr 6–7 | Core features deep dive — detailed code walks, PR review, integration check |
+
+Starting with Meeting 2, your TA scores each student on a **10-point scale** using the rubric below. These scores are the primary input into the **Individual Accountability Adjustment** (see Grading Rubric) — they directly determine whether your individual grade is adjusted up or down. A student who consistently demonstrates strong comprehension and collaboration in meetings is unlikely to receive a downward adjustment; a student who cannot explain their own code will.
+
+| Category | Points | What your TA is looking for |
+|----------|--------|-----------------------------|
+| **Code Comprehension** | 4 | Can you explain your own code at both a high level and in detail? Can you articulate design decisions and trade-offs? |
+| **Process & Workflow** | 3 | Are you using feature branches, opening PRs with meaningful descriptions, and participating in code review? |
+| **Collaboration Evidence** | 2 | Have you reviewed teammates' PRs? Can you describe what your teammates are working on? |
+| **Forward Planning** | 1 | Do you have a concrete plan for what you're doing next? |
+
+Your TA will use a **top-down questioning approach**: starting with general questions ("What does your feature do?") and drilling into specifics ("Show me this method — why did you structure it this way?"). The goal is to assess comprehension, not to quiz you on syntax. The specific questions are not shared in advance.
+
+These meetings are where you demonstrate your understanding of your code. If you used AI tools to help with implementation, you must still be able to explain how the code works and why you made certain design decisions. Inability to do so is a red flag that will be reflected in your accountability adjustment.
+
+**Before your first meeting**, make sure your team has read the [Git Workflow for Team Projects](/assignments/git-workflow) guide and set up your branching strategy.
 
 ## Provided Materials
 
 You will receive:
 
 1. **ViewModel Interfaces**: Four Java interfaces defining the contract for each core feature
-2. **Automated Test Suite**: JUnit tests that verify your ViewModel implementations
-3. **Starter FXML Templates**: Optional starting points for your Views
+2. **Starter FXML Templates**: Optional starting points for your Views
 4. **A5 Solution**: The complete service layer your ViewModels will use
 
 ## Core Features
@@ -140,7 +155,6 @@ Find recipes across all collections.
 ### ViewModel Implementation
 
 - Implement your assigned ViewModel interface
-- All provided automated tests must pass
 - Use dependency injection to receive services (constructor injection)
 - Follow your team's user-facing terminology for naming
 
@@ -233,7 +247,7 @@ void selectCollection_updatesRecipeList() {
 
 | Component | Points | Criteria |
 |-----------|--------|----------|
-| **ViewModel Tests Pass** | 20 | All provided automated tests pass |
+| **ViewModel Implementation** | 20 | Implements the provided interface correctly; manually evaluated by course staff |
 | **View Implementation** | 8 | FXML + controller binds correctly, follows design |
 | **Additional Tests** | 5 | 5+ meaningful tests covering edge cases |
 | **Code Quality** | 2 | Follows UI terminology, clean code, appropriate documentation |
@@ -251,7 +265,7 @@ void selectCollection_updatesRecipeList() {
 
 ### Individual Accountability Adjustment
 
-TA meeting observations, collaboration surveys, and peer evaluation can adjust an individual's final grade by **±20 points**. If a team member cannot explain their code in TA meetings while the rest of the team succeeds, their grade may be reduced. Teammates who compensate may receive a small boost. The weekly collaboration surveys (due Mar 16, Mar 23, Mar 30, Apr 6, Apr 13) and peer evaluation submitted after the assignment inform this adjustment.
+TA meeting observations, collaboration surveys, and peer evaluation can adjust an individual's final grade by up to **-20 points** or award an **upward adjustment of up to +20 points**. If a team member cannot explain their code in TA meetings while the rest of the team succeeds, their grade may be reduced. The upward adjustment exists for a specific scenario: if your team's project isn't fully complete, but you went above and beyond to support struggling teammates — helping them get unblocked, taking on extra integration work, providing thorough code reviews — you can still earn full marks. This is **not an extra credit mechanism**; it is unlikely to bring a student above the assignment's total points. Simply doing your own work well is the expected baseline, not grounds for an upward adjustment. The weekly collaboration surveys (due Mar 23, Mar 30, Apr 6, Apr 13) and peer evaluation submitted after the assignment inform this adjustment.
 
 ## Submission
 
@@ -263,15 +277,5 @@ Your team repository should follow this structure (plan it from day one):
 /menu-features/                 ← GA2 process portfolios (one subfolder per feature)
 ```
 
-1. **Push to team repository:** All code in your team's GitHub repository
-2. **Tag release:** Create a git tag `ga1-submission` on your final commit
-3. **Individual reflection:** Each member submits a brief reflection (see below)
-
-### Individual Reflection (submitted separately)
-
-Answer these questions (1-2 paragraphs each):
-
-1. What was the most challenging aspect of implementing your ViewModel?
-2. How did your GA0 design artifacts help (or not help) during implementation?
-3. Describe one code review interaction that improved your code or understanding.
-4. What would you do differently in GA2 based on this experience?
+1. **Merge to `main`:** Your `main` branch is automatically submitted to Pawtograder. Make sure all work is merged to `main` by the deadline.
+2. **Weekly collaboration surveys:** Make sure all team members are up to date on the weekly TCRS surveys via Pawtograder

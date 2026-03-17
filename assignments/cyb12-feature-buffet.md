@@ -4,11 +4,6 @@ sidebar_position: 11
 image: /img/assignments/web/ga2.png
 ---
 
-:::warning Preliminary Content
-
-This assignment is preliminary content and is subject to change until the release date of the assignment.
-
-:::
 
 ## Overview
 
@@ -43,12 +38,20 @@ Use AI as a tool, but ensure the *thinking* is yours.
 
 ## TA Mentor Meetings
 
-Throughout GA2, your team will have **weekly 30-minute meetings** with your assigned TA mentor. **These meetings are an accountability mechanism, not just a scheduling requirement.** If you cannot attend, notify your TA *before* the meeting and provide a written update on your work status—this demonstrates accountability. Missing a meeting without prior notice signals a lack of accountability and will likely result in a grade of zero for that week's individual accountability component. These meetings serve multiple purposes:
+Throughout GA2, your team will have **weekly 30-minute meetings** with your assigned TA mentor. **These meetings are an accountability mechanism, not just a scheduling requirement.** If you cannot attend, notify your TA *before* the meeting and provide a written update on your work status—this demonstrates accountability. Missing a meeting without prior notice signals a lack of accountability and will likely result in a penalty for that week's individual accountability component. These meetings serve multiple purposes:
 
 - **Code walks:** Each team member explains what they worked on and their design choices
 - **Progress check-ins:** Are you on track? Stuck anywhere?
 - **Collaboration verification:** Is the team working well together?
 - **Debugging support:** Your TA can help unblock technical issues
+
+**Meeting schedule for GA2:**
+
+| Meeting | Target Dates | Focus |
+|---------|-------------|-------|
+| 4 | Apr 13–14 | Feature buffet progress, integration deep dive, architecture decisions — graded code walk |
+
+Each student earns up to **10 points** based on code comprehension, process/workflow adherence, collaboration evidence, and forward planning.
 
 These meetings are also an opportunity to demonstrate your understanding of your code. If you used AI tools to help with implementation, you should still be able to explain how the code works and why you made certain design decisions.
 
@@ -122,14 +125,14 @@ Document your implementation process:
 
 **A well-documented partial feature scores higher than a complete feature with no process evidence.**
 
-| Scenario | Approximate Grade |
-|----------|-------------------|
-| Feature complete, excellent process documentation, meaningful iteration | A (90-100%) |
-| Feature complete, minimal process documentation | B- (75-80%) |
-| Feature complete, no documentation | C- (70-72%) |
-| Feature partially complete, excellent process documentation | B+ (85-88%) |
-| Feature partially complete, minimal process documentation | C (70-75%) |
-| Feature generally broken, but excellent documentation of what was attempted | B- (75-78%) |
+| Scenario | Score (out of 40) | Letter Grade Equivalent |
+|----------|-------------------|------------------------|
+| Feature complete, excellent process documentation, meaningful iteration | 36–40 | A |
+| Feature partially complete, excellent process documentation | 32–36 | B+ |
+| Feature complete, minimal process documentation | 28–32 | B- |
+| Feature generally broken, but excellent documentation of what was attempted | 28–32 | B- |
+| Feature partially complete, minimal process documentation | 24–28 | C+ |
+| Feature complete, no documentation | 20–24 | C- |
 
 ## Grading Rubric
 
@@ -160,9 +163,11 @@ Scored per team member based on evidence of personal engagement:
 
 ### Individual Accountability Adjustment
 
-TA meeting observations, collaboration surveys, and peer evaluation can adjust an individual's final grade by **±20 points**. If a team member cannot explain their code in TA meetings while the rest of the team succeeds, their grade may be reduced. Teammates who compensate may receive a small boost. The weekly collaboration surveys (due Mar 16, Mar 23, Mar 30, Apr 6, Apr 13) and peer evaluation submitted after the assignment inform this adjustment.
+TA meeting observations, collaboration surveys, and peer evaluation can adjust an individual's final grade by up to **-20 points** or award an **upward adjustment of up to +20 points**. If a team member cannot explain their code in TA meetings while the rest of the team succeeds, their grade may be reduced. The upward adjustment exists for a specific scenario: if your team's project isn't fully complete, but you went above and beyond to support struggling teammates — helping them get unblocked, taking on extra integration work, providing thorough code reviews — you can still earn full marks. This is **not an extra credit mechanism**; it is unlikely to bring a student above the assignment's total points. Simply doing your own work well is the expected baseline, not grounds for an upward adjustment. The weekly collaboration surveys (due Mar 23, Mar 30, Apr 6, Apr 13) and peer evaluation submitted after the assignment inform this adjustment.
 
 ## Submission
+
+All deliverables should be merged to `main` following the [Git Workflow for Team Projects](/assignments/git-workflow). Your `main` branch is automatically submitted to Pawtograder.
 
 ### Repository Contents
 
@@ -185,8 +190,7 @@ TA meeting observations, collaboration surveys, and peer evaluation can adjust a
 - [ ] 2-3 features selected from the buffet
 - [ ] Process portfolio complete for each feature
 - [ ] Demo videos recorded and linked
-- [ ] All features integrated into main application
-- [ ] Peer evaluation survey completed (separate submission)
+- [ ] Peer evaluation survey completed (separate submission via Pawtograder)
 
 ## Reflection Questions for Team Discussion
 

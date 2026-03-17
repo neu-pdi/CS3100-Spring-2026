@@ -20,8 +20,8 @@ Assignments are structured to provide a steady, manageable pace throughout the s
 **Notes:**
 - Each assignment builds on the provided solution from the previous week. Students are trusted to not share these solutions, or to seek them out.
 - AI coding assistants are introduced in Week 5 (Assignment 3) and encouraged thereafter. Students are strongly discouraged from using them in the first two assignments.
-- Group work begins in Week 10 (teams of 4 formed by Week 8, or teams of 3). Each team member owns one core GUI feature while collaborating on shared infrastructure and the Feature Buffet. **3-person teams:** You may omit the Search & Filter core feature; each member then owns one of the remaining three (Library View, Recipe Editor, Import Interface). Ownership and grading apply only to the features you implement. Automated grading and checkpoint tests run only against the ViewModel interfaces for those features (three or four); Feature Buffet and process-grading expectations are unchanged for 3- and 4-person teams.
-- The group project (GA1+GA2+Final) is released as **one specification** with accountability checkpoints. **Features must be delivered incrementally**—it is not possible to complete the project at the last minute. Students receive automated grading feedback at checkpoints; full instructor feedback comes at the end. Core features are graded individually via automated tests against the defined ViewModel interfaces for the features your team implements (four, or three if you use the 3-person-team exception). Feature Buffet items are graded primarily on **process** (design iteration, code review quality, documentation) rather than product.
+- Group work begins in Week 10 (teams of 4 formed by Week 8, or teams of 3). Each team member owns one core GUI feature while collaborating on shared infrastructure and the Feature Buffet. **3-person teams:** You may omit the Search & Filter core feature; each member then owns one of the remaining three (Library View, Recipe Editor, Import Interface). Ownership and grading apply only to the features you implement. Feature Buffet and process-grading expectations are unchanged for 3- and 4-person teams.
+- The group project (GA1+GA2+Final) is released as **one specification** with accountability checkpoints. **Features must be delivered incrementally**—it is not possible to complete the project at the last minute. Core features are graded individually based on the defined ViewModel interfaces for the features your team implements (four, or three if you use the 3-person-team exception). Feature Buffet items are graded primarily on **process** (design iteration, code review quality, documentation) rather than product.
 - Labs complement but don't depend on the main project assignments - they always build on a solution from a week earlier.
 
 
@@ -139,19 +139,21 @@ Assignments are structured to provide a steady, manageable pace throughout the s
 
 ## **Module 3: Design for Users (Group Work Begins)**
 
-Group assignments are structured around **individual accountability with team collaboration**. Each team member owns one of four core GUI features, implementing against a provided ViewModel interface that enables automated grading. Teams also collaborate on shared infrastructure, integration, and choose additional "menu" features to implement together.
+Group assignments are structured around **individual accountability with team collaboration**. Each team member owns one of four core GUI features, implementing against a provided ViewModel interface. Teams also collaborate on shared infrastructure, integration, and choose additional "menu" features to implement together.
 
 **Weekly collaboration surveys** are due Mar 16, Mar 23, Mar 30, Apr 6, and Apr 13—submit via Pawtograder. These brief check-ins factor into individual accountability adjustments.
 
-**Important:** The group project (GA1+GA2+Final) is released as a single specification with two accountability checkpoints. **You cannot wait until the end to complete this project**—features must be delivered incrementally, and each checkpoint requires working functionality. You should expect only automated grading feedback at checkpoints; full instructor/TA feedback will be provided at the end. Plan your work from day one and use your team's code review process for iterative improvement.
+**Important:** The group project (GA1+GA2+Final) is released as a single specification with two accountability checkpoints. **You cannot wait until the end to complete this project**—features must be delivered incrementally, and each checkpoint requires working functionality. Plan your work from day one and use your team's code review process for iterative improvement.
 
 ### Mandatory Group Processes
 
 Two recurring processes run throughout the group project and are **required** for full credit:
 
-**Weekly Team Collaboration Surveys** — Due each Monday (Mar 16, Mar 23, Mar 30, Apr 6, Apr 13) via Pawtograder. Each survey asks you to briefly reflect on the team's dynamics, your own contributions that week, and any blockers or tensions. Responses are not shared with teammates but are visible to your TA group mentor, who uses them to lead retrospectives and guide team dynamics. They feed directly into the individual accountability adjustments for GA1, GA2, and the Final Report.
+**Weekly Team Collaboration Surveys** — Due each Monday (Mar 23, Mar 30, Apr 6, Apr 13) via Pawtograder. Each survey asks you to briefly reflect on the team's dynamics, your own contributions that week, and any blockers or tensions. Responses are not shared with teammates but are visible to your TA group mentor, who uses them to lead retrospectives and guide team dynamics. They feed directly into the individual accountability adjustments for GA1, GA2, and the Final Report.
 
 **Weekly TA Mentor Meetings** — Your team meets with your assigned TA mentor for 30 minutes each week. Every team member is expected to attend and to explain what they worked on—including the design decisions behind their code. The meeting also covers progress relative to upcoming checkpoints and next steps. These meetings are not a scheduling formality; they are the primary mechanism by which TA mentors verify that each team member understands their own code and is contributing meaningfully.
+
+Before your first meeting, make sure your team has read the **[Git Workflow for Team Projects](/assignments/git-workflow)** guide and set up your branching strategy.
 
 - **If you can attend:** show up prepared to walk through your code and explain why you made the choices you made.
 - **If you cannot attend:** notify your TA *before* the meeting and send a written update covering your work status. This demonstrates accountability.
@@ -169,9 +171,9 @@ Individual accountability is assessed through three lenses and affects your grad
 | **Weekly collaboration surveys** | Is the team working well? Are contributions equitable? |
 | **Peer evaluation** | How do your teammates assess your collaboration and contribution? |
 
-Each checkpoint rubric includes an **Individual Accountability Adjustment** of up to ±20 points. Note also that, as part of the [Final Report](/assignments/cyb13-final-report), the individual reflection is a **mandatory submission gate**: your team and individual grades are not released until your reflection is submitted.
+Each checkpoint rubric includes an **Individual Accountability Adjustment** of up to **-20 points**, or an **upward adjustment of up to +20 points**. Deductions address cases where a team member is not pulling their weight. The upward adjustment exists for a specific scenario: if your team's project isn't fully complete, but you went above and beyond to support struggling teammates, you can still earn full marks. This is **not an extra credit mechanism** — it is unlikely to bring a student above the assignment's total points. Doing your own work well is the expected baseline. Note also that, as part of the [Final Report](/assignments/cyb13-final-report), the individual reflection is a **mandatory submission gate**: your team and individual grades are not released until your reflection is submitted.
 
-The accountability adjustments are not punitive—they exist to protect teammates who carry their weight from being penalized by those who don't, and to reward collaborative behavior that isn't always visible in code alone.
+The accountability adjustments exist to protect teammates who carry their weight from being penalized by those who don't, and to recognize collaborative behavior that isn't always visible in code alone.
 
 ---
 
@@ -197,7 +199,7 @@ The accountability adjustments are not punitive—they exist to protect teammate
 ### **Week 12-15: Group Project**
 - [**Group Project: CookYourBooks GUI**](/assignments/cyb11-core-features) (Released 2026-03-23)
   
-  This is a **single project** with two accountability checkpoints. The full specification is available from day one—plan your work accordingly. **Checkpoints require working, tested features**; later checkpoints build on earlier ones, so it is impossible to leave everything until the final week. You will receive automated test feedback at each checkpoint, but comprehensive instructor feedback comes only at the final submission.
+  This is a **single project** with two accountability checkpoints. The full specification is available from day one—plan your work accordingly. **Checkpoints require working features**; later checkpoints build on earlier ones, so it is impossible to leave everything until the final week.
 
 - [**Lab 12: GUI Programming**](/labs/lab12-gui) (Week 13)
   - JavaFX workshop
@@ -205,14 +207,14 @@ The accountability adjustments are not punitive—they exist to protect teammate
   - Practice with CompletableFutures
 
   #### **Checkpoint 1: Core Features** (Due 2026-04-09)
-  - **You are provided:** ViewModel interfaces (contracts) for each of the four core features (or three if your team uses the 3-person exception and omits Search & Filter), plus a shared test suite. Automated tests run only against the ViewModel interfaces for the features your team implements.
+  - **You are provided:** ViewModel interfaces (contracts) for each of the four core features (or three if your team uses the 3-person exception and omits Search & Filter).
   - **Core Features (one owner per team member):**
     1. **Library View**: Browse cookbooks/collections, navigation, collection management
     2. **Recipe Details/Editor**: View and edit recipe content, ingredient list, validation
     3. **Import Interface**: Image upload, Gemini-based import progress feedback, error handling, async operations
     4. **Search & Filter**: Search by title/ingredient, tag filtering, keyboard navigation *(3-person teams omit this feature; each member owns one of 1–3)*
   - **Individual Deliverables:**
-    - ViewModel implementation that passes the provided automated tests for your feature
+    - ViewModel implementation for your feature
     - View implementation (FXML + controller) that binds to your ViewModel
     - Additional unit tests beyond the provided suite
   - **Team Deliverables:**
@@ -220,7 +222,7 @@ The accountability adjustments are not punitive—they exist to protect teammate
     - Shared infrastructure: navigation, theming, error handling components (for implemented features)
     - Integration tests verifying interactions between implemented core features
     - Evidence of code review (meaningful PR comments applying HRT principles)
-  - *Checkpoint grading: 70% individual (ViewModel tests), 30% team (integration). Same for 3- and 4-person teams; grading applies only to implemented features.*
+  - *Checkpoint grading: 70% individual (ViewModel + View), 30% team (integration). Same for 3- and 4-person teams; grading applies only to implemented features.*
 
 - [**Lab 14: Prep for Future of Programming**](/labs/lab14-future-prep) (Week 15)
   - Explore emerging trends in software development
@@ -234,7 +236,7 @@ The accountability adjustments are not punitive—they exist to protect teammate
     - Design artifacts: show iteration (at least 2 versions with rationale for changes)
     - Implementation journal: git history, PR reviews, documented decisions
     - Testing evidence: unit tests, accessibility check
-  - *Checkpoint grading: 20% individual, 80% team (with peer evaluation adjustment ±20%)*
+  - *Checkpoint grading: 20% individual, 80% team (with individual accountability adjustment of up to ±20 points)*
 
   #### **Final Submission** (Due 2026-04-20)
   See [Final Report](/assignments/cyb13-final-report) for full details, but in summary:
