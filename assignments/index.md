@@ -141,7 +141,7 @@ Assignments are structured to provide a steady, manageable pace throughout the s
 
 Group assignments are structured around **individual accountability with team collaboration**. Each team member owns one of four core GUI features, implementing against a provided ViewModel interface. Teams also collaborate on shared infrastructure, integration, and choose additional "menu" features to implement together.
 
-**Weekly collaboration surveys** are due Mar 16, Mar 23, Mar 30, Apr 6, and Apr 13—submit via Pawtograder. These brief check-ins factor into individual accountability adjustments.
+**Weekly collaboration surveys** are due Mar 23, Mar 30, Apr 6, and Apr 13—submit via Pawtograder. These brief check-ins factor into individual accountability adjustments.
 
 **Important:** The group project (GA1+GA2+Final) is released as a single specification with two accountability checkpoints. **You cannot wait until the end to complete this project**—features must be delivered incrementally, and each checkpoint requires working functionality. Plan your work from day one and use your team's code review process for iterative improvement.
 
@@ -151,7 +151,16 @@ Two recurring processes run throughout the group project and are **required** fo
 
 **Weekly Team Collaboration Surveys** — Due each Monday (Mar 23, Mar 30, Apr 6, Apr 13) via Pawtograder. Each survey asks you to briefly reflect on the team's dynamics, your own contributions that week, and any blockers or tensions. Responses are not shared with teammates but are visible to your TA group mentor, who uses them to lead retrospectives and guide team dynamics. They feed directly into the individual accountability adjustments for GA1, GA2, and the Final Report.
 
-**Weekly TA Mentor Meetings** — Your team meets with your assigned TA mentor for 30 minutes each week. Every team member is expected to attend and to explain what they worked on—including the design decisions behind their code. The meeting also covers progress relative to upcoming checkpoints and next steps. These meetings are not a scheduling formality; they are the primary mechanism by which TA mentors verify that each team member understands their own code and is contributing meaningfully.
+**Weekly TA Mentor Meetings** — Your team meets with your assigned TA mentor for 30 minutes each week (Mon–Tue). Every team member is expected to attend and to explain what they worked on—including the design decisions behind their code. The meeting also covers progress relative to upcoming checkpoints and next steps. These meetings are not a scheduling formality; they are the primary mechanism by which TA mentors verify that each team member understands their own code and is contributing meaningfully.
+
+| Meeting | Week | Dates | Project Phase | Graded? |
+|---------|------|-------|---------------|---------|
+| 1 | 12 | Mar 23–24 | Design Sprint (GA0 due Mar 26) | No — introductory "slow walk" |
+| 2 | 13 | Mar 30–31 | Core Features kickoff (GA1 due Apr 9) | Yes — 10 pts per student |
+| 3 | 14 | Apr 6–7 | Core Features deep dive | Yes — 10 pts per student |
+| 4 | 15 | Apr 13–14 | Feature Buffet & integration (GA2 due Apr 16) | Yes — 10 pts per student |
+
+Starting with Meeting 2, your TA scores each student on code comprehension, process & workflow, collaboration evidence, and forward planning. See the GA1 and GA2 assignment pages for the full rubric.
 
 Before your first meeting, make sure your team has read the **[Git Workflow for Team Projects](/assignments/git-workflow)** guide and set up your branching strategy.
 
@@ -169,7 +178,7 @@ Individual accountability is assessed through three lenses and affects your grad
 |-----------|-----------------|
 | **TA mentor meeting observations** | Can you explain your code and design decisions? Are you contributing week to week? |
 | **Weekly collaboration surveys** | Is the team working well? Are contributions equitable? |
-| **Peer evaluation** | How do your teammates assess your collaboration and contribution? |
+| **Peer evaluation (final report only)** | How do your teammates assess your collaboration and contribution? |
 
 Each checkpoint rubric includes an **Individual Accountability Adjustment** of up to **-20 points**, or an **upward adjustment of up to +20 points**. Deductions address cases where a team member is not pulling their weight. The upward adjustment exists for a specific scenario: if your team's project isn't fully complete, but you went above and beyond to support struggling teammates, you can still earn full marks. This is **not an extra credit mechanism** — it is unlikely to bring a student above the assignment's total points. Doing your own work well is the expected baseline. Note also that, as part of the [Final Report](/assignments/cyb13-final-report), the individual reflection is a **mandatory submission gate**: your team and individual grades are not released until your reflection is submitted.
 
@@ -198,8 +207,17 @@ The accountability adjustments exist to protect teammates who carry their weight
 
 ### **Week 12-15: Group Project**
 - [**Group Project: CookYourBooks GUI**](/assignments/cyb11-core-features) (Released 2026-03-23)
-  
+
   This is a **single project** with two accountability checkpoints. The full specification is available from day one—plan your work accordingly. **Checkpoints require working features**; later checkpoints build on earlier ones, so it is impossible to leave everything until the final week.
+
+  **TA Mentor Meeting schedule during group project:**
+
+  | Week | Meeting | Dates | Focus | Graded? |
+  |------|---------|-------|-------|---------|
+  | 12 | Meeting 1 | Mar 23–24 | Design sprint check-in, team intros, workflow setup | No |
+  | 13 | Meeting 2 | Mar 30–31 | Core features kickoff — early code walks | Yes (10 pts) |
+  | 14 | Meeting 3 | Apr 6–7 | Core features deep dive — detailed code walks, integration check | Yes (10 pts) |
+  | 15 | Meeting 4 | Apr 13–14 | Feature buffet & integration — architecture review, final sprint | Yes (10 pts) |
 
 - [**Lab 12: GUI Programming**](/labs/lab12-gui) (Week 13)
   - JavaFX workshop

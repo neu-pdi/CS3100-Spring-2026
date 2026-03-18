@@ -13,12 +13,16 @@ With your Team Charter established, it's time to design your group project. In t
 
 Each team member will create personas, wireframes, and accessibility considerations for their assigned core feature. You'll also select your **Feature Buffet** items for GA2 and design **"Our Feature"**—a custom feature concept that you'll include (but not implement) in your final report.
 
+:::info Getting Started with Git
+This is your first team assignment. Your team repository is on GitHub — clone it and start working. Each team member must author at least **one pull request** for this assignment. You don't need a strict branching workflow yet (that comes in GA1), but practice creating branches and opening PRs now. Read the **[Git Workflow for Team Projects](/assignments/git-workflow)** guide before your first TA mentor meeting.
+:::
+
 :::info Codebase Handout
 When you begin implementation in GA1, you will receive a codebase handout that includes the **solution to HW5** (the service layer) as well as a **basic integration with the Gemini API for recipe OCR parsing** (extracting recipe text from images). You do not need to build these from scratch—your job in GA1 and GA2 is to design and build the GUI and additional features on top of this foundation.
 :::
 
 :::tip What's a ViewModel?
-In GUI applications, a common pattern is to separate the **View** (what the user sees and clicks) from the **business logic and data** (the services you built in HW5). A **ViewModel** is the glue between them: it holds the state that the View displays and translates user actions into calls to your services. You don't need to know the implementation details yet—just think of it as a layer that sits between your UI screens and the existing service code. We'll cover this in detail in [L29: GUIs Part 1](/lecture-notes/l29-gui1), but for this design sprint, it's enough to think about: *"What data does each screen need, and what actions can the user take?"*
+Think back to [Hexagonal Architecture](/lecture-notes/l16-testing2) — your HW5 services are the **application core**, and the GUI you're about to build is an external system that needs an **adapter** to talk to them. A **ViewModel** is exactly that adapter: it holds the state that the View displays and translates user actions into calls to your services. The View (what the user sees and clicks) depends on the ViewModel, and the ViewModel depends on your services — just like adapters depend on ports. You don't need to know the implementation details yet — we'll cover this in [L29: GUIs Part 1](/lecture-notes/l29-gui1). For this design sprint, it's enough to think about: *"What data does each screen need, and what actions can the user take?"*
 :::
 
 **Due:** Thursday, March 26, 2026 at 11:59 PM Boston Time
@@ -178,6 +182,8 @@ This is your chance to exercise full UCD creativity without implementation const
    - Scope? Complexity? Time? Dependencies?
    - This honest assessment demonstrates mature engineering judgment
 
+**Scope guidance:** Think big — aim for something at least as substantial as a Feature Buffet item, and don't be afraid to go bigger. We want to see product vision here: what would genuinely make CookYourBooks better if you had more time?
+
 **Examples of good "Our Feature" ideas** (must be something *not* on the Feature Buffet):
 - Recipe version history with diff view
 - Collaborative cookbook sharing with permissions
@@ -193,7 +199,8 @@ This is your chance to exercise full UCD creativity without implementation const
 |-----------|--------|----------|
 | **User Persona** | 5 | Realistic, specific to feature, includes goals/pain points/context |
 | **Wireframes** | 6 | Shows key screens, interactions, and connections to other features |
-| **Accessibility Plan** | 4 | Addresses keyboard, screen reader, color; references WCAG |
+| **Accessibility Plan** | 3 | Addresses keyboard, screen reader, color; references WCAG |
+| **Pull Request** | 1 | Authored at least one PR |
 
 ### Team Components (15 points)
 
@@ -209,26 +216,7 @@ This is your chance to exercise full UCD creativity without implementation const
 
 ## Submission
 
-All deliverables should be merged to `main` in your team repository following the [Git Workflow for Team Projects](/assignments/git-workflow). Your `main` branch is automatically submitted to Pawtograder.
+All deliverables go in the **`README.md`** provided in your team's handout repository. The template includes section headers for each deliverable — fill them in. Embed or link wireframes, diagrams, and other images directly in the document, and commit image files to the `design/` folder.
 
-1. **Feature assignments:** Update your Team Charter with feature ownership
-2. **Individual deliverables:** Each member adds their persona, wireframes, and accessibility plan to `design/{username}/` folder
-3. **Architecture diagram:** Add to `design/architecture.png` (or PDF)
-4. **Integrated wireframes:** Add to `design/integrated-wireframes.md`
-5. **User-facing terminology:** Add to `design/ui-terminology.md`
-6. **Feature Buffet selection:** Add to `design/buffet-selection.md`
-7. **"Our Feature" concept:** Add to `design/our-feature.md`
+Your `main` branch is automatically submitted to Pawtograder. Each team member must author at least **one pull request** as part of this assignment. You don't need to follow a strict branching workflow yet — that comes in GA1 — but get comfortable with PRs now.
 
-### Submission Checklist
-
-- [ ] Feature assignments added to Team Charter
-- [ ] Each member has persona, wireframes, accessibility plan in their folder
-- [ ] Architecture diagram present
-- [ ] Integrated wireframes showing navigation and shared elements
-- [ ] User-facing terminology table complete
-- [ ] Feature Buffet: 2-3 selections with rationale
-- [ ] "Our Feature": complete design concept with all 5 sections
-
----
-
-Good luck! This design phase sets the foundation for everything that follows. Teams that invest in thoughtful design upfront consistently have smoother implementation phases.
