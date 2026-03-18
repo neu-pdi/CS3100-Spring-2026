@@ -14,7 +14,11 @@ With your Team Charter established, it's time to design your group project. In t
 Each team member will create personas, wireframes, and accessibility considerations for their assigned core feature. You'll also select your **Feature Buffet** items for GA2 and design **"Our Feature"**—a custom feature concept that you'll include (but not implement) in your final report.
 
 :::info Codebase Handout
-When you begin implementation in GA1, you will receive a codebase handout that includes the **solution to HW5** (the service layer) as well as a **basic integration with the Gemini API for recipe OCR parsing** (extracting recipe text from images). You do not need to build these from scratch—your job in GA1 and GA2 is to design and build the GUI and additional features on top of this foundation. Keep this in mind as you design: your ViewModels will connect to these existing services.
+When you begin implementation in GA1, you will receive a codebase handout that includes the **solution to HW5** (the service layer) as well as a **basic integration with the Gemini API for recipe OCR parsing** (extracting recipe text from images). You do not need to build these from scratch—your job in GA1 and GA2 is to design and build the GUI and additional features on top of this foundation.
+:::
+
+:::tip What's a ViewModel?
+In GUI applications, a common pattern is to separate the **View** (what the user sees and clicks) from the **business logic and data** (the services you built in HW5). A **ViewModel** is the glue between them: it holds the state that the View displays and translates user actions into calls to your services. You don't need to know the implementation details yet—just think of it as a layer that sits between your UI screens and the existing service code. We'll cover this in detail in [L29: GUIs Part 1](/lecture-notes/l29-gui1), but for this design sprint, it's enough to think about: *"What data does each screen need, and what actions can the user take?"*
 :::
 
 **Due:** Thursday, March 26, 2026 at 11:59 PM Boston Time
@@ -26,7 +30,7 @@ By completing this assignment, you will demonstrate proficiency in:
 - **Applying User-Centered Design** through personas, wireframes, and prototyping ([L27: User-Centered Design](/lecture-notes/l27-ucd))
 - **Considering accessibility** in interface design from the start ([L28: Accessibility and Inclusivity](/lecture-notes/l28-accessibility))
 - **Evaluating usability** using Nielsen's heuristics ([L24: Usability](/lecture-notes/l24-usability))
-- **Connecting design to architecture** by mapping ViewModels to existing services ([L18: Thinking Architecturally](/lecture-notes/l18-architecture-design))
+- **Connecting design to architecture** by mapping UI screens to existing services ([L18: Thinking Architecturally](/lecture-notes/l18-architecture-design))
 
 ## AI Policy for This Assignment
 
@@ -87,8 +91,8 @@ Write a brief document (1/2 page) addressing:
 ### 1. Architecture Diagram
 
 Create a diagram showing:
-- How your ViewModels connect to the existing services from A5
-- The relationship between Views, ViewModels, and Services
+- How your UI screens connect to the existing services from HW5 (think: *what data does each screen need from the service layer?*)
+- The relationship between Views (screens), ViewModels (the glue), and Services (your HW5 code)
 - Any new components your team plans to add
 
 ### 2. Integrated Wireframe Document
