@@ -13,6 +13,10 @@ With your Team Charter established, it's time to design your group project. In t
 
 Each team member will create personas, wireframes, and accessibility considerations for their assigned core feature. You'll also select your **Feature Buffet** items for GA2 and design **"Our Feature"**—a custom feature concept that you'll include (but not implement) in your final report.
 
+:::info Codebase Handout
+When you begin implementation in GA1, you will receive a codebase handout that includes the **solution to HW5** (the service layer) as well as a **basic integration with the Gemini API for recipe OCR parsing** (extracting recipe text from images). You do not need to build these from scratch—your job in GA1 and GA2 is to design and build the GUI and additional features on top of this foundation. Keep this in mind as you design: your ViewModels will connect to these existing services.
+:::
+
 **Due:** Thursday, March 26, 2026 at 11:59 PM Boston Time
 
 ## Learning Outcomes
