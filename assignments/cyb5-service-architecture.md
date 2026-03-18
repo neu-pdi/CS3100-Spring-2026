@@ -539,7 +539,7 @@ Instructions:
 cyb> search chicken
 ```
 
-Finds all recipes containing the specified ingredient (case-insensitive substring matching). Search operates on the `RecipeRepository` only — it does not separately iterate `RecipeCollectionRepository`. Displays matching recipe titles with their collection membership. Your service layer should provide this search capability.
+Finds all recipes containing the specified ingredient (case-insensitive substring matching). Displays matching recipe titles with their collection membership. Your service layer should provide this search capability.
 
 **Example output:**
 ```text
