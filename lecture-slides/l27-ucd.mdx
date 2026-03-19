@@ -16,8 +16,8 @@ import Img from '@site/src/components/Img';
 <Slide>
   <Img
     src="/img/lectures/web/l27.png"
-    prompt="Concept: 'User-Centered Design' (Program Design & Implementation 2). A pixel art educational illustration. On the left, a confident designer stands at a whiteboard covered in wireframes and checkmarks, smiling and giving a thumbs up — the design 'looks perfect.' On the right, behind a one-way observation mirror (clearly labeled 'Observation Room'), a real user sits at a laptop showing the same interface, looking completely lost — head tilted, question marks floating above, clicking the wrong buttons. The contrast is stark: the expert sees perfection, the user sees confusion. Between them, the one-way mirror reflects the designer's confidence back at them while the user's struggle is invisible. A clipboard on the wall shows 'Heuristic Evaluation: ALL PASS ✓'. Tagline at bottom: 'The Expert Approved It. The User Couldn't Use It.' Retro 8-bit pixel art style with teals, blues, purples, and warm accents."
-    alt="Pixel art showing a designer giving thumbs up to wireframes that passed heuristic evaluation, while behind a one-way mirror a real user is completely lost using the same interface. Tagline: The Expert Approved It. The User Couldn't Use It."
+    prompt="Concept: 'User-Centered Design' (Program Design & Implementation 2). A pixel art educational illustration showing the evolution of a study room booking app through three UCD stages, arranged left to right. 1: A crumpled paper sketch on a desk showing a rough 'Book a Room' interface with hand-drawn boxes. A female student with curly hair points at it saying 'I don't care which building!' Red X marks cross out the building-first navigation. A pencil and eraser nearby. Cost label: '$'. 2: A tablet/laptop showing a cleaner wireframe mockup, now with a time picker at the top. A different male student with glasses gives a thumbs up but points to something asking 'How do I book longer than 30 min?' Some yellow sticky notes with feedback. Cost label: '$$'. 3: A polished phone app showing the final time-first design with available rooms listed. A different female student with short hair successfully booking a room, looking happy with a small checkmark and sparkles. Cost label: '$$$'. Arrows connect the three stages showing progression. Above the whole scene: 'Test Early, Change Cheap'. Each stage features a distinct user providing feedback — showing that UCD involves testing with multiple real users. Retro 8-bit pixel art style with teals, blues, purples, and warm accents."
+    alt="Pixel art showing the evolution of a study room booking app through three UCD stages: paper sketch with user feedback and crossed-out ideas, wireframe mockup with more feedback, and polished final app with happy user. Tagline: Test Early, Change Cheap."
   />
 
 <aside className="notes">
@@ -27,6 +27,7 @@ import Img from '@site/src/components/Img';
 - **Connects to:** Lab usability work, final project
 
 **Structure (~28 slides):**
+- Recall from L24 (~2 min) — quick bridge to usability concepts from last week
 - Arc 1: Why UCD Matters (~12 min) — limitations of expert review, cost of building wrong thing, can't think your way to usability
 - Arc 2: The UCD Process (~6 min) — iterative cycle, fidelity matching
 - Arc 3: Prototyping Approaches (~10 min) — paper, Wizard-of-Oz, working prototypes, AI as accelerator
@@ -36,6 +37,8 @@ import Img from '@site/src/components/Img';
 - Key Takeaways (~2 min)
 
 **Running example:** Study room booking app
+
+**Cover image concept:** The image shows the *evolution* of the study room booking app through three UCD stages — paper sketch with user feedback ("I don't care which building!"), wireframe mockup with more feedback, and polished final app. Each stage shows real users providing input and the design improving. The cost labels ($, $$, $$$) reinforce that early changes are cheap.
 
 **Narrative spine:** In L24, we learned to *evaluate* usability with heuristics. But expert evaluation misses real user confusion. UCD closes that gap by putting real users at the center of the design process — through prototyping and evaluation at every stage, not just at the end.
 
@@ -103,6 +106,72 @@ After this lecture, you will be able to:
 </Slide>
 
 {/* ============================================ */}
+{/* RECALL FROM L24 */}
+{/* ============================================ */}
+
+<Slide>
+
+## Recall from L24: What Usability Means
+
+<div style={{display: 'flex', flexDirection: 'column', gap: '1em', fontSize: '0.7em', marginTop: '0.3em'}}>
+
+<div>
+
+```mermaid
+graph LR
+    L[Learnability] --> E[Effectiveness]
+    E --> P[Productivity]
+    L --> R[Retainability]
+    R --> P
+    P --> S[Satisfiability]
+    
+    style L fill:#c8f0dc,stroke:#4a9,color:#000
+    style E fill:#c8e6f0,stroke:#49a,color:#000
+    style P fill:#e6c8f0,stroke:#94a,color:#000
+    style R fill:#f0dcc8,stroke:#a94,color:#000
+    style S fill:#ddf0c8,stroke:#9a4,color:#000
+```
+
+**Five aspects that trade off against each other**
+
+</div>
+
+<div>
+
+**Key concepts from L24:**
+
+- **Marcus & Dorothy** — power user vs. occasional user personas with conflicting needs
+- **Mental models** — users and designers think about the same interface differently
+- **Nielsen's 10 Heuristics** — systematic expert evaluation checklist
+- **Stakeholder trade-offs** — you can't optimize for everyone
+
+</div>
+
+</div>
+
+<p style={{fontSize: '0.9em', marginTop: '0.8em', fontWeight: 'bold', color: '#9370DB'}}>
+L24 taught us to <em>evaluate</em> usability. Today: how to <em>design for</em> it from the start.
+</p>
+
+<aside className="notes">
+**Quick recap (~2 min):**
+
+This slide bridges L24 (a week ago, before the exam) to today's content. Students should recognize all these concepts.
+
+**Five aspects:** Learnability, Effectiveness, Productivity, Retainability, Satisfiability — and the trade-offs between them. Optimizing for one can hurt another.
+
+**Marcus & Dorothy:** Our personas from SceneItAll. Marcus (power user, wants productivity and flexibility) vs. Dorothy (visiting grandparent, wants learnability and simplicity). Their needs often conflict.
+
+**Mental models:** The Marcus/Dorothy hierarchy example — when users tap "All Lights Off" on Living Room, different users expect different things (only Living Room? cascade up to Downstairs? cascade down to Reading Nook?).
+
+**Nielsen's heuristics:** H1-H10, the systematic checklist for expert evaluation. Today we'll see why this isn't enough on its own.
+
+> **Transition:** Let's start with a fundamental limitation of heuristic evaluation...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
 {/* ARC 1: WHY UCD MATTERS (~12 min) */}
 {/* ============================================ */}
 
@@ -117,7 +186,7 @@ After this lecture, you will be able to:
 />
 
 <p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#9370DB'}}>
-<strong>Connection to L24:</strong> Heuristic evaluation is valuable — but experts evaluating against principles are not the same as real users trying to accomplish real goals.
+<strong>Connection to L24:</strong> Heuristic evaluation is valuable — but experts evaluating against principles are not the same as real users trying to accomplish real goals. <strong>Use both:</strong> heuristics catch obvious violations quickly and cheaply; UCD catches deeper mental model mismatches that experts can't see.
 </p>
 
 <aside className="notes">
@@ -150,6 +219,10 @@ After this lecture, you will be able to:
 
 <p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
 Neither model is <em>wrong</em>. But when the interface assumes the designer's model, users who think differently get lost — and <strong>no amount of expert review catches this</strong>.
+</p>
+
+<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
+<strong>Connection to L24:</strong> Remember Marcus and Dorothy? Marcus (power user) might think building-first because he understands system architecture. Dorothy (visiting grandparent) thinks time-first — she just wants a room at 3pm. Same gap: expert vs. casual user mental models.
 </p>
 
 <aside className="notes">
@@ -210,9 +283,20 @@ Neither model is <em>wrong</em>. But when the interface assumes the designer's m
 
 </div>
 
-<p style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
+<p style={{fontSize: '0.85em', marginTop: '0.8em', fontWeight: 'bold', color: '#9370DB'}}>
 Every team that skipped user feedback and built for 6 months has the same story: "We thought we knew what users wanted."
 </p>
+
+<div style={{fontSize: '0.65em', marginTop: '0.5em', backgroundColor: 'rgba(147,112,219,0.1)', padding: '0.5em', borderRadius: '6px'}}>
+
+| UCD Activity | Tests Which L24 Aspect |
+|--------------|----------------------|
+| Paper prototyping | **Learnability** — can users figure it out? |
+| Think-aloud testing | **Effectiveness** — can they complete tasks? |
+| Iteration with users | **Satisfiability** — do they enjoy using it? |
+| Testing after time gap | **Retainability** — can they remember how? |
+
+</div>
 
 <aside className="notes">
 **The iceberg of cost:**
@@ -265,15 +349,15 @@ Every team that skipped user feedback and built for 6 months has the same story:
 
 - Designer assumed building-first navigation → Students wanted time-first search
 - Designer assumed students know which buildings have whiteboards → Students had no idea
-- Designer assumed "Reserve" was self-explanatory → Students searched for "Book" or "Get a room"
-- Designer assumed 30-minute fixed slots → Students wanted custom time ranges like "3pm to 4:30pm"
+- Designer assumed "Reserve" was self-explanatory → Students searched for "Book" or "Get a room" **(H2 violation: terminology doesn't match user language)**
+- Designer assumed 30-minute fixed slots → Students wanted custom time ranges like "3pm to 4:30pm" **(H1 violation: system constraints not visible)**
 
 </div>
 
 </div>
 
-<p style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
-These aren't edge cases. These are the primary workflow. And no amount of expert review catches them — because <strong>experts aren't users</strong>.
+<p style={{fontSize: '0.85em', marginTop: '0.8em', fontWeight: 'bold', color: '#9370DB'}}>
+These aren't edge cases. These are the primary workflow. <strong>Connection to L24:</strong> Experts applying Nielsen's heuristics are still experts — they share the designer's mental model. Heuristic evaluation catches violations; only real users reveal misunderstandings.
 </p>
 
 <aside className="notes">
@@ -844,6 +928,90 @@ AI builds prototypes in seconds. Only users can tell you if they work.
 - Users are prototype *evaluators*
 - Both are essential; neither replaces the other
 
+> **Transition:** Before we move to evaluation methods, let's check understanding with a quick poll...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Launch PollEverywhere
+
+<p style={{fontSize: '0.95em', marginTop: '1em'}}>
+Please open PollEverywhere and join the poll.
+</p>
+
+<p style={{fontSize: '0.75em', marginTop: '1.5em', textAlign: 'left', lineHeight: 1.5}}>
+<strong>5 scenarios</strong> — apply L24 concepts (personas, mental models, heuristics) to UCD situations involving campus dining apps, room booking design, and user testing with prototypes.
+</p>
+
+<aside className="notes">
+**Poll placement:** Between Arc 3 (Prototyping) and Arc 4 (Evaluation) — students have absorbed motivation, process, and all three prototyping approaches. Creates an engagement break before shifting to evaluation methods.
+
+**5 questions (recall to application):**
+
+---
+
+**1. Mental model gap (LO1)**
+Your team designs a campus dining app organized by dining hall location. During testing, students say "I just want to know what's open near me that has pizza." What have you discovered?
+
+- A) A heuristic violation — the navigation labels are unclear
+- B) A mental model gap — designers organized by location, users think by food and proximity
+- C) A bug — the search feature isn't working
+- D) That students are using the app incorrectly
+
+**Answer: B.** Parallels the study room example — the interface is technically correct but organized around the wrong concept.
+
+---
+
+**2. Fidelity matching (LO2)**
+You're unsure whether your app should organize rooms by building, by time, or by campus map. What's the most cost-effective way to find out?
+
+- A) Build a working prototype with all three options and A/B test
+- B) Conduct a survey asking users which they'd prefer
+- C) Sketch all three on paper and test with 3-5 users
+- D) Apply Nielsen's heuristics to each design
+
+**Answer: C.** High uncertainty about the basic concept = low-fidelity prototype. Don't invest in code to test a hypothesis you can test with paper.
+
+---
+
+**3. Prototyping approach (LO2)**
+Your team validated that time-first booking is the right concept. Now you want to test whether users understand the room capacity labels and can select a duration — but the availability backend doesn't exist yet. What prototyping approach fits?
+
+- A) Paper prototype
+- B) Wizard-of-Oz prototype
+- C) Working prototype
+- D) Heuristic evaluation
+
+**Answer: B.** Concept is validated (past paper stage), need realistic interaction, but backend isn't built — a human simulates the hard parts behind the curtain.
+
+---
+
+**4. Think-aloud insight (LO2 + LO3)**
+During a think-aloud session, a student says: "It says 3:00 to 3:30 — we need at least an hour. How do I change that?" What type of finding is this?
+
+- A) A visual design issue — the duration picker is too small
+- B) A terminology issue — the user doesn't understand "time slot"
+- C) A workflow mismatch — users expect custom durations, not fixed 30-min slots
+- D) User error — they need to read the instructions more carefully
+
+**Answer: C.** The system assumes fixed slots; the user assumes free-form duration. This is a discovered requirement, not a UI bug.
+
+---
+
+**5. Interview vs. prototype (LO3)**
+You interview 5 students and ask "What do you need in a room booking app?" They say: search, booking, and a calendar. You then test a paper prototype with 5 different students and discover they also want recurring bookings, custom durations, and to see where friends booked. Why did the interviews miss these?
+
+- A) The interviewees were less knowledgeable than the prototype testers
+- B) The interview questions were poorly designed
+- C) Users can't articulate needs they haven't encountered yet — prototypes make abstract needs concrete
+- D) Interviews are always less reliable than prototypes
+
+**Answer: C.** This is the core LO3 insight. Interviews capture what users think to mention; prototypes reveal what users actually do when faced with a concrete interface.
+
+---
+
 > **Transition:** Now let's talk about how we actually learn from users interacting with prototypes...
 </aside>
 
@@ -878,13 +1046,13 @@ AI builds prototypes in seconds. Only users can tell you if they work.
 </div>
 
 <div style={{backgroundColor: 'rgba(200,74,74,0.15)', padding: '0.5em 0.8em', borderRadius: '8px', borderLeft: '3px solid #c44'}}>
-"Wait, it says 3:00 to 3:30? <strong>We need at least an hour. How do I change that?</strong>"
+"Wait, it says 3:00 to 3:30? <strong>We need at least an hour. How do I change that?</strong>" <em style={{fontSize: '0.85em'}}>(H1: system status not visible — user didn't know about fixed slots)</em>
 </div>
 
 </div>
 
 <p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
-The color coding reveals what to listen for: <span style={{color:'#4a9'}}>confidence</span>, <span style={{color:'#c90'}}>hesitation</span>, <span style={{color:'#4a4'}}>success</span>, <span style={{color:'#c44'}}>problems discovered</span>.
+The color coding reveals what to listen for: <span style={{color:'#4a9'}}>confidence</span>, <span style={{color:'#c90'}}>hesitation</span>, <span style={{color:'#4a4'}}>success</span>, <span style={{color:'#c44'}}>problems discovered</span>. Notice how UCD reveals issues that map back to Nielsen's heuristics — but only real users reveal <em>which</em> heuristics matter most.
 </p>
 
 <aside className="notes">
@@ -1078,9 +1246,9 @@ The color coding reveals what to listen for: <span style={{color:'#4a9'}}>confid
 
 ```mermaid
 graph TD
-    F["'Students can't book<br/>for longer than 30 min'"] --> A["Duration controls<br/>not visible?"]
-    F --> B["Students don't understand<br/>the slot system?"]
-    F --> C["Students expect to<br/>set their own times?"]
+    F["'Students can't book<br/>for longer than 30 min'"] --> A["Duration controls<br/>not visible? (H1)"]
+    F --> B["Students don't understand<br/>the slot system? (H2)"]
+    F --> C["Students expect to<br/>set their own times? (H2)"]
     A --> A2["Visual design fix:<br/>more prominent duration picker"]
     B --> B2["Labeling fix:<br/>'Select multiple slots' hint"]
     C --> C2["Conceptual model fix:<br/>free-form time range input"]
@@ -1097,7 +1265,7 @@ graph TD
 </div>
 
 <p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#9370DB'}}>
-Same symptom, three different root causes, three different fixes. <strong>After implementing changes, test again</strong> — confirm the fix works without introducing new problems.
+Same symptom, three different root causes, three different fixes. <strong>Connection to L24:</strong> Root causes often map to specific heuristics (H1: visibility, H2: user language) — but UCD reveals <em>which</em> root cause is actually affecting your users.
 </p>
 
 <aside className="notes">
@@ -1250,7 +1418,7 @@ Prototypes reveal what users *actually do*.
 </div>
 
 <p style={{fontSize: '0.85em', marginTop: '0.8em', color: '#9370DB'}}>
-Interviews discover <strong>features</strong>. Prototypes discover <strong>requirements</strong> — including the organizing principles and workflows that make features usable.
+Interviews discover <strong>features</strong>. Prototypes discover <strong>requirements</strong> — including the organizing principles and workflows that make features usable. <strong>Connection to L24:</strong> Prototypes test all five usability aspects directly — can users <em>learn</em> it, be <em>effective</em>, stay <em>productive</em>?
 </p>
 
 <aside className="notes">
