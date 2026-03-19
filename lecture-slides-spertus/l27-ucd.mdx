@@ -237,6 +237,7 @@ Developed in the 1990s by Jakob Nielsen, these heuristics capture recurring patt
 
 <Img
   src="/img/lectures/web/l27-heuristic-gap.webp"
+  width={1000}
   prompt="Split comparison for a university study room booking app. LEFT SIDE: A clipboard showing 'Heuristic Evaluation Results' with all 10 Nielsen heuristics checked off with green checkmarks. The booking screen shows a clean navigation: Building > Floor > Room > Time Slot. Breadcrumbs, clear labels, consistent buttons. A UX expert with glasses nods approvingly. Label: 'EXPERT VERDICT: No violations found'. RIGHT SIDE: A stressed college student with a laptop and backpack, standing outside a library 20 minutes before a group meeting. They stare at the 'Select Building' screen confused, with a thought bubble: 'I don't care WHICH building — I just need a room at 3pm!' The interface is technically perfect but organized around the wrong concept for the user's actual need. Label: 'USER REALITY: Can't figure out the basic workflow'. Clean, modern infographic style with flat design elements, teal/purple color palette."
   alt="Split comparison: Left shows a UX expert approving a study room booking app's building-first navigation on all 10 heuristics. Right shows a stressed student who just wants a room at 3pm, confused by the 'Select Building' screen."
 />
@@ -269,17 +270,16 @@ Developed in the 1990s by Jakob Nielsen, these heuristics capture recurring patt
 
 <Img
   src="/img/lectures/web/l27-mental-model-gap.webp"
+  width={1000}
   prompt="A large 'Book Room' button for a university study room booking app shown prominently in the center. Two thought bubbles emerge from the button in opposite directions. LEFT THOUGHT BUBBLE (labeled 'Designer's Model', teal border): Shows a building floor plan with a hierarchy — Campus Map > Snell Library > 3rd Floor > Room 310. The designer thinks booking starts with selecting a physical location, drilling down through the spatial hierarchy. Clean, organized, architectural. RIGHT THOUGHT BUBBLE (labeled 'Student's Model', warm orange border): Shows a simple calendar/clock view with '3:00 PM Today' highlighted and a list of available rooms below it. The student thinks booking starts with WHEN they need a room, and the system should figure out WHERE. Urgent, time-driven, need-focused. Clean, modern infographic style with flat design, professional color palette."
   alt="A study room 'Book Room' button with two diverging thought bubbles: the designer imagines a building-floor-room spatial hierarchy, while the student imagines entering a time and seeing available rooms. A gap between them is labeled 'invisible until you watch real users.'"
 />
 
-<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+<div style={{fontSize: '0.85em', marginTop: '-0.5em'}}>
 Neither model is <em>wrong</em>. But when the interface assumes the designer's model, users who think differently get lost — and <strong>no amount of expert review catches this</strong>.
-</p>
 
-<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
 <strong>Connection to L24:</strong> Remember Marcus and Dorothy? Marcus (power user) might think building-first because he understands system architecture. Dorothy (visiting grandparent) thinks time-first — she just wants a room at 3pm. Same gap: expert vs. casual user mental models.
-</p>
+</div>
 
 <aside className="notes">
 **Why mental model gaps are invisible to experts:**
@@ -311,7 +311,7 @@ Neither model is <em>wrong</em>. But when the interface assumes the designer's m
 
 ## Building the Wrong Thing Is the Most Expensive Mistake in Software
 
-<div style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+<div style={{fontSize: '0.7em', marginTop: '0.5em'}}>
 
 <div style={{display: 'flex', flexDirection: 'column', gap: '0.4em'}}>
 
@@ -342,17 +342,6 @@ Neither model is <em>wrong</em>. But when the interface assumes the designer's m
 <p style={{fontSize: '0.85em', marginTop: '0.8em', fontWeight: 'bold', color: '#9370DB'}}>
 Every team that skipped user feedback and built for 6 months has the same story: "We thought we knew what users wanted."
 </p>
-
-<div style={{fontSize: '0.65em', marginTop: '0.5em', backgroundColor: 'rgba(147,112,219,0.1)', padding: '0.5em', borderRadius: '6px'}}>
-
-| UCD Activity | Tests Which L24 Aspect |
-|--------------|----------------------|
-| Paper prototyping | **Learnability** — can users figure it out? |
-| Think-aloud testing | **Effectiveness** — can they complete tasks? |
-| Iteration with users | **Satisfiability** — do they enjoy using it? |
-| Testing after time gap | **Retainability** — can they remember how? |
-
-</div>
 
 <aside className="notes">
 **The iceberg of cost:**
@@ -805,7 +794,8 @@ The entire navigation concept is wrong — discovered in 5 minutes with paper. N
 
 ## The Wizard of Oz: The Man Behind the Curtain
 
-<Img src ="wizrd-of-oz-pay-no-attention.gif"
+<Img src ="/img/lectures/web/wizard-of-oz-pay-no-attention.gif"
+  width={1100}
   alt="Screenshot from Wizard of Oz showing an old man in front of old-fashioned controls saying 'Pay no attention to that many behind the curtain!'"
 />
 
@@ -819,11 +809,12 @@ https://www.youtube.com/watch?v=ZHYw0nTcQXc
 
 <Img
   src="/img/lectures/web/l27-wizard-of-oz.webp"
+  width={1000}
   prompt="A split scene illustration showing a Wizard-of-Oz prototype session for a study room booking app. LEFT SIDE (Student's perspective): A college student sits at a laptop with a realistic-looking room booking app on screen. They've selected '3:00 PM Today' and the screen shows 'Finding available rooms...' with a progress spinner, then a list appears: 'Room 310 - Snell 3rd Floor (4 seats, whiteboard) ✓', 'Room 205 - Curry (8 seats, projector) ✓', 'Room 118 - Ryder (6 seats) ✓'. The student looks happy — the time-first design works perfectly. RIGHT SIDE: Separated by a curtain, a facilitator sits at another computer watching the student's screen via screen share. The facilitator has three browser tabs open showing different building scheduling spreadsheets, frantically cross-referencing availability and typing room results into a console to send back. A small sign on their desk says 'No backend — just me checking spreadsheets fast.' The student has absolutely no idea. One of the characters is male and the other is female. Clean, modern illustration style with flat design, professional color palette using teals, purples. Slightly humorous tone."
   alt="Split scene: Left shows a student happily using a time-first room booking app that instantly shows available rooms. Right shows a facilitator behind a curtain frantically cross-referencing building spreadsheets to simulate the availability backend. Sign reads: 'No backend — just me checking spreadsheets fast.'"
 />
 
-<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+<p style={{fontSize: '0.85em', marginTop: '-0.5em'}}>
 The interface looks real. The responses look real. But a human is simulating the hard parts. <strong>Test the user experience before building the technology.</strong>
 </p>
 
@@ -1532,11 +1523,12 @@ Interviews discover <strong>features</strong>. Prototypes discover <strong>requi
 
 <Img
   src="/img/lectures/web/l27-requirements-discovery.webp"
+  width={1100}
   prompt="An isometric-perspective illustration of a study room booking app prototype testing session. A college student sits at a table with a laptop showing a prototype. Around the student, colorful speech bubbles burst outward like fireworks or popcorn, each containing a surprise requirement discovery: (teal bubble) 'Can I book a recurring weekly slot for my study group?', (orange bubble) 'What if my meeting runs over — can I extend without rebooking?', (purple bubble) 'I need a room for 5 people but the biggest available says 4 seats — is that really the max or just the table?', (green bubble) 'Can I see if any of my friends already booked a room nearby?'. Across the table, a facilitator is furiously scribbling notes on a pad, eyes wide with surprise — they're discovering requirements they never anticipated. Each speech bubble has a small tag: 'Functional Req', 'Error Handling', 'Workflow Mismatch', 'New Feature'. The scene conveys that prototype sessions are *requirement generators*, not just usability tests. Clean, modern illustration style with flat design, warm and energetic color palette."
   alt="A prototype testing session where a student generates unexpected requirements in speech bubbles: recurring bookings, extending reservations, unclear capacity labeling, social features. A facilitator across the table frantically takes notes. Each bubble is tagged as a different type of requirement discovery."
 />
 
-<p style={{fontSize: '0.85em', marginTop: '0.3em', color: '#9370DB'}}>
+<p style={{fontSize: '0.85em', marginTop: '-0.5em', color: '#9370DB'}}>
 UCD isn't just a usability technique — it's a <strong>requirements elicitation technique</strong>. Real users with real tasks reveal functional requirements, edge cases, and workflow mismatches that no requirements document would capture.
 </p>
 
@@ -1634,7 +1626,7 @@ Every observation has a <strong>source</strong> (what the user said/did), a <str
 
 ## UCD Reduces All Three Dimensions of Requirements Risk
 
-<div style={{display: 'flex', flexDirection: 'column', gap: '0.8em', fontSize: '0.7em', marginTop: '0.5em'}}>
+<div style={{display: 'flex', flexDirection: 'column', gap: '0.7em', fontSize: '0.7em', marginTop: '0.2em'}}>
 
 <div style={{backgroundColor: 'rgba(74,153,153,0.15)', padding: '0.8em', borderRadius: '8px'}}>
 
@@ -1668,7 +1660,7 @@ If prototype testing reveals students fundamentally misunderstand your booking w
 
 </div>
 
-<p style={{fontSize: '0.85em', marginTop: '1em', color: '#9370DB'}}>
+<p style={{fontSize: '0.85em', marginTop: '-.5em', color: '#9370DB'}}>
 <strong>Connection to L9:</strong> Same three risk dimensions we identified in requirements analysis — now with a concrete mitigation strategy at every stage of development.
 </p>
 
