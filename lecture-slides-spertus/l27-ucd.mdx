@@ -6,6 +6,7 @@ image: /img/lectures/web/l27.png
 
 import RevealJS, { Slide } from '@site/src/components/RevealJS';
 import Img from '@site/src/components/Img';
+import PollSlide from '@site/src/components/PollSlide';
 
 <RevealJS transition="slide">
 
@@ -935,87 +936,101 @@ AI builds prototypes in seconds. Only users can tell you if they work.
 
 <Slide>
 
-## Launch PollEverywhere
+## Poll: Mental model gap (LO1)
 
-<p style={{fontSize: '0.95em', marginTop: '1em'}}>
-Please open PollEverywhere and join the poll.
-</p>
-
-<p style={{fontSize: '0.75em', marginTop: '1.5em', textAlign: 'left', lineHeight: 1.5}}>
-<strong>5 scenarios</strong> — apply L24 concepts (personas, mental models, heuristics) to UCD situations involving campus dining apps, room booking design, and user testing with prototypes.
-</p>
-
-<aside className="notes">
-**Poll placement:** Between Arc 3 (Prototyping) and Arc 4 (Evaluation) — students have absorbed motivation, process, and all three prototyping approaches. Creates an engagement break before shifting to evaluation methods.
-
-**5 questions (recall to application):**
-
----
-
-**1. Mental model gap (LO1)**
 Your team designs a campus dining app organized by dining hall location. During testing, students say "I just want to know what's open near me that has pizza." What have you discovered?
 
-- A) A heuristic violation — the navigation labels are unclear
-- B) A mental model gap — designers organized by location, users think by food and proximity
-- C) A bug — the search feature isn't working
-- D) That students are using the app incorrectly
+<PollSlide username='espertus' choices={[
+  "A heuristic violation — the navigation labels are unclear",
+  "A mental model gap — designers organized by location, users think by food and proximity",
+  "A bug — the search feature isn't working",
+  "That students are using the app incorrectly"
+]} />
 
-**Answer: B.** Parallels the study room example — the interface is technically correct but organized around the wrong concept.
-
----
-
-**2. Fidelity matching (LO2)**
-You're unsure whether your app should organize rooms by building, by time, or by campus map. What's the most cost-effective way to find out?
-
-- A) Build a working prototype with all three options and A/B test
-- B) Conduct a survey asking users which they'd prefer
-- C) Sketch all three on paper and test with 3-5 users
-- D) Apply Nielsen's heuristics to each design
-
-**Answer: C.** High uncertainty about the basic concept = low-fidelity prototype. Don't invest in code to test a hypothesis you can test with paper.
-
----
-
-**3. Prototyping approach (LO2)**
-Your team validated that time-first booking is the right concept. Now you want to test whether users understand the room capacity labels and can select a duration — but the availability backend doesn't exist yet. What prototyping approach fits?
-
-- A) Paper prototype
-- B) Wizard-of-Oz prototype
-- C) Working prototype
-- D) Heuristic evaluation
-
-**Answer: B.** Concept is validated (past paper stage), need realistic interaction, but backend isn't built — a human simulates the hard parts behind the curtain.
-
----
-
-**4. Think-aloud insight (LO2 + LO3)**
-During a think-aloud session, a student says: "It says 3:00 to 3:30 — we need at least an hour. How do I change that?" What type of finding is this?
-
-- A) A visual design issue — the duration picker is too small
-- B) A terminology issue — the user doesn't understand "time slot"
-- C) A workflow mismatch — users expect custom durations, not fixed 30-min slots
-- D) User error — they need to read the instructions more carefully
-
-**Answer: C.** The system assumes fixed slots; the user assumes free-form duration. This is a discovered requirement, not a UI bug.
-
----
-
-**5. Interview vs. prototype (LO3)**
-You interview 5 students and ask "What do you need in a room booking app?" They say: search, booking, and a calendar. You then test a paper prototype with 5 different students and discover they also want recurring bookings, custom durations, and to see where friends booked. Why did the interviews miss these?
-
-- A) The interviewees were less knowledgeable than the prototype testers
-- B) The interview questions were poorly designed
-- C) Users can't articulate needs they haven't encountered yet — prototypes make abstract needs concrete
-- D) Interviews are always less reliable than prototypes
-
-**Answer: C.** This is the core LO3 insight. Interviews capture what users think to mention; prototypes reveal what users actually do when faced with a concrete interface.
-
----
-
-> **Transition:** Now let's talk about how we actually learn from users interacting with prototypes...
+<aside className="notes">
+Answer: B. Parallels the study room example — the interface is technically correct but organized around the wrong concept.
 </aside>
 
 </Slide>
+
+<Slide>
+
+## Poll: Fidelity matching (LO2)
+
+You're unsure whether your app should organize rooms by building, by time, or by campus map. What's the most cost-effective way to find out?
+
+<PollSlide username='espertus' choices={[
+  "Build a working prototype with all three options and A/B test",
+  "Conduct a survey asking users which they'd prefer",
+  "Sketch all three on paper and test with 3–5 users",
+  "Apply Nielsen's heuristics to each design"
+]} />
+
+<aside className="notes">
+Answer: C. High uncertainty about the basic concept = low-fidelity prototype. Don't invest in code to test a hypothesis you can test with paper.
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Poll: Prototyping approach (LO2)
+
+Your team validated that time-first booking is the right concept. Now you want to test whether users understand the room capacity labels and can select a duration — but the availability backend doesn't exist yet. What prototyping approach fits?
+
+<PollSlide username='espertus' choices={[
+  "Paper prototype",
+  "Wizard-of-Oz prototype",
+  "Working prototype",
+  "Heuristic evaluation"
+]} />
+
+<aside className="notes">
+Answer: B. Concept is validated (past paper stage), need realistic interaction, but backend isn't built — a human simulates the hard parts behind the curtain.
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Poll: Think-aloud insight (LO2 + LO3)
+
+During a think-aloud session, a student says: "It says 3:00 to 3:30 — we need at least an hour. How do I change that?" What type of finding is this?
+
+<PollSlide username='espertus' choices={[
+  "A visual design issue — the duration picker is too small",
+  "A terminology issue — the user doesn't understand 'time slot'",
+  "A workflow mismatch — users expect custom durations, not fixed 30-min slots",
+  "User error — they need to read the instructions more carefully"
+]} />
+
+<aside className="notes">
+Answer: C. The system assumes fixed slots; the user assumes free-form duration. This is a discovered requirement, not a UI bug.
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Poll: Interview vs. prototype (LO3)
+
+You interview 5 students about what they need in a room booking app. They mention search, booking, and a calendar. A paper prototype test with 5 different students reveals they also want recurring bookings, custom durations, and to see where friends booked. Why did the interviews miss these?
+
+<PollSlide username='espertus' choices={[
+  "The interviewees were less knowledgeable than the prototype testers",
+  "The interview questions were poorly designed",
+  "Users can't articulate needs they haven't encountered yet — prototypes make abstract needs concrete",
+  "Interviews are always less reliable than prototypes"
+]} />
+
+<aside className="notes">
+Answer: C. Interviews capture what users think to mention; prototypes reveal what users actually do when faced with a concrete interface.
+
+**Transition:** Now let's talk about how we actually learn from users interacting with prototypes...
+</aside>
+
+</Slide>
+
 
 {/* ============================================ */}
 {/* ARC 4: EVALUATION METHODS (~8 min) */}
