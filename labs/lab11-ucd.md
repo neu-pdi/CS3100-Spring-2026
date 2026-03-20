@@ -153,7 +153,7 @@ Submit through your Pawtograder lab repository:
 
 ## Resources
 
-- [L27: User-Centered Design](/lecture-notes/l27-user-centered-design) — the prototype → evaluate → revise cycle
+- [L27: User-Centered Design](/lecture-notes/l27-ucd) — the prototype → evaluate → revise cycle
 - [Lab 10: Usability Heuristic Evaluation](/labs/lab10-usability) — Nielsen's 10 Heuristics reference
 - [Nielsen Norman Group: Paper Prototyping](https://www.nngroup.com/articles/paper-prototyping/)
 - [Nielsen Norman Group: Thinking Aloud](https://www.nngroup.com/articles/thinking-aloud-the-1-usability-tool/)
