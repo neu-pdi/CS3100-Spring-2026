@@ -6,6 +6,7 @@ image: /img/lectures/web/l28.png
 
 import RevealJS, { Slide } from '@site/src/components/RevealJS';
 import Img from '@site/src/components/Img';
+import PollSlide from '@site/src/components/PollSlide';
 
 <RevealJS transition="slide">
 
@@ -27,12 +28,12 @@ import Img from '@site/src/components/Img';
 - **Connects to:** GA0 accessibility deliverable, GA1 implementation requirements
 
 **Structure (~28 slides):**
-- Arc 1: From Usability to Accessibility and Inclusivity (~30 min) — running example (recipe import), spectrum, curb cut effect, GenderMag/SESMag with Fee vs. Dav walkthrough, invisible assumptions table, assistive technologies (vision, motor/hearing)
+- Arc 1: From Usability to Accessibility and Inclusivity (~30 min) — running example (recipe import), spectrum, curb cut effect, GenderMag/SESMag with Fay vs. Dan walkthrough, invisible assumptions table, assistive technologies (vision, motor/hearing)
 - Arc 2: POUR Framework + Assistive Tech in Practice (~15 min) — POUR principles with running example connections, standard vs. custom widget comparison, five rules checklist, keyboard navigation
 - Arc 3: Evaluating Accessibility Claims (~15 min) — evaluation tiers, Google Maps exercise, connection to group project
 - Key Takeaways (~2 min)
 
-**Running example:** "Importing a recipe into CookYourBooks" — introduced early, revisited through different user lenses (blind, tremors, Dav/Fee, ESL) across all three arcs.
+**Running example:** "Importing a recipe into CookYourBooks" — introduced early, revisited through different user lenses (blind, tremors, Dan/Fay, ESL) across all three arcs.
 
 **Narrative spine:** In L24 and L27 we learned to design for users. Today we ask: *which* users? We'll discover that designing for users at the margins improves software for everyone — and that our invisible assumptions about who users are can exclude entire populations.
 
@@ -96,7 +97,7 @@ After this lecture, you will be able to:
 
 **Why this matters:** Your GA0 accessibility plan wasn't hypothetical. In GA1, your features need to be keyboard-navigable and work with standard assistive technologies. Today gives you the framework to do that well.
 
-> **Transition:** Let's start where we left off in L24 and L27...
+→ Let's start where we left off in L24 and L27...
 </aside>
 
 </Slide>
@@ -142,51 +143,91 @@ Most students will realize their personas were basically... themselves.
 </Slide>
 
 <Slide>
+## Poll: What disabilities do you or people you care about have?
 
-## Running Example: Importing a Recipe
+<PollSlide username='espertus'
+  choices={[
+    "Mobility 🦼 👋",
+    "Visual 🦯 🐕‍🦺",
+    "Hearing 🧏 🦻",
+    "Neurological 🧠 ♾️",
+    "Psychiatric 💚 🌀",
+    "Other ❤️‍🩹"
+  ]}
+/>
+<aside className="notes">
+- Multiple answer Poll
+- Acknowledge limitations of survey
+</aside>
+</Slide>
 
-<p style={{fontSize: '0.85em'}}>
-Let's follow one user task through this entire lecture: <strong>importing a recipe into CookYourBooks.</strong>
-</p>
+<Slide>
 
-<div style={{fontSize: '0.8em'}}>
+## Terminology
 
-The flow seems simple:
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.8em'}}>
 
-1. Click "Import" button
-2. Paste a URL or upload a photo of a recipe
-3. App extracts the recipe (title, ingredients, instructions)
-4. Review the result, fix any errors
-5. Save to your cookbook
+<div style={{backgroundColor: 'rgba(74,153,153,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+**Impairment**
+
+An absence of normal function due to an injury or disorder
+* Near-sightedness
+* Deafness
+* Tremor
+</div>
+
+<div style={{backgroundColor: 'rgba(148,74,170,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+**Assistive technology**
+
+A tool that helps impaired individuals function despite impairments
+* Eyeglasses*
+* Hearing aid
+* Mechanical keyboard
+</div>
+
+<div style={{backgroundColor: 'rgba(169,148,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+**Accommodation**
+
+A modification made for the inclusion of an individual
+* Access to electronic content
+* Captions
+* Scribe or permission to type
+</div>
+
+<div style={{backgroundColor: 'rgba(74,100,170,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+**Disability**
+
+An inability to participate in activities due to unaccommodated impairments
+* Inability to use a website
+* Inability to follow a lecture
+* Inability to use an iPad
+</div>
 
 </div>
 
-<p style={{fontSize: '0.85em', marginTop: '0.8em'}}>
-Now imagine this flow used by:
-
-</p>
-
-<ul style={{fontSize: '0.8em'}}>
-  <li>A <strong>blind user</strong> navigating with a screen reader</li>
-  <li>A user with <strong>tremors</strong> who can't drag-and-drop a photo</li>
-  <li>A user on a <strong>shared library computer</strong> with 20 minutes left on their session</li>
-  <li>A user whose <strong>first language isn't English</strong>, trying to parse "OCR extraction failed"</li>
-</ul>
-
-<p style={{fontSize: '0.8em', color: '#9370DB'}}>
-Same feature. Same five steps. Completely different experience — depending on who the user is.
-</p>
 
 <aside className="notes">
-**This is the throughline for the lecture.** We'll return to this import flow repeatedly:
-- Accessibility vs. inclusivity spectrum: which of these users face accessibility barriers vs. inclusivity barriers?
-- POUR: walk through each principle against this flow
-- Assistive tech: what does each tool need from this flow to work?
-- Evaluation: would automated testing catch problems in this flow?
 
-Don't spend too long here — just plant the example. It pays off when you reference it later.
+</aside>
 
-> **Transition:** These different experiences exist on a spectrum...
+</Slide>
+
+<Slide>
+
+## From Accommodation to Accessibility
+
+| | Who acts | For whom |
+|---|---|---|
+| **Accommodation** | An institution | A specific person |
+| **Assistive technology** | The individual | Themselves |
+| **Accessibility** | A designer/developer | Everyone |
+
+<aside className="notes">
+
 </aside>
 
 </Slide>
@@ -255,7 +296,7 @@ Ensuring software works across all dimensions of human diversity: age, gender, c
 </div>
 
 <p style={{fontSize: '0.85em', marginTop: '0.5em', fontWeight: 'bold', color: '#9370DB'}}>
-A man wanted to order a pizza. It took six years and the Supreme Court to make that possible.
+It shouldn't take 6 years and a federal case to order a pizza.
 </p>
 
 <p style={{fontSize: '0.7em', color: '#888'}}>
@@ -338,19 +379,73 @@ These aren't deficits in the user — they're assumptions in the software.
 <aside className="notes">
 **GenderMag** is a research framework from Oregon State (Margaret Burnett and colleagues) identifying cognitive facets that vary statistically by gender: risk tolerance, self-efficacy, information processing style, etc.
 
-**SESMag** extends this to socioeconomic status. People from different SES backgrounds interact with technology differently — not because of ability, but because of experience, access, education, and life circumstances. Key personas: "Fee" (high SES, experiments freely, blames the tool, comfortable with jargon) vs. "Dav" (low SES, sticks to familiar features, blames themselves, struggles with tech vocabulary).
+**SESMag** extends this to socioeconomic status. People from different SES backgrounds interact with technology differently — not because of ability, but because of experience, access, education, and life circumstances. Key personas: "Fay" (high SES, experiments freely, blames the tool, comfortable with jargon) vs. "Dan" (low SES, sticks to familiar features, blames themselves, struggles with tech vocabulary).
 
 **Examples to mention verbally:**
-- "Session expired, please re-authenticate" — Fee logs back in. Dav on a shared computer thinks they're locked out.
-- "Are you sure? This action cannot be undone" — Fee clicks through. Dav avoids the feature entirely.
+- "Session expired, please re-authenticate" — Fay logs back in. Dan on a shared computer thinks they're locked out.
+- "Are you sure? This action cannot be undone" — Fay clicks through. Dan avoids the feature entirely.
 - Auto-save to the cloud — great with reliable internet, silent data loss without it.
 
-**Key insight for students:** Most of you are closer to Fee. You design for Fee by default. That's not malicious — it's invisible.
+**Key insight for students:** Most of you are closer to Fay. You design for Fay by default. That's not malicious — it's invisible.
 
 > **Transition:** Let's see what this looks like with our running example...
 </aside>
 
 </Slide>
+
+
+<Slide>
+
+## Running Example: Importing a Recipe
+
+<p style={{fontSize: '0.85em'}}>
+Let's follow one user task through this entire lecture: <strong>importing a recipe into CookYourBooks.</strong>
+</p>
+
+<div className='fragment' style={{fontSize: '0.8em'}}>
+
+The flow seems simple:
+
+1. Click "Import" button
+2. Paste a URL or upload a photo of a recipe
+3. App extracts the recipe (title, ingredients, instructions)
+4. Review the result, fix any errors
+5. Save to your cookbook
+
+</div>
+
+<div className='fragment'>
+<p style={{fontSize: '0.85em', marginTop: '0.8em'}}>
+Now imagine this flow used by:
+
+</p>
+
+<ul style={{fontSize: '0.8em'}}>
+  <li>A <strong>blind user</strong> navigating with a screen reader</li>
+  <li>A user with <strong>tremors</strong> who can't drag-and-drop a photo</li>
+  <li>A user on a <strong>shared library computer</strong> with 20 minutes left on their session</li>
+  <li>A user whose <strong>first language isn't English</strong>, trying to parse "OCR extraction failed"</li>
+</ul>
+
+<p style={{fontSize: '0.8em', color: '#9370DB'}}>
+Same feature. Same five steps. Completely different experience — depending on who the user is.
+</p>
+</div>
+
+<aside className="notes">
+**This is the throughline for the lecture.** We'll return to this import flow repeatedly:
+- Accessibility vs. inclusivity spectrum: which of these users face accessibility barriers vs. inclusivity barriers?
+- POUR: walk through each principle against this flow
+- Assistive tech: what does each tool need from this flow to work?
+- Evaluation: would automated testing catch problems in this flow?
+
+Don't spend too long here — just plant the example. It pays off when you reference it later.
+
+> **Transition:** These different experiences exist on a spectrum...
+</aside>
+
+</Slide>
+
 
 <Slide>
 
@@ -358,9 +453,9 @@ These aren't deficits in the user — they're assumptions in the software.
 
 <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.75em'}}>
 
-<div style={{backgroundColor: 'rgba(74,153,153,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+<div className='fragment' style={{backgroundColor: 'rgba(74,153,153,0.15)', padding: '0.8em', borderRadius: '8px'}}>
 
-**Fee** (high self-efficacy, high risk tolerance)
+**Fay** (high self-efficacy, high risk tolerance)
 
 1. Clicks "Import" — tries URL paste first
 2. Sees "OCR extraction failed" — shrugs, tries a different URL
@@ -370,9 +465,9 @@ These aren't deficits in the user — they're assumptions in the software.
 
 </div>
 
-<div style={{backgroundColor: 'rgba(200,100,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+<div className='fragment' style={{backgroundColor: 'rgba(200,100,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
 
-**Dav** (low self-efficacy, low risk tolerance)
+**Dan** (low self-efficacy, low risk tolerance)
 
 1. Looks for "Import" — not sure which button it is (icon only, no label)
 2. Sees "OCR extraction failed" — thinks *they* did something wrong. Tries again with the same URL.
@@ -384,21 +479,21 @@ These aren't deficits in the user — they're assumptions in the software.
 
 </div>
 
-<p style={{fontSize: '0.8em', marginTop: '0.8em', color: '#9370DB'}}>
+<p className='fragment' style={{fontSize: '0.8em', marginTop: '0.8em', color: '#9370DB'}}>
 The interface didn't change. The user did. Every design decision — icon-only buttons, technical error messages, jargon in dialogs — is a filter that selects for one kind of user and excludes another.
 </p>
 
 <aside className="notes">
-**This is the core GenderMag/SESMag insight made concrete.** Walk through each step and ask students: which design decision caused Dav's different experience?
+**This is the core GenderMag/SESMag insight made concrete.** Walk through each step and ask students: which design decision caused Dan's different experience?
 
-- Step 1: Icon-only button → recognition vs. recall (H6). Fee recognizes it from other apps. Dav doesn't.
-- Step 2: "OCR extraction failed" → developer language. Fee blames the tool. Dav blames themselves.
-- Step 3: Inline editing → risk tolerance. Fee experiments freely. Dav fears breaking things.
-- Step 4: "Merge duplicates" → jargon. Fee ignores it. Dav can't proceed without understanding it.
+- Step 1: Icon-only button → recognition vs. recall (H6). Fay recognizes it from other apps. Dan doesn't.
+- Step 2: "OCR extraction failed" → developer language. Fay blames the tool. Dan blames themselves.
+- Step 3: Inline editing → risk tolerance. Fay experiments freely. Dan fears breaking things.
+- Step 4: "Merge duplicates" → jargon. Fay ignores it. Dan can't proceed without understanding it.
 
-**The punchline:** Dav is not a less capable user. Dav is a user your software wasn't designed for. These are fixable design choices, not user deficits.
+**The punchline:** Dan is not a less capable user. Dan is a user your software wasn't designed for. These are fixable design choices, not user deficits.
 
-**Connection to GA0:** "Look at your personas. Are any of them closer to Dav than Fee? If not, you're only designing for one end of the spectrum."
+**Connection to GA0:** "Look at your personas. Are any of them closer to Dan than Fay? If not, you're only designing for one end of the spectrum."
 
 > **Transition:** We've been talking about cognitive and social exclusion. Now let's look at how users with physical disabilities interact with software...
 </aside>
@@ -409,11 +504,14 @@ The interface didn't change. The user did. Every design decision — icon-only b
 
 ## What's Different Between These Two Interfaces?
 
+<div style={{textAlign: 'center'}}>
 <Img
+  width={1100}
   src="/img/lectures/web/l28-import-comparison.webp"
   prompt="Clean educational illustration (not pixel art) showing a side-by-side comparison of two software interface mockups for a 'Recipe Import' screen, labeled 'Less Accessible' and 'More Accessible'. 16:9 aspect ratio. LEFT SIDE (labeled 'Less Accessible', red-tinted border): A recipe import dialog with these problems: (1) An unlabeled icon-only button at the top — just an arrow icon with no text, (2) A large drag-and-drop zone that says 'Drag photo here' with NO alternative upload button, (3) A red error message reading 'OCR extraction failed: invalid MIME type' in small monospace font, (4) A red/green progress indicator with no text labels — just colored circles, (5) Small, cramped 'Save' and 'Cancel' buttons with no undo option. RIGHT SIDE (labeled 'More Accessible', green-tinted border): The same recipe import dialog redesigned: (1) A clearly labeled button reading 'Import Recipe' with both an icon AND text, (2) A drag-and-drop zone WITH a visible 'Browse files' button underneath as an alternative, (3) A friendly error message in a clear box: 'We couldn't read that image. Try a clearer photo or paste the recipe URL instead.' with a helpful suggestion, (4) Status shown with BOTH colors AND text labels: a green checkmark with 'Imported successfully' text and a yellow triangle with 'Needs review' text, (5) Larger touch-friendly buttons with an 'Undo' option and reassuring text: 'You can always edit this later.' Both interfaces show the same basic layout and the same recipe (chocolate chip cookies) so the comparison is about design choices, not content. Clean, modern UI mockup style with clear annotations."
   alt="Side-by-side comparison: a less accessible recipe import interface (icon-only buttons, drag-only upload, technical error messages, color-only status) versus a more accessible version (labeled buttons, browse-files alternative, plain-language errors, text+color status, undo option)."
 />
+</div>
 
 <p style={{fontSize: '0.85em'}}>
 Both interfaces import a recipe. Both have the same features. Look at the two versions and identify: <strong>what assumptions does the left version make about its users that the right version doesn't?</strong>
@@ -430,13 +528,26 @@ Both interfaces import a recipe. Both have the same features. Look at the two ve
 | Drag-only upload vs. drag + browse button | User can drag-and-drop | Users with tremors, keyboard users | Add a "Browse files" button |
 | Technical error vs. plain language error | User can read developer jargon | Non-technical users, ESL speakers | "We couldn't read that image. Try a clearer photo." |
 | Color-only status vs. color + text status | User can distinguish red from green | Colorblind users (~8% of men) | Add text labels or shapes alongside colors |
-| No undo vs. undo + reassuring text | User trusts that editing won't break things | Low self-efficacy users (Dav) | Add undo, show "You can always change this later" |
+| No undo vs. undo + reassuring text | User trusts that editing won't break things | Low self-efficacy users (Dan) | Add undo, show "You can always change this later" |
 
 **Point out the pattern:** Most of these fixes are *also* better for the "default" user. Text labels help everyone. Progress indicators help everyone. Plain language helps everyone. Curb cut effect in action.
 
 **Punchline:** Every design choice on the left is an invisible assumption about who your user is. The right side doesn't assume — it accommodates.
 
 > **Transition:** Now let's understand the specific technologies these users rely on...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## What's Inaccessible about this User Interface?
+
+<Img src="/img/lectures/web/l28-password-stars.png"/>
+<aside className="notes">
+When Ellen types her login password on a Mac keyboard, she can't tell if
+she's getting it right because she only sees asterisks, and Northeastern
+requires long passwords.
 </aside>
 
 </Slide>
@@ -467,7 +578,7 @@ Before we talk about how to design for accessibility, let's understand what user
 
 <div style={{fontSize: '0.8em'}}>
 
-<div style={{backgroundColor: 'rgba(74,153,153,0.15)', padding: '0.8em', borderRadius: '8px', marginBottom: '1em'}}>
+<div className='fragment' style={{backgroundColor: 'rgba(74,153,153,0.15)', padding: '0.5em', borderRadius: '8px', marginBottom: '.5em'}}>
 
 **Screen readers** convert the visual interface to audio. They announce text, buttons, headings, form fields, and their states — all read aloud. Users navigate entirely by keyboard commands, not by looking at the screen.
 
@@ -475,7 +586,7 @@ Before we talk about how to design for accessibility, let's understand what user
 
 </div>
 
-<div style={{backgroundColor: 'rgba(148,74,170,0.15)', padding: '0.8em', borderRadius: '8px', marginBottom: '1em'}}>
+<div className='fragment' style={{backgroundColor: 'rgba(148,74,170,0.15)', padding: '0.5em', borderRadius: '8px', marginBottom: '.5em'}}>
 
 **Screen magnifiers** enlarge a portion of the screen (2x–16x). Users see only a small area at a time and pan around — they never see your whole interface at once.
 
@@ -483,7 +594,7 @@ Before we talk about how to design for accessibility, let's understand what user
 
 </div>
 
-<div style={{backgroundColor: 'rgba(169,148,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+<div className='fragment' style={{backgroundColor: 'rgba(169,148,74,0.15)', padding: '0.5em', borderRadius: '8px'}}>
 
 **High contrast / color adjustments** change the color palette for users who are colorblind or have low vision. Your interface needs to still make sense when colors shift.
 
@@ -507,29 +618,57 @@ Before we talk about how to design for accessibility, let's understand what user
 
 <Slide>
 
+## Simulating Poor Vision
+
+<div style={{ fontSize: '.7em' }}>
+* [silktide browser extension](https://silktide.com/toolbar/) (Chrome and Edge)
+  * Cataracts & Myopia
+  * Glare
+  * Yellowing
+  * Loss of peripheral vision
+  * Loss of central vision
+  * Double vision
+  * Loss of contrast
+
+* Set Zoom to 400%
+  * Windows: `Ctrl +`
+  * MacOS: `Cmd -`
+
+Check the [course schedule](https://nubanner.neu.edu/StudentRegistrationSsb/ssb/term/termSelection?mode=search)
+to see what Khoury classes are offered online during the summer.
+</div>
+
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+<Slide>
+
 ## Assistive Tech: Motor &amp; Hearing
 
 <div style={{fontSize: '0.8em'}}>
 
-<div style={{backgroundColor: 'rgba(74,153,153,0.15)', padding: '0.8em', borderRadius: '8px', marginBottom: '1em'}}>
+<div className='fragment' style={{backgroundColor: 'rgba(74,153,153,0.15)', padding: '0.8em', borderRadius: '8px', marginBottom: '1em'}}>
 
 **Keyboard-only navigation** — Tab between elements, Enter to activate, arrow keys within components. No mouse, no touchpad. Used by people with motor impairments, repetitive strain injuries, and power users who prefer keyboard shortcuts.
 
 </div>
 
-<div style={{backgroundColor: 'rgba(148,74,170,0.15)', padding: '0.8em', borderRadius: '8px', marginBottom: '1em'}}>
+<div className='fragment' style={{backgroundColor: 'rgba(148,74,170,0.15)', padding: '0.8em', borderRadius: '8px', marginBottom: '1em'}}>
 
 **Voice control** — Users speak commands: "Click Import," "Press Tab," "Scroll down." The software maps spoken words to UI elements by their labels. If your button doesn't have a label, voice control can't target it.
 
 </div>
 
-<div style={{backgroundColor: 'rgba(200,100,74,0.15)', padding: '0.8em', borderRadius: '8px', marginBottom: '1em'}}>
+<div className='fragment' style={{backgroundColor: 'rgba(200,100,74,0.15)', padding: '0.8em', borderRadius: '8px', marginBottom: '1em'}}>
 
 **Switch devices** — A single button (or sip-and-puff tube) that cycles through interface elements one at a time. Interaction is extremely slow — every unnecessary focusable element adds real time. Poor focus order isn't just annoying; it's exclusionary.
 
 </div>
 
-<div style={{backgroundColor: 'rgba(169,148,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+<div className='fragment' style={{backgroundColor: 'rgba(169,148,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
 
 **Captions and transcripts** — Text alternatives for audio content. Used by deaf and hard-of-hearing users, but also by anyone in a noisy environment or watching without sound.
 
@@ -545,6 +684,18 @@ Before we talk about how to design for accessibility, let's understand what user
 **Captions** are the classic curb cut: built for deaf users, used by everyone watching TikTok on mute.
 
 > **Transition:** Now that we know what assistive technologies exist, let's look at a framework for making sure our software works with them...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Simulating a Motor disorder
+
+Use your non-dominant hand to find out what time office hours are today.
+
+<aside className="notes">
+
 </aside>
 
 </Slide>
@@ -742,11 +893,11 @@ Remember <a href="/lecture-notes/l24-usability">Nielsen's Heuristic #2</a>: <em>
 <aside className="notes">
 **Git's "detached HEAD state"** always gets a laugh — it's famously incomprehensible to beginners. It's a perfect example of software that is technically accurate but completely fails the "understandable" principle.
 
-**Connection to SESMag:** Dav struggles with tech jargon and complex sentence structures. Fee can parse "exponential backoff." Most users are closer to Dav than Fee for unfamiliar software.
+**Connection to SESMag:** Dan struggles with tech jargon and complex sentence structures. Fay can parse "exponential backoff." Most users are closer to Dan than Fay for unfamiliar software.
 
 **Connection to GA0:** This is why you created a user-facing terminology table — so your team uses consistent, user-friendly language.
 
-**Running example connection:** "OCR extraction failed" → Dav doesn't know what OCR means. "We couldn't read that image. Try a clearer photo." → everyone understands.
+**Running example connection:** "OCR extraction failed" → Dan doesn't know what OCR means. "We couldn't read that image. Try a clearer photo." → everyone understands.
 
 > **Transition:** The last principle — does it work with assistive technology?
 </aside>
@@ -929,24 +1080,37 @@ The standard keyboard navigation contract:
 
 ## "We're Accessible!" — But Are They?
 
-<p style={{fontSize: '0.85em'}}>
-Companies love to claim accessibility compliance. But claims vary enormously in credibility.
-</p>
-
-<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
-How would you evaluate whether an app is actually accessible?
-</p>
+<div style={{textAlign: 'center'}}>
 
 <Img
+  width={1100}
   src="/img/lectures/web/l28-badge.webp"
   prompt="Clean educational illustration (not pixel art) showing a shiny 'WCAG Compliant' badge pinned to a software interface that is clearly inaccessible: tiny unreadable text, no focus indicators, images without labels showing broken image icons, a mouse-only drag interface with no keyboard alternative. The badge gleams proudly while the interface fails every principle. Ironic contrast between the claim and reality. Modern flat illustration style, 16:9."
   alt="An ironic scene: a shiny 'WCAG Compliant' badge on a software interface that has tiny text, no focus indicators, unlabeled images, and mouse-only interactions — clearly not accessible despite the badge."
 />
+</div>
 
+<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+How would you evaluate whether an app is actually accessible?
+</p>
 <aside className="notes">
 **Set up the critical thinking frame:** Accessibility badges and compliance statements are everywhere. But what do they actually mean? This arc teaches students to be skeptical consumers of accessibility claims — a skill they'll use as developers AND as users.
 
 > **Transition:** There are three levels of accessibility evaluation, and they vary enormously in rigor...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Poll: Who should evaluate whether an app is accessible?
+
+<PollSlide username='espertus'
+  choices={["An accessibility expert", "Disabled people", "An automated checker", "Other"]}
+/>
+
+<aside className="notes">
+- Multi-select
 </aside>
 
 </Slide>
@@ -1084,7 +1248,7 @@ Passing automated tests ≠ accessible. It means you cleared the lowest bar.
 **Try these three tasks using only your keyboard:**
 
 1. Search for a restaurant near campus
-2. Get walking directions from Snell Library to that restaurant
+2. Get walking directions from Olin Library to that restaurant
 3. Switch to satellite view
 
 **Hints** (Google Maps does have keyboard support — but can you find it?):
@@ -1143,11 +1307,9 @@ Reference: <a href="https://support.google.com/maps/answer/6396990?hl=en&co=GENI
 
 <Slide>
 
-## Debrief: What Did You Find?
+## Poll: What Did You Find?
 
-<p style={{fontSize: '0.85em'}}>
-Let's hear what you experienced:
-</p>
+<div style={{display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5em'}}>
 
 <ol style={{fontSize: '0.8em'}}>
   <li>Where did you get <strong>stuck</strong>? Which task was hardest?</li>
@@ -1156,11 +1318,20 @@ Let's hear what you experienced:
   <li>Would an <strong>automated testing tool</strong> have caught the problems you found?</li>
 </ol>
 
+<div>
+<Img src="/img/lectures/poll-ev/qr-pollev-espertus.png" />
+            <p style={{ fontSize: '0.8em', marginTop: '0.5em' }}>
+              Text <strong>espertus</strong> to 22333 if the<br />URL isn't working for you.
+            </p>
+</div>
+</div>
+
 <p style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
 Google has a massive accessibility team and billions of users. It's still genuinely hard. This is why real evaluation matters.
 </p>
 
 <aside className="notes">
+- This should be a PollEV survey.
 **This is a discussion slide — not a reveal.** Let students share before you summarize. Use the likely findings table from the previous slide's notes to validate or supplement what they report.
 
 **Connect back to automated testing:** The punchline is question 4. No automated tool would catch "I can't pan the map with my keyboard." That requires a human attempting a real task. This is why the evaluation pyramid has humans at the top.
@@ -1271,6 +1442,39 @@ Today we learned to see the users we've been missing. Next, we start building in
 **CS 4973 plug:** For students who want to go deeper, the accessibility course is a great elective.
 
 > That's it for today. Questions?
+</aside>
+
+</Slide>
+
+<Slide>
+## Disability Awareness Week
+
+<Img src='/img/lectures/web/l28-disability-awareness-week.png'
+  alt="
+  A graphic event flyer titled 'Northeastern University Disability Access Services - Disability Awareness Week' at the top with a large red 'N' logo and a green bar. Below this is the main title in large, stylized green and yellow-outlined letters, framed by yellow starbursts.
+
+The flyer lists a three-column schedule of events:
+
+Column 1: BUTTON-MAKING STATION, Monday, March 23, 1:30 to 3:00 PM, In front of Tea Shop.
+
+Column 2: SPILL THE DISABILI-TEA, Tuesday, March 24, 4:00 to 6:00 PM, Solidarity Lounge.
+
+Column 3: REIKI WORKSHOP @ CARE FAIR, Wednesday, March 25, 6:00 to 8:00 PM, LGBTQIA+ Lounge.
+"
+/>
+</Slide>
+
+<Slide>
+
+## Bonus Slide
+
+<Img src='/img/lectures/web/l28-dinosaur-accessibility-meme.jpg'
+  width={1100}
+  alt="Humorous image of short-armed dinosaur trying unsuccessfully to reach button labeled beneath sign 'Push the button if you're not satisfied with the new design changes'."
+/>
+
+<aside className="notes">
+
 </aside>
 
 </Slide>
