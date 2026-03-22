@@ -16,8 +16,8 @@ import Img from '@site/src/components/Img';
 <Slide>
   <Img
     src="/img/lectures/web/l28.png"
-    prompt="Concept: 'Accessibility and Inclusivity' (Program Design & Implementation 2). Pixel art educational illustration showing a single software application being used simultaneously by diverse users through different means. CENTER: A large monitor displaying a recipe app interface. Around the monitor, arranged in a semicircle: a person wearing headphones listening to a screen reader with audio waves visible, a person using only a keyboard with no mouse on their desk, a person holding a phone in bright sunlight squinting at glare, a person using voice commands with a speech bubble containing a microphone icon, an elderly person with reading glasses leaning toward a large-text display, and a young person on a cracked older phone with a weak WiFi signal icon. Each user has a subtle colored glow connecting them to the same app. A curb cut ramp in the foreground connects a sidewalk to a street, with diverse people using it (wheelchair, stroller, bicycle, luggage). Banner text: 'L28: Accessibility and Inclusivity'. Bottom text: 'CS 3100: Program Design & Implementation 2'. Color palette: warm inclusive oranges and teals, accessibility blue for icons, purple accents for emphasis. 8-bit lo-fi pixel art style, clean outlines, retro game aesthetic, 16:9 aspect ratio."
-    alt="Pixel art showing a recipe app being used simultaneously by diverse users: screen reader user, keyboard-only user, person in bright sunlight, voice control user, elderly user with large text, and person on older phone with weak signal. A curb cut ramp in the foreground shows diverse people benefiting from the same accommodation."
+    prompt="Concept: 'Accessibility and Inclusivity' (Program Design & Implementation 2). Pixel art educational illustration showing a single software application being used simultaneously by diverse users through different means. CENTER: A large monitor displaying a smart home control app interface with light switches, sliders, and room names. Around the monitor, arranged in a semicircle: a person wearing headphones listening to a screen reader with audio waves visible, a person using only a keyboard with no mouse on their desk, a person holding a phone in bright sunlight squinting at glare, a person using voice commands with a speech bubble containing a microphone icon, an elderly person with reading glasses leaning toward a large-text display, and a young person on a cracked older phone with a weak WiFi signal icon. Each user has a subtle colored glow connecting them to the same app. A curb cut ramp in the foreground connects a sidewalk to a street, with diverse people using it (wheelchair, stroller, bicycle, luggage). Banner text: 'L28: Accessibility and Inclusivity'. Bottom text: 'CS 3100: Program Design & Implementation 2'. Color palette: warm inclusive oranges and teals, accessibility blue for icons, purple accents for emphasis. 8-bit lo-fi pixel art style, clean outlines, retro game aesthetic, 16:9 aspect ratio."
+    alt="Pixel art showing a smart home control app being used simultaneously by diverse users: screen reader user, keyboard-only user, person in bright sunlight, voice control user, elderly user with large text, and person on older phone with weak signal. A curb cut ramp in the foreground shows diverse people benefiting from the same accommodation."
   />
 
 <aside className="notes">
@@ -27,12 +27,12 @@ import Img from '@site/src/components/Img';
 - **Connects to:** GA0 accessibility deliverable, GA1 implementation requirements
 
 **Structure (~28 slides):**
-- Arc 1: From Usability to Accessibility and Inclusivity (~30 min) — running example (recipe import), spectrum, curb cut effect, GenderMag/SESMag with Fee vs. Dav walkthrough, invisible assumptions table, assistive technologies (vision, motor/hearing)
+- Arc 1: From Usability to Accessibility and Inclusivity (~30 min) — running example (adding a device in SceneItAll), spectrum, curb cut effect, GenderMag/SESMag with Fee vs. Dav walkthrough, invisible assumptions table, assistive technologies (vision, motor/hearing)
 - Arc 2: POUR Framework + Assistive Tech in Practice (~15 min) — POUR principles with running example connections, standard vs. custom widget comparison, five rules checklist, keyboard navigation
 - Arc 3: Evaluating Accessibility Claims (~15 min) — evaluation tiers, Google Maps exercise, connection to group project
 - Key Takeaways (~2 min)
 
-**Running example:** "Importing a recipe into CookYourBooks" — introduced early, revisited through different user lenses (blind, tremors, Dav/Fee, ESL) across all three arcs.
+**Running example:** "Adding a new device in SceneItAll" — introduced early, revisited through different user lenses (blind, tremors, Dav/Fee, ESL) across all three arcs.
 
 **Narrative spine:** In L24 and L27 we learned to design for users. Today we ask: *which* users? We'll discover that designing for users at the margins improves software for everyone — and that our invisible assumptions about who users are can exclude entire populations.
 
@@ -143,21 +143,21 @@ Most students will realize their personas were basically... themselves.
 
 <Slide>
 
-## Running Example: Importing a Recipe
+## Running Example: Adding a New Device
 
 <p style={{fontSize: '0.85em'}}>
-Let's follow one user task through this entire lecture: <strong>importing a recipe into CookYourBooks.</strong>
+Let's follow one user task through this entire lecture: <strong>adding a new smart light to SceneItAll.</strong>
 </p>
 
 <div style={{fontSize: '0.8em'}}>
 
 The flow seems simple:
 
-1. Click "Import" button
-2. Paste a URL or upload a photo of a recipe
-3. App extracts the recipe (title, ingredients, instructions)
-4. Review the result, fix any errors
-5. Save to your cookbook
+1. Click "Add Device" button
+2. App scans the network and discovers a new light
+3. Name the device and assign it to a room
+4. Set initial brightness and color
+5. Save and confirm the device appears in your dashboard
 
 </div>
 
@@ -168,9 +168,9 @@ Now imagine this flow used by:
 
 <ul style={{fontSize: '0.8em'}}>
   <li>A <strong>blind user</strong> navigating with a screen reader</li>
-  <li>A user with <strong>tremors</strong> who can't drag-and-drop a photo</li>
-  <li>A user on a <strong>shared library computer</strong> with 20 minutes left on their session</li>
-  <li>A user whose <strong>first language isn't English</strong>, trying to parse "OCR extraction failed"</li>
+  <li>A user with <strong>tremors</strong> who can't drag a brightness slider precisely</li>
+  <li>A user on a <strong>shared tablet</strong> at an assisted living facility with 10 minutes left</li>
+  <li>A user whose <strong>first language isn't English</strong>, trying to parse "Zigbee pairing timeout"</li>
 </ul>
 
 <p style={{fontSize: '0.8em', color: '#9370DB'}}>
@@ -178,7 +178,7 @@ Same feature. Same five steps. Completely different experience — depending on 
 </p>
 
 <aside className="notes">
-**This is the throughline for the lecture.** We'll return to this import flow repeatedly:
+**This is the throughline for the lecture.** We'll return to this device setup flow repeatedly:
 - Accessibility vs. inclusivity spectrum: which of these users face accessibility barriers vs. inclusivity barriers?
 - POUR: walk through each principle against this flow
 - Assistive tech: what does each tool need from this flow to work?
@@ -354,7 +354,7 @@ These aren't deficits in the user — they're assumptions in the software.
 
 <Slide>
 
-## Same Feature, Different Experience: Importing a Recipe
+## Same Feature, Different Experience: Adding a Device
 
 <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.75em'}}>
 
@@ -362,11 +362,11 @@ These aren't deficits in the user — they're assumptions in the software.
 
 **Fee** (high self-efficacy, high risk tolerance)
 
-1. Clicks "Import" — tries URL paste first
-2. Sees "OCR extraction failed" — shrugs, tries a different URL
-3. Notices the extracted recipe has a wrong ingredient — edits it inline
-4. Hits "Save" without reading the confirmation dialog
-5. **Total time: 90 seconds**
+1. Clicks "Add Device" — immediately starts network scan
+2. Sees "Zigbee pairing timeout" — shrugs, moves the device closer to the hub and retries
+3. Notices the default room is wrong — changes it to "Bedroom" without hesitation
+4. Drags the brightness slider to 70%, hits "Save" without reading the confirmation
+5. **Total time: 60 seconds**
 
 </div>
 
@@ -374,11 +374,11 @@ These aren't deficits in the user — they're assumptions in the software.
 
 **Dav** (low self-efficacy, low risk tolerance)
 
-1. Looks for "Import" — not sure which button it is (icon only, no label)
-2. Sees "OCR extraction failed" — thinks *they* did something wrong. Tries again with the same URL.
-3. Notices a wrong ingredient — afraid to edit it in case they break something
-4. Reads every word of the confirmation dialog. Isn't sure what "merge duplicates" means. Closes the dialog to be safe.
-5. **Gives up. Recipe not saved.**
+1. Looks for "Add Device" — not sure which button it is (icon only, no label)
+2. Sees "Zigbee pairing timeout" — thinks *they* broke something. Doesn't know what Zigbee is. Doesn't retry.
+3. Wants to change the room but the dropdown says "Assign to Area" — not sure what "Area" means in this context
+4. Reads the confirmation dialog. Sees "Override existing device configuration?" — panics and clicks Cancel
+5. **Gives up. Device not added.**
 
 </div>
 
@@ -392,9 +392,9 @@ The interface didn't change. The user did. Every design decision — icon-only b
 **This is the core GenderMag/SESMag insight made concrete.** Walk through each step and ask students: which design decision caused Dav's different experience?
 
 - Step 1: Icon-only button → recognition vs. recall (H6). Fee recognizes it from other apps. Dav doesn't.
-- Step 2: "OCR extraction failed" → developer language. Fee blames the tool. Dav blames themselves.
-- Step 3: Inline editing → risk tolerance. Fee experiments freely. Dav fears breaking things.
-- Step 4: "Merge duplicates" → jargon. Fee ignores it. Dav can't proceed without understanding it.
+- Step 2: "Zigbee pairing timeout" → developer language. Fee blames the tool. Dav blames themselves.
+- Step 3: "Assign to Area" → internal jargon. Fee guesses it means room. Dav isn't sure and hesitates.
+- Step 4: "Override existing device configuration?" → scary confirmation. Fee ignores it. Dav can't proceed without understanding what "override" means.
 
 **The punchline:** Dav is not a less capable user. Dav is a user your software wasn't designed for. These are fixable design choices, not user deficits.
 
@@ -410,13 +410,13 @@ The interface didn't change. The user did. Every design decision — icon-only b
 ## What's Different Between These Two Interfaces?
 
 <Img
-  src="/img/lectures/web/l28-import-comparison.webp"
-  prompt="Clean educational illustration (not pixel art) showing a side-by-side comparison of two software interface mockups for a 'Recipe Import' screen, labeled 'Less Accessible' and 'More Accessible'. 16:9 aspect ratio. LEFT SIDE (labeled 'Less Accessible', red-tinted border): A recipe import dialog with these problems: (1) An unlabeled icon-only button at the top — just an arrow icon with no text, (2) A large drag-and-drop zone that says 'Drag photo here' with NO alternative upload button, (3) A red error message reading 'OCR extraction failed: invalid MIME type' in small monospace font, (4) A red/green progress indicator with no text labels — just colored circles, (5) Small, cramped 'Save' and 'Cancel' buttons with no undo option. RIGHT SIDE (labeled 'More Accessible', green-tinted border): The same recipe import dialog redesigned: (1) A clearly labeled button reading 'Import Recipe' with both an icon AND text, (2) A drag-and-drop zone WITH a visible 'Browse files' button underneath as an alternative, (3) A friendly error message in a clear box: 'We couldn't read that image. Try a clearer photo or paste the recipe URL instead.' with a helpful suggestion, (4) Status shown with BOTH colors AND text labels: a green checkmark with 'Imported successfully' text and a yellow triangle with 'Needs review' text, (5) Larger touch-friendly buttons with an 'Undo' option and reassuring text: 'You can always edit this later.' Both interfaces show the same basic layout and the same recipe (chocolate chip cookies) so the comparison is about design choices, not content. Clean, modern UI mockup style with clear annotations."
-  alt="Side-by-side comparison: a less accessible recipe import interface (icon-only buttons, drag-only upload, technical error messages, color-only status) versus a more accessible version (labeled buttons, browse-files alternative, plain-language errors, text+color status, undo option)."
+  src="/img/lectures/web/l28-add-device.webp"
+  prompt="Clean educational illustration (not pixel art) showing a side-by-side comparison of two software interface mockups for an 'Add Device' screen in a smart home app, labeled 'Less Accessible' and 'More Accessible'. 16:9 aspect ratio. LEFT SIDE (labeled 'Less Accessible', red-tinted border): A device setup dialog with these problems: (1) An unlabeled icon-only button at the top — just a plus icon with no text, (2) A brightness slider with NO text input alternative and no current value displayed, (3) A red error message reading 'Zigbee pairing timeout: ERR_CONN_REFUSED' in small monospace font, (4) A red/green status indicator with no text labels — just colored circles next to device names, (5) A dropdown labeled 'Assign to Area' using internal jargon, and small cramped 'Save' and 'Cancel' buttons with no undo option. RIGHT SIDE (labeled 'More Accessible', green-tinted border): The same device setup dialog redesigned: (1) A clearly labeled button reading 'Add Device' with both a plus icon AND text, (2) A brightness slider WITH a numeric text input beside it showing '70%' as an alternative, (3) A friendly error message in a clear box: 'Could not connect to the device. Try moving it closer to your hub and click Retry.' with a retry button, (4) Status shown with BOTH colors AND text labels: a green checkmark with 'Connected' text and a yellow triangle with 'Searching...' text, (5) A dropdown labeled 'Choose a room' in plain language, and larger touch-friendly buttons with reassuring text: 'You can change this later.' Both interfaces show the same basic layout for setting up a smart light bulb so the comparison is about design choices, not content. Clean, modern UI mockup style with clear annotations."
+  alt="Side-by-side comparison: a less accessible device setup interface (icon-only buttons, slider-only input, technical error messages, color-only status, jargon labels) versus a more accessible version (labeled buttons, slider plus text input, plain-language errors, text+color status, friendly labels, undo option)."
 />
 
 <p style={{fontSize: '0.85em'}}>
-Both interfaces import a recipe. Both have the same features. Look at the two versions and identify: <strong>what assumptions does the left version make about its users that the right version doesn't?</strong>
+Both interfaces add a device. Both have the same features. Look at the two versions and identify: <strong>what assumptions does the left version make about its users that the right version doesn't?</strong>
 </p>
 
 <aside className="notes">
@@ -426,11 +426,12 @@ Both interfaces import a recipe. Both have the same features. Look at the two ve
 
 | What students might notice | The assumption | Who it excludes | The fix (right side) |
 |-----------|----------------|-----|-----|
-| Icon-only button vs. labeled button | User can see and recognize the icon | Blind users, low-vision users, unfamiliar users | Add a text label alongside the icon |
-| Drag-only upload vs. drag + browse button | User can drag-and-drop | Users with tremors, keyboard users | Add a "Browse files" button |
-| Technical error vs. plain language error | User can read developer jargon | Non-technical users, ESL speakers | "We couldn't read that image. Try a clearer photo." |
-| Color-only status vs. color + text status | User can distinguish red from green | Colorblind users (~8% of men) | Add text labels or shapes alongside colors |
-| No undo vs. undo + reassuring text | User trusts that editing won't break things | Low self-efficacy users (Dav) | Add undo, show "You can always change this later" |
+| Icon-only button vs. labeled button | User can see and recognize the plus icon | Blind users, low-vision users, unfamiliar users | Add text label: "Add Device" |
+| Slider-only vs. slider + text input | User can precisely drag a slider | Users with tremors, keyboard users | Add a numeric text input alongside the slider |
+| Technical error vs. plain language error | User can read "Zigbee pairing timeout" | Non-technical users, ESL speakers | "Could not connect. Try moving it closer and click Retry." |
+| Color-only status vs. color + text status | User can distinguish red from green | Colorblind users (~8% of men) | Add text labels: "Connected" / "Searching..." |
+| "Assign to Area" vs. "Choose a room" | User understands internal terminology | Non-technical users, new users | Use plain language matching the user's mental model |
+| No reassurance vs. "You can change this later" | User trusts that actions won't break things | Low self-efficacy users (Dav) | Add reassuring text, show undo is possible |
 
 **Point out the pattern:** Most of these fixes are *also* better for the "default" user. Text labels help everyone. Progress indicators help everyone. Plain language helps everyone. Curb cut effect in action.
 
@@ -656,7 +657,7 @@ Added distinct shapes + different colors that are distinguishable by colorblind 
 
 **Instagram example:** Instagram's auto-generated alt text isn't great, but it's better than nothing. The best approach is author-written alt text that conveys the *meaning* of the image, not just its literal content.
 
-**Running example connection:** In CookYourBooks import flow — the imported recipe shows a photo. Without alt text, a screen reader user knows there's an image but not what it shows. Status indicators (success/failure) shown only in red/green exclude colorblind users.
+**Running example connection:** In the SceneItAll device setup flow — device status is shown with colored circles only (red/green). Without text labels, a colorblind user can't tell if the device is connected. The device icon has no alt text — a screen reader user doesn't know what type of device was found.
 
 > **Transition:** Can users interact with it?
 </aside>
@@ -698,7 +699,7 @@ Many media players have a volume slider that works perfectly with a mouse — cl
 
 **Connection to GA1:** Standard UI components from any framework support keyboard navigation automatically. If you build custom components from scratch, you need to handle this yourself.
 
-**Running example connection:** The import flow requires drag-and-drop to upload a photo. A user with tremors can't do this. A keyboard user can't do this. Fix: provide a "Browse files" button as an alternative.
+**Running example connection:** The device setup flow requires dragging a brightness slider precisely. A user with tremors can't do this accurately. A keyboard user can use arrow keys — but only if the slider is focusable. Fix: provide a text input as an alternative to the slider.
 
 > **Transition:** Can users understand what's happening?
 </aside>
@@ -746,7 +747,7 @@ Remember <a href="/lecture-notes/l24-usability">Nielsen's Heuristic #2</a>: <em>
 
 **Connection to GA0:** This is why you created a user-facing terminology table — so your team uses consistent, user-friendly language.
 
-**Running example connection:** "OCR extraction failed" → Dav doesn't know what OCR means. "We couldn't read that image. Try a clearer photo." → everyone understands.
+**Running example connection:** "Zigbee pairing timeout" → Dav doesn't know what Zigbee means. "Could not connect to the device. Try moving it closer to your hub." → everyone understands.
 
 > **Transition:** The last principle — does it work with assistive technology?
 </aside>
@@ -794,7 +795,7 @@ graph LR
 ## What You Build vs. What Assistive Tech Sees
 
 <p style={{fontSize: '0.85em'}}>
-Back to our running example — the "Import" button in CookYourBooks:
+Back to our running example — the "Add Device" button in SceneItAll:
 </p>
 
 <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.8em'}}>
@@ -803,13 +804,13 @@ Back to our running example — the "Import" button in CookYourBooks:
 
 **Standard button component**
 
-What the user sees: a clickable "Import Recipe" button
+What the user sees: a clickable "Add Device" button
 
-What a screen reader announces: *"Import Recipe, button"*
+What a screen reader announces: *"Add Device, button"*
 
 What a keyboard user experiences: Tab highlights it, Enter activates it
 
-What voice control hears: "Click Import Recipe" → works
+What voice control hears: "Click Add Device" → works
 
 </div>
 
@@ -823,7 +824,7 @@ What a screen reader announces: *...nothing.* It's invisible.
 
 What a keyboard user experiences: Tab skips right over it. No way to activate it.
 
-What voice control hears: "Click Import Recipe" → *"No matching element found"*
+What voice control hears: "Click Add Device" → *"No matching element found"*
 
 </div>
 
@@ -873,7 +874,7 @@ They look the same on screen. They are completely different to assistive technol
 
 Rules 1 and 3 are the most important for their projects. If they use standard components and ensure keyboard operability, they'll cover most of the low-hanging fruit.
 
-**Focus management (rule 5)** is the one students are least likely to think about. Give a concrete example: "You click 'Import Recipe,' a dialog appears. You're a screen reader user. If focus doesn't move to the dialog, you don't know it appeared. You hear nothing. You press Tab and end up in the footer."
+**Focus management (rule 5)** is the one students are least likely to think about. Give a concrete example: "You click 'Add Device,' a setup dialog appears. You're a screen reader user. If focus doesn't move to the dialog, you don't know it appeared. You hear nothing. You press Tab and end up in the footer."
 
 > **Transition:** Let's talk about how keyboard navigation should feel...
 </aside>
