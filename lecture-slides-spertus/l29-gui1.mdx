@@ -245,10 +245,11 @@ We'll use <strong>JavaFX</strong> because its architecture — scene graphs, dec
   choices={["I've used Swing", "I've used JavaFX", "I've used a different Java framework", "I don't know which Java framework I used", "I've modified Java GUIs", "No", "I created all the code myself", "I used Scene Builder", "I used AI"]}
 />
 
+<div style={{ fontSize: '.8em' }}>
 Choose all that apply.
-
+</div>
 <aside className="notes">
-- Multiple select
+- Multiple answer
 </aside>
 </Slide>
 
@@ -256,14 +257,16 @@ Choose all that apply.
 {/* JAVAFX API CONCEPTS */}
 {/* ============================================ */}
 
+
+{/* This slide uses overlays in a brittle manner but looks good in light presentation mode.*/}
+
 <Slide>
 
 ## The JavaFX API: Stage, Scene, and Scene Graph
 
-<p style={{fontSize: '0.85em'}}>
-Before we organize our code, let's understand what the GUI toolkit gives us:
-</p>
+<div style={{display: 'flex', gap: '2.5rem', alignItems: 'flex-start', marginTop: '1rem'}}>
 
+<div style={{flex: '0 0 52%', position: 'relative'}}>
 ```mermaid
 graph TD
     ST[Stage - the window] --> SC[Scene - the content]
@@ -276,26 +279,46 @@ graph TD
     V1 --> LV[ListView]
     V1 --> B1[Button: 'Activate']
     style ST fill:#f0dcc8,stroke:#a94,color:#000
-    style SC fill:#d4c8f0,stroke:#94a,color:#000
+    style SC fill:#d4c8f0,stroke:#7a8ab0,color:#000
 ```
 
-<div style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+<div className="fragment fade-out diagram-overlay" data-fragment-index="1" style={{position: 'absolute', top: '59px', left: 0, width: '100%', height: '100%', background: '#ffffff'}} />
+<div className="fragment fade-out diagram-overlay" data-fragment-index="2" style={{position: 'absolute', top: '156px', left: 0, width: '100%', height: '100%', background: '#ffffff'}} />
 
-- **Stage** = the application window (title bar, minimize/maximize/close)
-- **Scene** = the content inside the window
-- **Scene Graph** = a tree of **nodes** — every widget, every layout container, every label is a node in this tree
-- Rendering = the framework walks the tree and draws each node. You build the tree; the framework draws it.
+</div>
+
+<div style={{flex: 1, fontSize: '0.6em', display: 'flex', flexDirection: 'column', gap: '0.6rem', paddingTop: '0rem'}}>
+
+<div className="fragment visible" data-fragment-index="0">
+
+**Stage** is the OS-managed application window — title bar, minimize, maximize, close.
+
+</div>
+<div className="fragment" data-fragment-index="1">
+
+**Scene** is the content inside the window. A Stage holds one active Scene at a time. You can swap Scenes at runtime — like a browser tab loading a different page.
+
+</div>
+
+<div className="fragment" data-fragment-index="2">
+
+The **Scene Graph** is a tree of *nodes* — every widget and layout container is a node. You build the tree; the framework walks it to render, handle focus, and dispatch events.
+
+</div>
+
+</div>
+</div>
+
+<div className="fragment" data-fragment-index="3" style={{fontSize: '0.6em'}}>
+
+**Leaf nodes** are widgets (Labels, Buttons, Sliders). **Container nodes** (VBox, HBox) control layout. *Analogy:* FXML is to JavaFX what HTML is to the browser.
 
 </div>
 
 <aside className="notes">
-**The scene graph is the key concept.** Students need to understand that a GUI is a tree of objects — not a canvas you paint on. Every button, every label, every container is an object with properties, methods, and events. The framework traverses this tree to render the UI, handle focus order, and dispatch events.
+**The scene graph is the key concept** — a GUI is a tree of objects, not a canvas you paint on.
 
-**Analogy:** HTML is also a tree (the DOM). If students have web experience, this will click immediately. FXML is to JavaFX what HTML is to the browser — a declarative way to define the tree.
-
-**Stage vs. Scene:** A Stage can swap its Scene (like a browser tab loading a different page). For GA1, students will typically have one Stage and one Scene.
-
-> **Transition:** Let's see this in code...
+**Transition:** Let's see this in code...
 </aside>
 
 </Slide>
