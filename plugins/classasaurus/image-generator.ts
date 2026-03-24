@@ -75,7 +75,7 @@ function extractAttribute(tagContent: string, attrName: string): string | null {
         } else if (content[i] === quoteChar) {
           // Found the closing quote — extract and unescape
           const extracted = content.substring(0, i);
-          return extracted.replace(/\\"/g, '"').replace(/\\'/g, "'");
+          return extracted.replace(/\\\\/g, '\\').replace(/\\"/g, '"').replace(/\\'/g, "'");
         } else {
           i++;
         }

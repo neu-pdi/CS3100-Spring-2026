@@ -195,7 +195,7 @@ while (applicationIsRunning) {
 
 **Freezing demo idea:** If you have time, show a button handler with `Thread.sleep(5000)` — the entire UI becomes unresponsive for 5 seconds. This viscerally demonstrates why long-running handlers are a problem. (We'll solve this properly in L31-32 with concurrency.)
 
-**SceneItAll connection:** "Imagine a user dims the living room lights and then immediately tries to close the shades. If your light dimming handler takes 5 seconds to talk to the physical device, the shade button is frozen. The user thinks the app crashed."
+**SceneItAll connection:** "Imagine a user dims the living room lights and then immediately tries to close the shades. If your light-dimming handler takes 5 seconds to talk to the physical device, the shade button is frozen. The user thinks the app crashed."
 
 > **Transition:** Java has gone through three generations of GUI toolkits. Let's see the evolution...
 </aside>
@@ -428,16 +428,16 @@ In <a href="/lecture-notes/l16-testing2">L16</a> we learned to separate domain l
 graph LR
     U[User] -->|interacts| V[View]
     V -->|events| C[Controller]
-    C -->|updates| M[Model]
-    M -->|notifies| V
-    C -->|updates| V
+    C -->|reads| M[Model]
+    C -->|updates| M
+    C -->|manually updates| V
     style M fill:#c8f0dc,stroke:#4a9,color:#000
     style V fill:#d4c8f0,stroke:#94a,color:#000
-    style C fill:#f0dcc8,stroke:#a94,color:#000
+    style C fill:#f0e8c8,stroke:#aa4,color:#000
 ```
 
 <p style={{fontSize: '0.8em', color: '#9370DB'}}>
-The Model is cleanly on the domain side — no UI imports, fully testable. But notice the Controller: it contains decision-making logic <em>and</em> depends on <code>@FXML</code> widgets. The hexagonal boundary runs through the middle of the Controller. We'll fix this in L30.
+The Model is cleanly domain-side — no UI imports, fully testable. But the Controller does <em>everything else</em>: it reads from the Model, makes decisions, AND manually pushes updates to View widgets. It straddles the hexagonal boundary. We'll fix this in L30.
 </p>
 
 <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1em', fontSize: '0.75em', marginTop: '0.5em'}}>

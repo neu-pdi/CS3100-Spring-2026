@@ -205,10 +205,9 @@ Recall from <a href="/lecture-notes/l16-testing2">L16</a>: testable code has hig
 
 ```mermaid
 graph LR
-    M[Model] -->|notifies| VM[ViewModel]
+    M[Model] --- VM[ViewModel]
     VM -->|reads/updates| M
-    VM ===|"two-way data binding"| V[View]
-    V ===|"two-way data binding"| VM
+    VM ===|"two-way binding"| V[View]
     U[User] -->|interacts| V
     style M fill:#c8f0dc,stroke:#4a9,color:#000
     style VM fill:#f0dcc8,stroke:#a94,color:#000
@@ -473,70 +472,86 @@ For GA1, recommend solution 1. It's simpler and students can reason about when i
 ## MVC vs. MVVM: Same Feature, Two Architectures
 
 <p style={{fontSize: '0.85em'}}>
-The same "Activate Scene" handler — compare the Controller's job:
+The same "Activate Scene" feature. Look at what each class <strong>depends on</strong>:
 </p>
 
 <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.68em'}}>
 
 <div style={{backgroundColor: 'rgba(200,74,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
 
-**MVC Controller**
+**MVC — logic lives in the Controller**
 
 ```java
-@FXML private void handleActivateScene() {
-    String scene = sceneSelector.getValue();
-    if (scene != null) {
-        model.activateScene(scene);
-        // Must manually update EVERY widget
-        updateDeviceList();
-        brightnessSlider.setValue(
-            model.getAverageBrightness());
-        brightnessValueLabel.setText(
-            model.getAverageBrightness() + "%");
+public class AreaDashboardController {
+    // Depends on View widgets ↓
+    @FXML private Slider brightnessSlider;
+    @FXML private Label brightnessValueLabel;
+    @FXML private ListView<String> deviceList;
+    @FXML private ComboBox<String> sceneSelector;
+
+    // AND depends on the Model ↓
+    private Area model;
+
+    @FXML private void handleActivateScene() {
+        model.activateScene(sceneSelector.getValue());
+        // Must know about EVERY widget to update
+        brightnessSlider.setValue(model.getAvgBrightness());
+        brightnessValueLabel.setText(model.getAvgBrightness() + "%");
+        deviceList.getItems().setAll(/* ... */);
     }
 }
 ```
 
-Controller knows about widgets. 4 lines of manual sync.
+**Depends on:** Model + Slider + Label + ListView + ComboBox
+
+**To test:** need JavaFX runtime, FXML, all widgets instantiated
 
 </div>
 
 <div style={{backgroundColor: 'rgba(74,153,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
 
-**MVVM Controller**
+**MVVM — logic lives in the ViewModel**
 
 ```java
-@FXML private void handleActivateScene() {
-    String scene = sceneSelector.getValue();
-    if (scene != null) {
-        viewModel.activateScene(scene);
-        // That's it. Binding handles the rest.
+public class AreaDashboardViewModel {
+    // Depends on the Model only ↓
+    private Area model;
+
+    // Exposes observable properties (no widgets!)
+    private final IntegerProperty brightness = ...;
+    private final ObservableList<String> statuses = ...;
+
+    public void activateScene(String name) {
+        model.activateScene(name);
+        brightness.set(model.getAvgBrightness());
+        statuses.setAll(/* ... */);
+        // View updates automatically via binding
     }
 }
 ```
 
-Controller calls ViewModel. Binding updates all widgets automatically.
+**Depends on:** Model only
+
+**To test:** `new AreaDashboardViewModel()` — no UI needed
 
 </div>
 
 </div>
 
-<div style={{fontSize: '0.75em', marginTop: '0.5em'}}>
-
-| | MVC | MVVM |
-|---|---|---|
-| **Coupling** | Controller → View widgets | ViewModel → nothing |
-| **Sync** | Manual per widget | Automatic via binding |
-| **Testable?** | Needs JavaFX runtime | Plain Java unit test |
-
-</div>
+<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
+Same logic. But the MVC Controller <strong>depends on the View</strong> — it names specific widgets. The ViewModel depends on <strong>nothing but the Model</strong>. That's why one is testable and the other isn't.
+</p>
 
 <aside className="notes">
-**This is the concrete version of the comparison.** The table alone is abstract — the code makes it visceral. MVC has 4 extra lines per action, and every one is a potential bug.
+**The punchline is the dependency arrows.** MVC Controller depends on both Model AND View widgets. ViewModel depends on Model only. That's the entire difference — and it's what makes one testable and the other not.
 
-**When is MVC still fine?** For trivial UIs with 2-3 widgets. The MVVM overhead isn't worth it for a settings panel with one checkbox.
+**Draw it on the board if you can:**
+- MVC: Controller → Model, Controller → View (two dependencies, one is infrastructure)
+- MVVM: ViewModel → Model (one dependency, pure domain). Controller → ViewModel + View (thin wiring, infrastructure side)
 
-**When does MVVM pay for itself?** When you have multiple views of the same data, or when you need to test UI logic without a running app. GA1 features are in this category.
+**When is MVC still fine?** For trivial UIs with 2-3 widgets where testability of the controller isn't a concern.
+
+**When does MVVM pay for itself?** When you need to test UI logic — which is always in a production app. GA1 features are in this category.
 
 > **Transition:** Now let's see why testability is the biggest payoff...
 </aside>
@@ -625,85 +640,12 @@ void activateScene_updatesDeviceStatuses() {
 
 **The ViewModel test has high controllability:** you call `activateScene("Evening")` directly. You don't need to find a ComboBox, select an item, then click a button.
 
-> **Transition:** This maps directly to a principle we learned earlier...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## MVVM Fixes the Leaky Hexagon
-
-<p style={{fontSize: '0.85em'}}>
-In L29 we said MVC is hexagonal architecture for GUIs — but with a leak. The Controller straddles the boundary: decision logic + <code>@FXML</code> widgets in the same class. MVVM fixes that:
-</p>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.75em'}}>
-
-<div style={{backgroundColor: 'rgba(200,74,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
-
-**MVC — leaky boundary**
-
-```mermaid
-graph LR
-    subgraph "Domain"
-        M[Model]
-    end
-    subgraph "??? straddles both"
-        C[Controller]
-    end
-    subgraph "Infrastructure"
-        V[View]
-    end
-    M --> C
-    C --> V
-    style M fill:#c8f0dc,stroke:#4a9,color:#000
-    style C fill:#f0e8c8,stroke:#aa4,color:#000
-    style V fill:#d4c8f0,stroke:#94a,color:#000
-```
-
-Controller has logic AND `@FXML` widgets. Hard to test.
-
-</div>
-
-<div style={{backgroundColor: 'rgba(74,153,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
-
-**MVVM — clean boundary**
-
-```mermaid
-graph LR
-    subgraph "Domain (testable)"
-        M2[Model] --> VM[ViewModel]
-    end
-    subgraph "Infrastructure (UI)"
-        C2[Controller] --> VM
-        V2[View] --> C2
-    end
-    style M2 fill:#c8f0dc,stroke:#4a9,color:#000
-    style VM fill:#f0dcc8,stroke:#a94,color:#000
-    style C2 fill:#d4c8f0,stroke:#94a,color:#000
-    style V2 fill:#d4c8f0,stroke:#94a,color:#000
-```
-
-ViewModel is pure domain. Controller is thin infrastructure.
-
-</div>
-
-</div>
-
-<p style={{fontSize: '0.8em', marginTop: '0.3em', color: '#9370DB'}}>
-The ViewModel never imports <code>javafx.scene</code>. It's on the domain side of the hexagon — fully testable, no mocking needed.
-</p>
-
-<aside className="notes">
-**This is the narrative payoff across L16 → L29 → L30:**
+**The hexagonal architecture story across the arc:**
 - L16: "Separate domain from infrastructure for testability"
-- L29: "MVC does this, but the Controller leaks — it has logic AND widgets"
-- L30: "MVVM fixes the leak — the ViewModel is pure domain, the Controller shrinks to a thin adapter"
+- L29: "MVC does this, but the Controller leaks — it depends on both Model and View widgets"
+- L30: "MVVM fixes the leak — the ViewModel depends on Model only, the Controller shrinks to thin infrastructure"
 
-**The ViewModel never imports `javafx.scene`.** It uses `javafx.beans` (properties) and `javafx.collections` (ObservableList), but never widgets. This is the equivalent of a domain class using an interface but never importing the infrastructure implementation.
-
-**Point out on the diagram:** In MVC, the Controller is yellow (ambiguous — neither cleanly domain nor cleanly infrastructure). In MVVM, the ViewModel is orange (domain side) and the Controller is purple (infrastructure side, same as the View). The boundary is clean.
+**To be precise about imports:** The ViewModel does import from JavaFX — `javafx.beans` for properties and `javafx.collections` for ObservableList. But it never imports `javafx.scene` — no widgets, no FXML, no rendering. The practical test: can you `new AreaDashboardViewModel()` in a plain JUnit test without starting the JavaFX Application Thread? Yes. Can you do that with the MVC Controller? No.
 
 > **Transition:** So what should ViewModel tests actually check?
 </aside>
