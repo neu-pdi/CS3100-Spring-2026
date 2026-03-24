@@ -1,0 +1,1362 @@
+---
+sidebar_position: 29
+title: "GUIs in Java"
+image: /img/lectures/web/l29.png
+---
+
+import RevealJS, { Slide } from '@site/src/components/RevealJS';
+import Img from '@site/src/components/Img';
+
+<RevealJS transition="slide">
+
+{/* ============================================ */}
+{/* COVER IMAGE */}
+{/* ============================================ */}
+
+<Slide>
+  <Img
+    src="/img/lectures/web/l29.png"
+    prompt="Concept: 'GUIs in Java' (Program Design and Implementation 2). Pixel art educational illustration, 16:9 aspect ratio. A large monitor display split exactly down the middle with a glowing vertical dividing line. LEFT HALF — a polished smart home dashboard UI with these exact elements from top to bottom: (1) A bold heading reading 'Living Room', (2) A horizontal row with the text 'Brightness:' followed by a slider widget set to about 70 percent and the text '70%', (3) A list panel showing three lines of text: 'Ceiling Light: 70%', 'Window Shades: Open', 'Floor Fan: Speed 2', (4) A dropdown reading 'Choose scene...' next to a button labeled 'Activate'. Dark theme with navy background and teal and coral accents. RIGHT HALF — the same layout represented as FXML code in a code editor, with matching vertical alignment to the UI on the left. The code should be mostly in focus at the top and fade to blurry or dots at the bottom. Lines of code visible should include angle-bracket VBox spacing 10, angle-bracket Label text Living Room with style font-size 20px, angle-bracket HBox spacing 5, angle-bracket Label text Brightness, angle-bracket Slider min 0 max 100, angle-bracket ListView fx:id deviceList, then dots where rest fades out. Code displayed in a dark editor theme with syntax highlighting — XML tags in blue, attribute names in purple, string values in green. Banner text: 'L29: GUIs in Java'. Bottom text: 'CS 3100: Program Design and Implementation 2'. Color palette: cool blues and teals for the smart home theme, amber for warm lighting accents. 8-bit lo-fi pixel art style, clean outlines, retro game aesthetic."
+    alt="Pixel art showing a smart home dashboard split down the middle: polished dark-themed UI on the left showing Living Room with brightness slider, device list, and Activate button. On the right, the corresponding FXML code with matching alignment, fading to ellipsis at the bottom."
+  />
+
+<aside className="notes">
+**Lecture overview:**
+- **Total time:** ~55 minutes
+- **Prerequisites:** L6/L7 (Information hiding, design for change), L28 (Accessibility)
+- **Connects to:** GA1 (Core Features), L30 (MVVM and TestFX)
+
+**Structure (~23 slides):**
+- Arc 1: From CLI to GUI (~10 min) — event-driven programming, event loop, Java GUI history
+- Arc 2: MVC (~15 min) — separation of concerns applied to UIs, Model/View/Controller with code
+- Arc 3: Building It (~15 min) — JavaFX components, layout, live coding, properties, CSS
+- Arc 4: Accessibility from the Start (~8 min) — accessible text, keyboard nav, focus management
+- Arc 5: What's Next (~5 min) — MVVM preview, GA1 architecture, takeaways
+
+**Running example:** SceneItAll device dashboard — the IoT/smarthome control app from L2, L13, and Lab 11. We build a panel that shows devices in a room and lets you control them. By slide 14, students have a complete working app.
+
+> **Transition:** Let's start with the learning objectives...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* TITLE SLIDE */}
+{/* ============================================ */}
+
+<Slide>
+
+# CS 3100: Program Design and Implementation II
+
+## Lecture 29: GUIs in Java
+
+<p style={{marginTop: '2em', fontSize: '0.8em', color: '#666'}}>
+  &copy;2026 Jonathan Bell, CC-BY-SA
+</p>
+
+<aside className="notes">
+**Context from previous lectures:**
+- L6/L7: Information hiding, coupling, cohesion — we'll apply these to UI architecture
+- L28: Accessibility — standard components, keyboard navigation, POUR framework
+- L2/L13: SceneItAll domain — students already know lights, fans, shades, areas, scenes
+- Today: we build our first GUI, using the principles we've learned all semester
+
+> **Transition:** Here's what you'll be able to do after today...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* LEARNING OBJECTIVES */}
+{/* ============================================ */}
+
+<Slide>
+
+## Learning Objectives
+
+<p style={{fontSize: '0.85em', textAlign: 'left'}}>
+After this lecture, you will be able to:
+</p>
+
+<ol style={{fontSize: '0.75em', textAlign: 'left'}}>
+  <li>Explain the difference between sequential and event-driven programming</li>
+  <li>Apply the Model-View-Controller pattern to separate UI from business logic</li>
+  <li>Build a simple JavaFX interface using FXML, controllers, and standard components</li>
+  <li>Use JavaFX properties and binding to keep the View synchronized with the Model</li>
+  <li>Apply accessibility practices (accessible text, keyboard navigation, focus management) in JavaFX</li>
+</ol>
+
+<aside className="notes">
+**Time allocation:**
+- Objective 1: Event-driven programming (~10 min)
+- Objective 2: MVC (~15 min)
+- Objectives 3-4: JavaFX components, layout, properties, CSS (~15 min)
+- Objective 5: Accessibility in JavaFX (~8 min)
+
+**Connection to GA1:** Students will implement one of four core CookYourBooks features using these exact patterns. We use SceneItAll today so they arrive at GA1 with fresh eyes for their own project.
+
+> **Transition:** Let's start with a fundamental shift in how your code runs...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 1: FROM CLI TO GUI (~10 min) */}
+{/* ============================================ */}
+
+<Slide>
+
+## Your Code Has Been Telling Users What to Do — Now They Tell You
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.75em'}}>
+
+<div style={{backgroundColor: 'rgba(200,74,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+**Sequential (CLI) — you're in control**
+
+```java
+System.out.println("Enter room name:");
+String room = scanner.nextLine(); // blocks here
+System.out.println("Enter brightness (0-100):");
+int brightness = scanner.nextInt(); // blocks here
+light.setBrightness(brightness);
+System.out.println("Set to " + brightness + "%");
+```
+
+Your code decides the order. The user waits for you.
+
+</div>
+
+<div style={{backgroundColor: 'rgba(74,153,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+**Event-driven (GUI) — the user is in control**
+
+```java
+brightnessSlider.setOnMouseReleased(e -> {
+    // runs when user releases the slider
+});
+sceneButton.setOnAction(e -> {
+    // runs when user clicks "Activate Scene"
+});
+// code continues immediately
+// doesn't wait for any interaction
+```
+
+The user decides the order. Your code waits for them.
+
+</div>
+
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '0.8em', fontWeight: 'bold', color: '#9370DB'}}>
+This is called <strong>inversion of control</strong>. You don't call the framework — the framework calls you.
+</p>
+
+<aside className="notes">
+**This is the single biggest mental model shift in the lecture.** Students have written sequential code for their entire programming education. Now the user — not their code — decides what happens next.
+
+**Analogy:** CLI is like a phone tree ("Press 1 for lights, press 2 for shades"). GUI is like a smart home dashboard — the user can tap any device, in any order, at any time.
+
+**Connection to prior concepts:** Students have already used callbacks — in `list.forEach(item -> ...)`, in `list.sort((a, b) -> ...)`, in JUnit's `@Test` methods. GUI callbacks are the same pattern, just with user events instead of list elements.
+
+> **Transition:** How does the framework know when to call your code?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Event Loop: Your Code Is a Guest in Someone Else's House
+
+<p style={{fontSize: '0.85em'}}>
+Every GUI framework has an event loop at its core:
+</p>
+
+```java
+// Pseudocode - what the framework does
+while (applicationIsRunning) {
+    Event event = waitForNextEvent();     // block until click, keypress, timer...
+    EventHandler handler = findHandler(event); // look up your registered callback
+    handler.handle(event);                // call YOUR code
+}
+```
+
+<div style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+
+**What this means for you:**
+- Your code runs *inside* the framework's loop — you are a guest
+- If your handler takes too long, the entire UI freezes (no events can be processed)
+- In JavaFX, this loop runs on the **JavaFX Application Thread** — all UI updates must happen here
+
+</div>
+
+<aside className="notes">
+**"Your code is a guest"** is the key metaphor. Students need to understand that they don't own the `main()` function anymore. The framework does.
+
+**Freezing demo idea:** If you have time, show a button handler with `Thread.sleep(5000)` — the entire UI becomes unresponsive for 5 seconds. This viscerally demonstrates why long-running handlers are a problem. (We'll solve this properly in L31-32 with concurrency.)
+
+**SceneItAll connection:** "Imagine a user dims the living room lights and then immediately tries to close the shades. If your light-dimming handler takes 5 seconds to talk to the physical device, the shade button is frozen. The user thinks the app crashed."
+
+> **Transition:** Java has gone through three generations of GUI toolkits. Let's see the evolution...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Java's Three GUI Toolkits Tell the Story of UI Evolution
+
+<div style={{fontSize: '0.75em'}}>
+
+| | **AWT (1995)** | **Swing (1997)** | **JavaFX (2008/2014)** |
+|---|---|---|---|
+| **Approach** | Wraps native OS widgets | Draws its own widgets in Java | Scene graph + CSS + FXML |
+| **Consistency** | Looks different on each OS | Identical everywhere | Styleable, consistent |
+| **Code** | `Button b = new Button("Go");` | `JButton b = new JButton("Go");` | `Button b = new Button("Go");` |
+| **Strength** | Native look and feel | Cross-platform consistency | Modern architecture |
+| **Weakness** | Lowest common denominator | Looks dated, no CSS/FXML | Unbundled from JDK since Java 11 |
+
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '0.8em'}}>
+We'll use <strong>JavaFX</strong> because its architecture — scene graphs, declarative UI, CSS styling, property binding — reflects patterns used in modern frameworks (React, SwiftUI, Flutter).
+</p>
+
+<aside className="notes">
+**Don't dwell here — this is context, not content.** 2-3 minutes max. The point is: JavaFX isn't arbitrary. Its patterns transfer to whatever UI framework students use next.
+
+**AWT's problem:** A button was 80px on Windows, 95px on Mac. Layouts broke across platforms. Only features available on *all* platforms could be used.
+
+**Swing's legacy:** Still widely used in IDEs (IntelliJ is partly Swing), enterprise tools, and legacy apps. Students may encounter it in industry.
+
+**JavaFX's status:** Unbundled from the JDK in Java 11 into OpenJFX. Still actively developed by the community. For learning GUI concepts, it's excellent.
+
+> **Transition:** Now let's talk about how to organize GUI code so it doesn't become an unmaintainable mess...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* JAVAFX API CONCEPTS */}
+{/* ============================================ */}
+
+<Slide>
+
+## The JavaFX API: Stage, Scene, and Scene Graph
+
+<p style={{fontSize: '0.85em'}}>
+Before we organize our code, let's understand what the GUI toolkit gives us:
+</p>
+
+```mermaid
+graph TD
+    ST[Stage - the window] --> SC[Scene - the content]
+    SC --> ROOT[Root Node]
+    ROOT --> V1[VBox]
+    V1 --> L1[Label: 'Living Room']
+    V1 --> H1[HBox]
+    H1 --> L2[Label: 'Brightness:']
+    H1 --> SL[Slider]
+    V1 --> LV[ListView]
+    V1 --> B1[Button: 'Activate']
+    style ST fill:#f0dcc8,stroke:#a94,color:#000
+    style SC fill:#d4c8f0,stroke:#94a,color:#000
+```
+
+<div style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+
+- **Stage** = the application window (title bar, minimize/maximize/close)
+- **Scene** = the content inside the window
+- **Scene Graph** = a tree of **nodes** — every widget, every layout container, every label is a node in this tree
+- Rendering = the framework walks the tree and draws each node. You build the tree; the framework draws it.
+
+</div>
+
+<aside className="notes">
+**The scene graph is the key concept.** Students need to understand that a GUI is a tree of objects — not a canvas you paint on. Every button, every label, every container is an object with properties, methods, and events. The framework traverses this tree to render the UI, handle focus order, and dispatch events.
+
+**Analogy:** HTML is also a tree (the DOM). If students have web experience, this will click immediately. FXML is to JavaFX what HTML is to the browser — a declarative way to define the tree.
+
+**Stage vs. Scene:** A Stage can swap its Scene (like a browser tab loading a different page). For GA1, students will typically have one Stage and one Scene.
+
+> **Transition:** Let's see this in code...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Your First JavaFX Application
+
+```java
+public class SceneItAllApp extends Application {
+
+    @Override
+    public void start(Stage stage) {
+        // Build the scene graph — a tree of nodes
+        Label title = new Label("Living Room");
+        title.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+
+        Slider brightness = new Slider(0, 100, 70);
+        Button activate = new Button("Activate Scene");
+        activate.setOnAction(e -> System.out.println("Scene activated!"));
+
+        ListView<String> devices = new ListView<>();
+        devices.getItems().addAll("Ceiling Light: 70%", "Shades: Open", "Fan: Speed 2");
+
+        VBox root = new VBox(10, title, brightness, devices, activate);
+
+        // Wrap the tree in a Scene, put the Scene in a Stage
+        Scene scene = new Scene(root, 400, 300);
+        stage.setTitle("SceneItAll");
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    public static void main(String[] args) { launch(args); }
+}
+```
+
+<p style={{fontSize: '0.8em', marginTop: '0.3em', color: '#9370DB'}}>
+This works — but all the UI construction, event handling, and data are in one method. That won't scale.
+</p>
+
+<aside className="notes">
+**This is the "everything in one place" starting point.** Students see a complete, runnable JavaFX app in 20 lines. The `start()` method builds the tree, wires an event, and shows the window.
+
+**Key API concepts to point out:**
+- `Application` is the base class — JavaFX calls `start()` for you (inversion of control!)
+- `Stage` is the window, `Scene` is the content, `VBox` is a layout container
+- `new Button("Activate Scene")` creates a node; `setOnAction()` registers a callback
+- `VBox(10, title, brightness, devices, activate)` — 10px spacing, children in order
+
+**The problem:** Everything is in `start()`. UI construction, event handling, styling, data. As the app grows, this method grows. We need to separate concerns.
+
+**Don't skip this slide.** Students need to see the raw API before FXML abstracts it away. FXML is just a different way to build the same tree — XML instead of Java constructor calls.
+
+> **Transition:** This works for 20 lines. But real apps have thousands of nodes and dozens of event handlers. We need a way to organize this code...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## FXML: Building the Same Tree Declaratively
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.7em'}}>
+
+<div style={{backgroundColor: 'rgba(200,74,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+**Java (imperative)**
+
+```java
+Label title = new Label("Living Room");
+title.setStyle("-fx-font-size: 20px;");
+
+Slider brightness = new Slider(0, 100, 70);
+
+ListView<String> devices = new ListView<>();
+
+Button activate = new Button("Activate");
+activate.setOnAction(e -> { ... });
+
+VBox root = new VBox(10,
+    title, brightness, devices, activate);
+```
+
+Build the tree with constructor calls. Mix structure with behavior.
+
+</div>
+
+<div style={{backgroundColor: 'rgba(74,153,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+**FXML (declarative)**
+
+```xml
+<VBox spacing="10">
+    <Label text="Living Room"
+           style="-fx-font-size: 20px;"/>
+
+    <Slider min="0" max="100" value="70"/>
+
+    <ListView fx:id="deviceList"/>
+
+    <Button text="Activate"
+            onAction="#handleActivate"/>
+</VBox>
+```
+
+Declare what exists. Behavior lives elsewhere (Controller).
+
+</div>
+
+</div>
+
+<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
+Same scene graph tree. Different way to define it. FXML separates <strong>structure</strong> (what exists) from <strong>behavior</strong> (what happens).
+</p>
+
+<aside className="notes">
+**The key insight:** Both approaches build the exact same tree of objects. FXML is not a different technology — it's a different notation for the same thing. The JavaFX runtime reads the FXML and calls the same constructors and setters you'd call in Java.
+
+**Why FXML wins for larger apps:**
+1. Structure is easier to read as XML than as nested constructor calls
+2. Behavior is separated into a Controller class
+3. Visual tools (Scene Builder) can generate and edit FXML
+4. Designers can work on FXML while developers work on Controllers
+
+**`fx:id` and `onAction`:** These are the bridge between FXML and Java. `fx:id="deviceList"` means "make this node available to the Controller as a field." `onAction="#handleActivate"` means "when this button is clicked, call the Controller's `handleActivate()` method."
+
+> **Transition:** Now that we know what the API gives us, let's talk about how to organize our code around it...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 2: MVC (~15 min) */}
+{/* ============================================ */}
+
+<Slide>
+
+## MVC Is Hexagonal Architecture for User Interfaces
+
+<p style={{fontSize: '0.85em'}}>
+In <a href="/lecture-notes/l16-testing2">L16</a> we learned to separate domain logic from infrastructure so code is testable. MVC applies that principle to GUIs:
+</p>
+
+```mermaid
+graph LR
+    U[User] -->|interacts| V[View]
+    V -->|events| C[Controller]
+    C -->|reads| M[Model]
+    C -->|updates| M
+    C -->|manually updates| V
+    style M fill:#c8f0dc,stroke:#4a9,color:#000
+    style V fill:#d4c8f0,stroke:#94a,color:#000
+    style C fill:#f0e8c8,stroke:#aa4,color:#000
+```
+
+<p style={{fontSize: '0.8em', color: '#9370DB'}}>
+The Model is cleanly domain-side — no UI imports, fully testable. But the Controller does <em>everything else</em>: it reads from the Model, makes decisions, AND manually pushes updates to View widgets. It straddles the hexagonal boundary. We'll fix this in L30.
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1em', fontSize: '0.75em', marginTop: '0.5em'}}>
+
+<div style={{backgroundColor: 'rgba(74,153,153,0.15)', padding: '0.6em', borderRadius: '8px'}}>
+
+**Model**
+
+Data + business logic. Knows nothing about the UI.
+
+</div>
+
+<div style={{backgroundColor: 'rgba(148,74,170,0.15)', padding: '0.6em', borderRadius: '8px'}}>
+
+**View**
+
+What the user sees. Widgets, layout, styling. No business logic.
+
+</div>
+
+<div style={{backgroundColor: 'rgba(169,148,74,0.15)', padding: '0.6em', borderRadius: '8px'}}>
+
+**Controller**
+
+Translates user actions into model updates. The thin middleman.
+
+</div>
+
+</div>
+
+<aside className="notes">
+**Frame through hexagonal architecture:** "In L16 we drew a hexagon with domain code in the middle and infrastructure on the outside. MVC is that same picture for GUIs. The Model is your domain core — pure business logic, no UI imports. The View is infrastructure — JavaFX widgets, FXML, rendering."
+
+**But flag the leak:** "The Controller is supposed to be the port between them. But look at what it imports — `@FXML` widgets, JavaFX types. It straddles the boundary. It has domain-level decisions (what to do when the user clicks) mixed with infrastructure dependencies (which widget to update). That's a leaky hexagonal boundary. MVC gets you 80% of the way; in L30 we'll fix the last 20%."
+
+**SceneItAll example:** The Model knows about lights, fans, and scenes. The View knows about sliders, buttons, and labels. The Model doesn't know sliders exist. The View doesn't know how dimming works. The Controller translates "slider moved to 75" into "set brightness to 75%."
+
+**Why this matters for testing:** "In L16 we said: domain code is easy to test, infrastructure code is hard to test. The Model is domain code — you can unit test `light.setBrightness(150)` without any UI. That's the payoff of separation. The Controller? Not so easy — and we'll see why at the end of this lecture."
+
+> **Transition:** Let's see what happens when you don't separate these concerns...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## What Goes Wrong Without MVC
+
+<p style={{fontSize: '0.85em'}}>
+This is what code looks like when UI and business logic are tangled together:
+</p>
+
+```java
+// Everything in one place — the "Big Ball of Mud"
+dimButton.setOnAction(event -> {
+    int brightness = Integer.parseInt(brightnessField.getText());
+    // Business logic mixed into the click handler
+    if (brightness < 0 || brightness > 100) brightness = 50;
+    for (int i = 0; i < deviceList.getItems().size(); i++) {
+        String device = deviceList.getItems().get(i);
+        if (device.contains("Light")) {
+            deviceList.getItems().set(i, device.split(":")[0] + ": " + brightness + "%");
+        }
+    }
+    // Network call in the UI handler
+    zigbeeController.sendCommand(deviceId, "brightness", brightness);
+    // Logging in the UI handler
+    auditLog.record("Brightness set to " + brightness + " by " + currentUser);
+});
+```
+
+<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
+How do you unit test the brightness validation logic? You can't — it's trapped inside a button click handler.
+</p>
+
+<aside className="notes">
+**Ask students to identify the problems:**
+- What happens when you want to control brightness from a voice command? Rewrite everything.
+- What happens when you change from a list to a grid layout? Business logic breaks.
+- How do you test the brightness clamping? You can't — you'd need to simulate a button click.
+- How many reasons does this method have to change? At least four (UI, brightness logic, networking, logging).
+
+**Connection to L7:** This is high coupling and low cohesion in action. The click handler has *logical cohesion* at best — things that happen at the same time but for different reasons.
+
+> **Transition:** Let's fix this by separating the Model...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Model: Business Logic with No UI Dependencies
+
+```java
+// Model: Light.java — pure business logic, fully testable
+public class Light extends SmartDevice {
+    private int brightness;  // 0-100
+    private boolean isOn;
+
+    public void setBrightness(int level) {
+        this.brightness = Math.clamp(level, 0, 100);
+        this.isOn = (brightness > 0);
+    }
+
+    public void toggle() {
+        this.isOn = !this.isOn;
+    }
+
+    public int getBrightness() { return brightness; }
+    public boolean isOn() { return isOn; }
+    public String getStatus() {
+        return isOn ? getName() + ": " + brightness + "%" : getName() + ": Off";
+    }
+}
+```
+
+```java
+// You can test this right now — no GUI required
+@Test
+void brightnessClampedToValidRange() {
+    Light light = new Light("Desk Lamp");
+    light.setBrightness(150);
+    assertEquals(100, light.getBrightness());
+}
+
+@Test
+void settingBrightnessToZeroTurnsOff() {
+    Light light = new Light("Desk Lamp");
+    light.setBrightness(0);
+    assertFalse(light.isOn());
+}
+```
+
+<aside className="notes">
+**Key point:** The Model has *zero* imports from `javafx.*`. It's a plain Java class. You can test it in isolation, use it from a CLI, expose it via a REST API — the Model doesn't care how it's displayed.
+
+**Connection to course arc:** Students have been writing domain model classes all semester (HW1-HW5). Those classes *are* Models in MVC. They've been building the M without knowing it.
+
+> **Transition:** Now let's define what the user sees...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The View: What the User Sees (FXML)
+
+<p style={{fontSize: '0.85em'}}>
+JavaFX separates UI structure into FXML — an XML file that declares what widgets exist and how they're arranged:
+</p>
+
+```xml
+<!-- View: area-dashboard.fxml -->
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="10" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="sceneitall.AreaDashboardController">
+
+    <Label fx:id="areaNameLabel" style="-fx-font-size: 18px;"/>
+
+    <HBox spacing="5" alignment="CENTER_LEFT">
+        <Label text="Brightness:"/>
+        <Slider fx:id="brightnessSlider" min="0" max="100"/>
+        <Label fx:id="brightnessValueLabel" text="50%"/>
+    </HBox>
+
+    <ListView fx:id="deviceList"/>
+
+    <Button fx:id="sceneButton" text="Activate Scene"
+            onAction="#handleActivateScene"/>
+</VBox>
+```
+
+<p style={{fontSize: '0.8em', marginTop: '0.3em', color: '#9370DB'}}>
+No business logic here. The View defines <strong>what</strong> appears — not <strong>what it means.</strong>
+</p>
+
+<aside className="notes">
+**Key FXML concepts to point out:**
+- `fx:controller` links this FXML to a Java class that handles events
+- `fx:id` gives each widget a name the Controller can reference
+- `onAction="#handleActivateScene"` wires the button click to a Controller method
+- `spacing`, `alignment` — layout properties, not logic
+
+**Scene Builder:** This FXML can be created visually by dragging and dropping in Scene Builder. Show a screenshot if you have one. Students will use Scene Builder for GA1.
+
+**Analogy:** FXML is to JavaFX what HTML is to the web. Structure and layout, not behavior.
+
+> **Transition:** The Controller connects the View to the Model...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## How FXML and Java Find Each Other: @FXML Wiring
+
+<Img
+  src="/img/lectures/web/l29-fxml-wiring.webp"
+  prompt="Clean educational diagram (not pixel art), 16:9 aspect ratio. Shows how JavaFX connects an FXML file to a Java Controller class. TWO PANELS side by side with glowing colored lines connecting matching elements between them. LEFT PANEL (labeled 'area-dashboard.fxml', styled like an XML editor with a dark background): Shows five lines of FXML code with key identifiers highlighted in color. Line 1 shows a VBox tag with fx:controller attribute containing 'AreaDashboardController' highlighted in ORANGE. Line 2 shows a Label tag with fx:id 'areaNameLabel' highlighted in BLUE. Line 3 shows a Slider tag with fx:id 'brightnessSlider' highlighted in GREEN. Line 4 shows a ListView tag with fx:id 'deviceList' highlighted in PURPLE. Line 5 shows a Button tag with onAction '#handleActivateScene' highlighted in RED. RIGHT PANEL (labeled 'AreaDashboardController.java', styled like a Java editor with a dark background): Shows matching Java code with same color highlights. Line 1: 'public class AreaDashboardController' with class name in ORANGE. Line 2: '@FXML private Label areaNameLabel;' with field name in BLUE. Line 3: '@FXML private Slider brightnessSlider;' with field name in GREEN. Line 4: '@FXML private ListView deviceList;' with field name in PURPLE. Line 5: '@FXML private void handleActivateScene()' with method name in RED. Curved colored lines connect each matching pair between the two panels. Between the panels a small label reads 'JavaFX runtime matches names automatically'. Below both panels a caption reads: fx:id in FXML equals @FXML field name in Java. Modern flat illustration style with code editor aesthetics."
+  alt="Diagram showing FXML on the left and Java Controller on the right, with colored lines connecting fx:id='areaNameLabel' to @FXML Label areaNameLabel, fx:id='brightnessSlider' to @FXML Slider brightnessSlider, and onAction='#handleActivateScene' to @FXML void handleActivateScene(). Caption: JavaFX runtime matches names automatically."
+/>
+
+<p style={{fontSize: '0.8em', marginTop: '0.3em', color: '#9370DB'}}>
+<code>fx:controller</code> tells JavaFX which class to create. <code>fx:id</code> matches <code>@FXML</code> fields by name. <code>onAction="#method"</code> matches <code>@FXML</code> methods by name. The framework does the wiring — you just make the names match.
+</p>
+
+<aside className="notes">
+**This is the "how does it work" slide.** Students will be confused by `@FXML` if they think it's just a decorator. Explain the runtime mechanism:
+
+1. When you load an FXML file with `FXMLLoader`, JavaFX reads the `fx:controller` attribute and creates an instance of that class using reflection.
+2. For each `fx:id` in the FXML, JavaFX looks for a field in the Controller with the same name and the `@FXML` annotation. It assigns the widget to that field (again via reflection).
+3. For each `onAction="#methodName"`, JavaFX looks for a method with that name and `@FXML`, and registers it as the event handler.
+
+**The names must match exactly.** `fx:id="brightnessSlider"` must correspond to a field named `brightnessSlider` (not `slider` or `brightness`). This is a common source of "null pointer" bugs — if the names don't match, the field stays null.
+
+**Why @FXML?** It tells the JavaFX runtime "this field/method should be accessible for injection, even though it's private." Without `@FXML`, JavaFX can't see private members via reflection.
+
+**Common student mistake:** Renaming a field in Java but not updating the `fx:id` in FXML (or vice versa). The app compiles fine but crashes at runtime with a null pointer.
+
+> **Transition:** But before we see the full Controller, let's understand *when* each piece of code runs...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The JavaFX Component Lifecycle: What Runs When
+
+<Img
+  src="/img/lectures/web/l29-lifecycle.webp"
+  prompt="Clean educational diagram (not pixel art), 16:9 aspect ratio. A vertical timeline showing the JavaFX component lifecycle as a sequence of numbered steps flowing downward, with a clear visual distinction between STARTUP PHASE (steps 1-4, blue background region) and RUNNING PHASE (steps 5+, green background region). STARTUP PHASE (labeled 'Happens Once, At Launch'): Step 1 — 'Application.start(stage)' with subtitle 'Your entry point. Create the stage.' with a small icon of a window frame. Step 2 — 'FXMLLoader.load()' with subtitle 'Reads the FXML file. Creates all widgets.' with a small icon of an XML document turning into UI components. Step 3 — '@FXML field injection' with subtitle 'Framework wires fx:id widgets to your @FXML fields.' with small arrows connecting widget icons to Java field icons (callback to the wiring diagram). Step 4 — 'initialize()' with subtitle 'Called AFTER injection. Safe to use @FXML fields. Set up listeners here.' with a small gear icon. A prominent warning label next to step 4: 'Do NOT use @FXML fields in your constructor — they are null until step 3.' RUNNING PHASE (labeled 'Happens Many Times, Driven By User'): Step 5 — 'Event handlers' with subtitle 'setOnAction, onMouseClicked, property listeners. Called by the event loop whenever the user interacts.' with a circular arrow icon suggesting repetition. Multiple small icons showing a mouse click, a key press, and a slider drag. A dotted arrow loops from step 5 back to itself, labeled 'event loop'. Between the two phases, a horizontal divider with the text: 'Above this line: your code sets things up. Below this line: the framework calls your code.' Modern flat illustration style, clean and minimal, good contrast."
+  alt="JavaFX lifecycle timeline: startup phase (Application.start, FXMLLoader.load, @FXML injection, initialize) happens once at launch; running phase (event handlers) happens repeatedly driven by user interaction. Warning: do not use @FXML fields in constructor — they are null until injection."
+/>
+
+<aside className="notes">
+**This is the mental model students need.** The most common bug in GA1 will be trying to use `@FXML` fields in the constructor — they're null until step 3.
+
+**Walk through each step:**
+
+1. **`start(Stage stage)`** — JavaFX calls this for you (inversion of control). You create the stage, load FXML, and show the window. This is the only code you write in `Application`.
+
+2. **`FXMLLoader.load()`** — reads the XML, calls constructors for every widget. The `VBox`, `Label`, `Slider`, `Button` — all created here. The Controller class is also instantiated here (via `fx:controller`).
+
+3. **`@FXML` injection** — the loader looks at each `fx:id` in the FXML, finds the matching `@FXML` field in the Controller, and assigns the widget to that field. Before this step, all `@FXML` fields are `null`.
+
+4. **`initialize()`** — called automatically *after* injection completes. This is the safe place to set up listeners, bind properties, and configure widgets that depend on other widgets. The constructor runs *before* injection, so `@FXML` fields are null there.
+
+5. **Event handlers** — once setup is done, the event loop takes over. Your `setOnAction`, `addListener`, and `onAction="#method"` callbacks fire whenever the user interacts. This phase runs indefinitely until the window closes.
+
+**The warning is critical:** Every semester, students write code like `areaNameLabel.setText("Hello")` in the constructor and get a `NullPointerException`. The label doesn't exist yet — it won't be injected until step 3. Use `initialize()` instead.
+
+> **Transition:** Now let's see the full Controller with this lifecycle in mind...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Controller: The Translator Between User Actions and Business Logic
+
+```java
+// Controller: AreaDashboardController.java
+public class AreaDashboardController {
+
+    @FXML private Label areaNameLabel;
+    @FXML private Slider brightnessSlider;
+    @FXML private Label brightnessValueLabel;
+    @FXML private ListView<String> deviceList;
+
+    private Area model;  // the Controller knows the Model
+
+    public void setModel(Area model) {
+        this.model = model;
+        areaNameLabel.setText(model.getName());
+        updateDeviceList();
+    }
+
+    @FXML
+    private void initialize() {
+        // Update label as slider moves
+        brightnessSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+            brightnessValueLabel.setText(newVal.intValue() + "%");
+            model.setAllLightsBrightness(newVal.intValue()); // delegate to Model
+            updateDeviceList();
+        });
+    }
+
+    @FXML
+    private void handleActivateScene() {
+        model.activateScene("Evening");  // delegate to Model
+        updateDeviceList();
+    }
+
+    private void updateDeviceList() {
+        deviceList.getItems().setAll(
+            model.getDevices().stream()
+                .map(SmartDevice::getStatus).toList()
+        );
+    }
+}
+```
+
+<aside className="notes">
+**The Controller is thin.** It does three things:
+1. Receives events from the View (slider change, button click)
+2. Delegates to the Model (`model.setAllLightsBrightness()`, `model.activateScene()`)
+3. Updates the View (`updateDeviceList()`)
+
+**`@FXML` annotation:** This is how JavaFX connects the FXML file to the Java class. When the FXML is loaded, JavaFX finds the fields and methods with `@FXML` and wires them to the widgets with matching `fx:id` values.
+
+**`initialize()` method:** Called automatically by JavaFX after the FXML is loaded and all `@FXML` fields are injected. This is where you set up listeners that aren't simple one-line handlers.
+
+**Compare to the anti-pattern:** The handleActivateScene method is 2 lines. The tangled version was 10+ lines with networking and logging. That's the power of separation.
+
+> **Transition:** Let's trace a complete user interaction through all three layers...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Following a Click Through All Three Layers
+
+<p style={{fontSize: '0.85em'}}>
+User clicks "Activate Scene" for the "Evening" scene. Trace the code:
+</p>
+
+<div style={{fontSize: '0.75em'}}>
+
+```java
+// 1. VIEW (FXML) — button wired to Controller method
+<Button text="Activate" onAction="#handleActivateScene"/>
+
+// 2. CONTROLLER — receives the event, delegates to Model
+@FXML private void handleActivateScene() {
+    String scene = sceneSelector.getValue();    // read from View
+    model.activateScene(scene);                 // delegate to Model
+    updateDeviceList();                         // refresh the View
+}
+
+// 3. MODEL — pure business logic, no UI
+public void activateScene(String name) {
+    Scene scene = scenes.get(name);             // "Evening" → dim to 30%, close shades
+    for (SmartDevice device : devices) {
+        scene.applyTo(device);                  // sets brightness, shade position, fan state
+    }
+}
+
+// 4. Back in CONTROLLER — View shows updated state
+private void updateDeviceList() {
+    deviceList.getItems().setAll(                // "Ceiling Light: 30%", "Shades: 80%", "Fan: Off"
+        model.getDevices().stream().map(SmartDevice::getStatus).toList());
+}
+```
+
+</div>
+
+<p style={{fontSize: '0.8em', marginTop: '0.3em', color: '#9370DB'}}>
+The Model never imports <code>javafx</code>. The View never calls <code>activateScene()</code>. Each layer does one job.
+</p>
+
+<aside className="notes">
+**Walk through each numbered section.** This is real code students can trace — not a diagram.
+
+**Ask:** "Which sections could run without a GUI at all?" Answer: section 3. You could call `activateScene("Evening")` from a unit test, a CLI, or a REST endpoint. That's the point of MVC.
+
+**Ask:** "Which section is the one we'd like to eliminate?" Answer: section 4 — the manual refresh. Every time you change the model, you have to remember to call `updateDeviceList()`. That's the problem MVVM will solve in L30.
+
+> **Transition:** Now let's get hands-on with the JavaFX components you'll use to build Views...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 3: BUILDING IT (~15 min) */}
+{/* ============================================ */}
+
+<Slide>
+
+## JavaFX Components Are the Standard Components from L28
+
+<p style={{fontSize: '0.85em'}}>
+Remember from <a href="/lecture-notes/l28-accessibility">L28</a>: standard components get accessibility for free. These are the real buttons, not the fakes:
+</p>
+
+<div style={{fontSize: '0.75em'}}>
+
+| Component | What it does | SceneItAll use case | Accessibility |
+|-----------|-------------|---------------------|---------------|
+| `Button` | Clickable action | "Activate Scene" | Screen reader: *"Activate Scene, button"* |
+| `Label` | Display-only text | "Living Room" | Screen reader reads the text |
+| `Slider` | Continuous value | Brightness control | Arrow keys adjust, announced as *"Brightness, slider, 75%"* |
+| `ComboBox` | Dropdown selection | Choose a scene | Arrow keys navigate options |
+| `ListView` | Scrollable list | Device list | Arrow keys navigate, Enter selects |
+| `CheckBox` | Toggle on/off | Device power | Space to toggle |
+| `TextField` | Text input | Rename a device | Screen reader: *"Device name, text field"* |
+| `Spinner` | Numeric up/down | Fan speed (1-4) | Arrow keys increment/decrement |
+
+</div>
+
+<p style={{fontSize: '0.8em', marginTop: '0.3em', color: '#9370DB'}}>
+All of these support Tab navigation, Enter/Space activation, and screen reader announcements — automatically.
+</p>
+
+<aside className="notes">
+**Connection to L28:** "Remember the side-by-side? A real button announces itself to a screen reader. A fake button is invisible. These are the real buttons."
+
+**Practical tip:** If students find themselves styling a `Label` to look like a button and adding a click handler, they should use a `Button` instead. Always use the component that semantically matches what the user is doing.
+
+> **Transition:** Components need to be arranged on screen. That's what layout containers do...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Layout Containers: How Components Arrange Themselves
+
+<Img
+  src="/img/lectures/web/l29-layouts.webp"
+  prompt="Clean educational diagram (not pixel art) showing four JavaFX layout containers side by side, each as a simple wireframe box with labeled child elements inside. 16:9. LEFT TO RIGHT: (1) VBox: a tall rectangle with three child boxes stacked vertically, labeled 'Label', 'TextField', 'Button', arrow pointing down labeled 'vertical stack'. (2) HBox: a wide rectangle with three child boxes arranged horizontally, labeled 'Label', 'Slider', 'Label', arrow pointing right labeled 'horizontal row'. (3) BorderPane: a rectangle divided into 5 regions — 'Top' across the top, 'Left' on the left, 'Center' large in the middle, 'Right' on the right, 'Bottom' across the bottom. (4) GridPane: a 2x3 grid with labels in column 0 ('Name:', 'Room:', 'Brightness:') and input widgets in column 1 (TextField, ComboBox, Slider). Each container is labeled with its class name above. Simple flat wireframe style, light gray borders, blue accent for labels. Modern educational illustration."
+  alt="Four JavaFX layout containers: VBox stacks vertically, HBox flows horizontally, BorderPane has five regions (top/left/center/right/bottom), GridPane arranges in a labeled row-column grid."
+/>
+
+
+<aside className="notes">
+**Nesting is the key insight:** You combine these. A `BorderPane` with a `TreeView` of areas on the left and an area dashboard `VBox` in the center containing `HBox` rows for each device control. Students will figure this out quickly once they see the pattern.
+
+**Scene Builder makes this visual:** Drag a VBox, drop an HBox inside it, drop a Slider inside that. The FXML writes itself.
+
+**Tab order follows document order:** The order components appear in FXML is the order Tab visits them. This is why layout structure matters for accessibility.
+
+> **Transition:** Let's put this together and build our area dashboard...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Building the Area Dashboard: Putting It All Together
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.6em'}}>
+
+<div>
+
+<Img
+  style={{maxWidth: '45%'}}
+  src="/img/lectures/web/l29-dashboard-mockup.webp"
+  prompt="Clean UI mockup (not pixel art) of a simple smart home area dashboard application window. 16:9 aspect ratio. The window title bar reads 'SceneItAll — Living Room'. Inside: at the top, a bold label 'Living Room'. Below that, a horizontal row with 'Brightness:' label, a slider set to about 70%, and a '70%' label next to it. Below that, a ListView showing three device statuses: 'Ceiling Light: 70%', 'Window Shades: Open', 'Floor Fan: Speed 2'. At the bottom, a horizontal row with a ComboBox dropdown showing 'Choose scene...' and a button labeled 'Activate'. Clean, minimal, standard platform UI widgets — looks like a real desktop application. Light gray background, standard UI chrome. Modern flat style, not pixel art."
+  alt="Mockup of the SceneItAll area dashboard: Living Room header, brightness slider at 70%, device list showing three devices, and a scene selector dropdown with Activate button."
+/>
+
+**area-dashboard.fxml**
+```xml
+<VBox spacing="10"
+  fx:controller="sceneitall.AreaDashboardController">
+
+  <Label fx:id="areaNameLabel"
+         style="-fx-font-size: 20px;
+                -fx-font-weight: bold;"/>
+
+  <HBox spacing="5" alignment="CENTER_LEFT">
+    <Label text="Brightness:"/>
+    <Slider fx:id="brightnessSlider"
+            min="0" max="100"/>
+    <Label fx:id="brightnessValueLabel"/>
+  </HBox>
+
+  <ListView fx:id="deviceList"
+            prefHeight="200"/>
+
+  <HBox spacing="5">
+    <ComboBox fx:id="sceneSelector"
+              promptText="Choose scene..."/>
+    <Button text="Activate"
+            onAction="#handleActivateScene"/>
+  </HBox>
+</VBox>
+```
+
+</div>
+
+<div>
+
+**AreaDashboardController.java**
+```java
+public class AreaDashboardController {
+  @FXML private Label areaNameLabel;
+  @FXML private Slider brightnessSlider;
+  @FXML private Label brightnessValueLabel;
+  @FXML private ListView<String> deviceList;
+  @FXML private ComboBox<String> sceneSelector;
+  private Area model;
+
+  public void setModel(Area model) {
+    this.model = model;
+    areaNameLabel.setText(model.getName());
+    sceneSelector.getItems().setAll(
+      model.getSceneNames());
+    updateDeviceList();
+  }
+
+  @FXML private void initialize() {
+    brightnessSlider.valueProperty()
+      .addListener((obs, old, val) -> {
+        int level = val.intValue();
+        brightnessValueLabel.setText(level + "%");
+        model.setAllLightsBrightness(level);
+        updateDeviceList();
+    });
+  }
+
+  @FXML private void handleActivateScene() {
+    String scene = sceneSelector.getValue();
+    if (scene != null) {
+      model.activateScene(scene);
+      updateDeviceList();
+    }
+  }
+
+  private void updateDeviceList() {
+    deviceList.getItems().setAll(
+      model.getDevices().stream()
+        .map(SmartDevice::getStatus).toList());
+  }
+}
+```
+
+</div>
+
+</div>
+
+<aside className="notes">
+**This is the complete working example.** If you have time and a projector, run it live. If not, walk through the code explaining how each piece connects.
+
+**Key things to point out:**
+- The FXML and Controller are two halves of the same feature — the FXML defines structure, the Controller defines behavior
+- `@FXML` annotations match `fx:id` values — this is the wiring
+- `onAction="#handleActivateScene"` in FXML calls `handleActivateScene()` in the Controller
+- The Controller calls `model.activateScene()` — it doesn't implement scene logic
+- The ComboBox is populated from the Model — scene names come from `model.getSceneNames()`
+- `updateDeviceList()` is the manual refresh — we'll automate this with binding next
+
+> **Transition:** That manual refresh is annoying. What if the View could update automatically?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Properties and Binding: When the Model Changes, the View Updates Automatically
+
+<p style={{fontSize: '0.85em'}}>
+JavaFX <strong>properties</strong> are observable values. When they change, anything bound to them updates automatically:
+</p>
+
+```java
+// Model with JavaFX properties
+public class Light extends SmartDevice {
+    private final IntegerProperty brightness = new SimpleIntegerProperty();
+    private final BooleanProperty on = new SimpleBooleanProperty();
+    private final StringProperty status = new SimpleStringProperty();
+
+    public IntegerProperty brightnessProperty() { return brightness; }
+    public BooleanProperty onProperty() { return on; }
+    public StringProperty statusProperty() { return status; }
+
+    public void setBrightness(int level) {
+        brightness.set(Math.clamp(level, 0, 100));
+        on.set(brightness.get() > 0);
+        status.set(on.get() ? getName() + ": " + brightness.get() + "%" : getName() + ": Off");
+    }
+}
+```
+
+```java
+// Controller: bind once, never manually refresh
+brightnessSlider.valueProperty().bindBidirectional(light.brightnessProperty());
+brightnessValueLabel.textProperty().bind(
+    light.brightnessProperty().asString("%d%%")
+);
+// When light.setBrightness(30) is called anywhere, the slider and label update automatically.
+```
+
+<p style={{fontSize: '0.8em', marginTop: '0.3em', color: '#9370DB'}}>
+Bind once. Never call <code>updateUI()</code> again. The View and Model stay in sync automatically.
+</p>
+
+<aside className="notes">
+**This is the "magic" moment.** Students will find this powerful once they see it work.
+
+**Explain the pattern:**
+- `SimpleIntegerProperty` wraps an int and fires change events when it's modified
+- `bind()` is one-way: Label always shows whatever the property contains
+- `bindBidirectional()` is two-way: moving the slider changes the model AND vice versa
+
+**SceneItAll payoff:** When the user activates the "Evening" scene, the model sets brightness to 30%. The slider *physically moves* to 30% without the Controller telling it to. That's binding.
+
+**When to use properties vs. plain fields:**
+- Use properties for data that the UI displays or edits
+- Use plain fields for internal state the UI doesn't need to see
+- In L30 (MVVM), we'll formalize this with ViewModel classes
+
+> **Transition:** Let's make it look good...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## CSS Styling: Your App Doesn't Have to Look Like 1997
+
+<p style={{fontSize: '0.85em'}}>
+JavaFX supports CSS — the same language used to style websites:
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.75em'}}>
+
+<div style={{backgroundColor: 'rgba(200,74,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+**Before (default styling)**
+
+Gray widgets, system font, no visual hierarchy. Functional but uninviting.
+
+</div>
+
+<div style={{backgroundColor: 'rgba(74,153,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+**After (with CSS)**
+
+Dark theme for a smart home dashboard, accent colors for active devices, hover effects. Same widgets, different experience.
+
+</div>
+
+</div>
+
+```css
+/* styles.css */
+.root {
+    -fx-font-family: "Inter", sans-serif;
+    -fx-base: #1a1a2e;           /* dark background */
+    -fx-accent: #e94560;          /* accent color */
+}
+.button {
+    -fx-background-color: #0f3460;
+    -fx-text-fill: white;
+    -fx-padding: 8px 16px;
+    -fx-cursor: hand;
+}
+.button:hover { -fx-background-color: #16213e; }
+.slider .track { -fx-background-color: #333; }
+.slider .thumb { -fx-background-color: #e94560; }
+```
+
+```xml
+<!-- Link the stylesheet in FXML -->
+<VBox stylesheets="@styles.css">
+```
+
+<aside className="notes">
+**Keep this brief — 2 minutes.** Students will learn CSS by doing in GA1. The point here is: styling is separate from structure and behavior. That's the third separation (after Model from View and View from Controller).
+
+**Dark theme for SceneItAll** makes sense — smart home dashboards often use dark themes for ambient use. This also shows students that CSS can dramatically change the look without touching any Java code.
+
+**Key JavaFX CSS differences from web CSS:**
+- Properties are prefixed with `-fx-` (e.g., `-fx-background-color` not `background-color`)
+- Selectors use JavaFX class names (`.button` not `button`)
+- No flexbox/grid — layout is done with containers, not CSS
+
+> **Transition:** Now let's connect this to what we learned about accessibility in L28...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 4: ACCESSIBILITY FROM THE START (~8 min) */}
+{/* ============================================ */}
+
+<Slide>
+
+## Every Widget Needs a Name: Accessible Text in JavaFX
+
+<p style={{fontSize: '0.85em'}}>
+From <a href="/lecture-notes/l28-accessibility">L28</a>: if a screen reader can't announce it, it doesn't exist. In JavaFX:
+</p>
+
+```xml
+<!-- Accessible: screen reader says "Living room brightness, slider, 75 percent" -->
+<Slider fx:id="brightnessSlider" min="0" max="100"
+        accessibleText="Living room brightness"
+        accessibleHelp="Use arrow keys to adjust brightness from 0 to 100 percent"/>
+
+<!-- Accessible: screen reader says "Activate scene, button" -->
+<Button text="Activate Scene" onAction="#handleActivateScene"/>
+
+<!-- NOT accessible: screen reader says "button" (no label!) -->
+<Button onAction="#handleToggleLight">
+    <graphic><ImageView image="@lightbulb-icon.png"/></graphic>
+</Button>
+
+<!-- Fixed: icon button WITH accessible text -->
+<Button onAction="#handleToggleLight"
+        accessibleText="Toggle desk lamp on or off">
+    <graphic><ImageView image="@lightbulb-icon.png"/></graphic>
+</Button>
+```
+
+<aside className="notes">
+**The icon-only button** is the most common accessibility mistake students will make. A lightbulb icon makes visual sense, but is unnamed to assistive technology.
+
+**Rule of thumb:** If your button has text, you're fine — the text *is* the accessible text. If your button has only an icon or graphic, you *must* add `accessibleText`.
+
+**`accessibleHelp`** provides additional context read after the main announcement. Use it for widgets where the purpose isn't obvious from the label alone (e.g., sliders, spinners).
+
+> **Transition:** Keyboard navigation...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Keyboard Navigation and Focus Management
+
+<div style={{display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1em'}}>
+
+<div style={{fontSize: '0.8em'}}>
+
+**Focus** is which widget is currently "selected" for keyboard input — the one that will respond when you press Enter, type text, or press arrow keys. Only one widget has focus at a time.
+
+- **Standard components get keyboard navigation for free.** Tab moves focus between widgets in FXML document order. Enter activates buttons. Arrow keys adjust sliders. No extra code.
+- **Tab order = FXML document order.** Arrange your FXML so Tab visits elements in a logical sequence.
+- **Focus must be visible.** The focused widget shows a highlight ring so keyboard users know where they are. Never remove this with CSS.
+- **Dialogs trap focus.** Use JavaFX's built-in `Dialog` and `Alert` — they handle focus trapping and return automatically.
+
+</div>
+
+<Img
+  src="/img/lectures/web/l29-focus.webp"
+  prompt="Clean educational illustration (not pixel art), portrait orientation approximately 1:1.5 aspect ratio. A small smart home control panel showing four stacked widgets: a ComboBox, a Slider, a Button labeled 'Activate', and a ListView. The BUTTON in the middle has a bright blue focus ring around it — a visible highlighted border showing it is the currently focused element. The other three widgets do NOT have focus rings. A small keyboard icon at the bottom shows the Tab key with an arrow pointing to the focused button. A tiny label reads 'Focus = which widget receives keyboard input'. Clean minimal flat style, light background, blue accent for the focus ring."
+  alt="A small smart home panel with four widgets stacked vertically. The Activate button has a bright blue focus ring showing it is the currently focused element. Other widgets have no focus ring."
+/>
+
+</div>
+
+<aside className="notes">
+**Define focus first** — students may not have a mental model for this. "Focus is the cursor for keyboard users. In a text editor, the cursor shows where your typing goes. In a GUI, focus shows which widget your keypresses go to."
+
+**Demo option:** Tab through your slides or the course website right now. Show students the focus ring moving between elements. This is more effective than any diagram.
+
+**GA1 tips:**
+- If you're tempted to paint something clickable on a Canvas, use a Button with CSS styling instead — Canvas elements can't receive focus
+- Use `Alert` for confirmations, `Dialog` for forms — don't build custom popups
+- If you must use a custom popup, call `requestFocus()` when it opens
+- Never remove focus outlines with CSS — keyboard users need them to navigate
+
+> **Transition:** Let's look ahead at what comes next...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 5: WHAT'S NEXT (~5 min) */}
+{/* ============================================ */}
+
+<Slide>
+
+## The Problem MVC Doesn't Solve: Testability of the View
+
+<p style={{fontSize: '0.85em'}}>
+We can unit test the Model — it's pure Java. But the Controller has a problem:
+</p>
+
+```java
+// Can we unit test this?
+public class AreaDashboardController {
+    @FXML private Label areaNameLabel;     // needs JavaFX runtime
+    @FXML private Slider brightnessSlider; // needs JavaFX runtime
+    @FXML private ListView<String> list;   // needs JavaFX runtime
+
+    // To test handleActivateScene(), we'd need to:
+    // 1. Start the JavaFX runtime
+    // 2. Load the FXML
+    // 3. Create all the widgets
+    // 4. Simulate a button click
+    // That's an integration test, not a unit test.
+}
+```
+
+<p style={{fontSize: '0.85em'}}>
+The Controller is tangled with JavaFX widgets. We can't test the <em>logic</em> without the <em>framework</em>.
+
+Could JavaFX solve this by providing a testing library that mocks all your FXML components? Sure — but that's a <em>lot</em> of software just to help you test software. There's a simpler answer.
+
+<strong>Next lecture (L30):</strong> The Model-View-ViewModel (MVVM) pattern solves this by extracting testable logic into a ViewModel that has no UI dependencies. No mock framework needed.
+</p>
+
+<aside className="notes">
+**Set up the cliffhanger.** Students now understand MVC and can see its limitation. L30 will introduce MVVM as the natural evolution — and TestFX for end-to-end GUI testing.
+
+**The mock framework point:** This is worth dwelling on. The instinct is "just mock the widgets." But that means building and maintaining fake versions of Label, Slider, ListView, Button, ComboBox... and keeping them in sync with the real ones across JavaFX versions. It's a massive maintenance burden. The better answer is architectural: move the logic out of the class that depends on widgets, so you don't need to mock anything.
+
+**This is hexagonal architecture again:** In L16 we said "don't mock your domain — separate it from infrastructure." The Controller *is* infrastructure (it depends on JavaFX). The fix isn't to mock JavaFX — it's to pull the logic into a plain Java class (the ViewModel) that doesn't depend on JavaFX at all.
+
+**The key insight to plant:** "What if the Controller's logic — reading the slider value, deciding to activate a scene, deciding what to display — lived in a plain Java class with no `@FXML` annotations? Then we could unit test it just like the Model."
+
+That's the ViewModel. Next lecture.
+
+> **Transition:** Here's how your GA1 architecture looks...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Your GA1 Architecture at a Glance
+
+```mermaid
+graph TB
+    subgraph "Shared Model Layer"
+        M[Recipe / Cookbook / Library]
+    end
+    subgraph "Feature: Library View"
+        V1[FXML] --> C1[Controller] --> VM1[ViewModel]
+    end
+    subgraph "Feature: Recipe Editor"
+        V2[FXML] --> C2[Controller] --> VM2[ViewModel]
+    end
+    subgraph "Feature: Import"
+        V3[FXML] --> C3[Controller] --> VM3[ViewModel]
+    end
+    subgraph "Feature: Search"
+        V4[FXML] --> C4[Controller] --> VM4[ViewModel]
+    end
+    VM1 --> M
+    VM2 --> M
+    VM3 --> M
+    VM4 --> M
+    style M fill:#c8f0dc,stroke:#4a9,color:#000
+```
+
+<div style={{fontSize: '0.8em'}}>
+
+- Each team member **owns one feature** (View + Controller + ViewModel)
+- All features share the **same Model layer** (your domain classes from HW1-HW5)
+- **ViewModel interfaces** are provided — they define the contract between features
+- Today we used SceneItAll; in GA1 you'll apply the same patterns to **CookYourBooks**
+
+</div>
+
+<aside className="notes">
+**This is the GA1 architecture.** Each student owns one vertical slice — their own FXML, Controller, and ViewModel — but they all plug into the shared Model.
+
+**Why SceneItAll today:** We used a different domain so you'd arrive at GA1 with fresh eyes for CookYourBooks. The patterns — MVC, FXML, properties, accessibility — are identical regardless of domain.
+
+**The ViewModel interfaces** serve the same role as the interfaces from earlier assignments: they define what your feature must do without prescribing how. Your TA will evaluate your ViewModel implementation independently.
+
+> **Transition:** Key takeaways...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Key Takeaways
+
+<ol style={{fontSize: '0.8em'}}>
+  <li><strong>GUI programming inverts control.</strong> The framework runs the event loop; your code responds to events via callbacks.</li>
+  <li><strong>MVC separates concerns.</strong> Model = business logic (testable). View = presentation (FXML). Controller = translation (thin).</li>
+  <li><strong>Use standard components.</strong> Button, Slider, ComboBox, ListView — they get accessibility, keyboard navigation, and screen reader support for free.</li>
+  <li><strong>FXML separates structure from behavior.</strong> Layout in XML, logic in Java, styling in CSS — three files, three concerns.</li>
+  <li><strong>Properties and binding keep the View in sync.</strong> Bind once, never manually refresh. The Model and View stay connected automatically.</li>
+  <li><strong>Accessibility is not extra work — it's using the right components.</strong> Standard components + accessible text + focus management covers the baseline.</li>
+</ol>
+
+<aside className="notes">
+**Reinforce #3 and #6:** These are the most common mistakes in GA1. Students who use standard components and add accessible text will save themselves debugging time AND score higher on the accessibility criteria.
+
+> **Transition:** Looking ahead...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Looking Ahead
+
+<div style={{fontSize: '0.85em'}}>
+
+**Lab 12 (next Monday): Hands-on GUI practice**
+- Build SceneItAll GUI components yourself — using the examples from this lecture and L30
+- Bring your laptop with Scene Builder installed
+
+**Next up: GUI Patterns and Testing (L30)**
+- Model-View-ViewModel (MVVM) — the testable evolution of MVC
+- Data binding deep dive — observable lists, computed properties
+- TestFX — automated end-to-end GUI testing
+
+**Your group project:**
+- GA0 (due Mar 26): Design Sprint — wireframes, personas, accessibility plan
+- GA1 (due Apr 9): Core Features — each person owns one feature (Library, Editor, Import, or Search)
+- Start exploring Scene Builder and the [OpenJFX documentation](https://openjfx.io/)
+
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '1em', color: '#9370DB'}}>
+Today you learned the architecture. Next, you learn to test it. Then you build it for real.
+</p>
+
+<aside className="notes">
+**Encourage early exploration:** Students should download Scene Builder and try dragging components around before GA1 starts. The learning curve is in the tooling, not the concepts.
+
+**AI policy reminder:** AI is encouraged for GA1. It's great for generating FXML boilerplate and wiring up property bindings. Students must understand the code well enough to debug and explain it in code walks.
+
+> That's it for today. Questions?
+</aside>
+
+</Slide>
+
+</RevealJS>
