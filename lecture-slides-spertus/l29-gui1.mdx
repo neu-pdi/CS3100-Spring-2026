@@ -6,6 +6,7 @@ image: /img/lectures/web/l29.png
 
 import RevealJS, { Slide } from '@site/src/components/RevealJS';
 import Img from '@site/src/components/Img';
+import PollSlide from '@site/src/components/PollSlide';
 
 <RevealJS transition="slide">
 
@@ -234,6 +235,21 @@ We'll use <strong>JavaFX</strong> because its architecture — scene graphs, dec
 > **Transition:** Now let's talk about how to organize GUI code so it doesn't become an unmaintainable mess...
 </aside>
 
+</Slide>
+
+<Slide>
+
+## Poll: Have you ever created a Java GUI?
+
+<PollSlide username='espertus'
+  choices={["I've used Swing", "I've used JavaFX", "I've used a different Java framework", "I don't know which Java framework I used", "I've modified Java GUIs", "No", "I created all the code myself", "I used Scene Builder", "I used AI"]}
+/>
+
+Choose all that apply.
+
+<aside className="notes">
+- Multiple select
+</aside>
 </Slide>
 
 {/* ============================================ */}
