@@ -571,12 +571,14 @@ dimButton.setOnAction(event -> {
     // the brightness of all lights.
     int brightness = Integer.parseInt(brightnessField.getText());
     // Business logic mixed into the click handler
-    if (brightness < 0 || brightness > 100) brightness = 50;
+    if (brightness < 0) brightness = 0;
+    if (brightness > 100) brightness = 100;
     for (SmartDevice device : deviceList) {
-        device.setBrightness(brightness);
+        if (device instanceof Light) {
+            // Network call in the UI handler
+            zigbeeController.sendCommand(device.getId(), "brightness", brightness);
+        }
     }
-    // Network call in the UI handler
-    zigbeeController.sendCommand(deviceId, "brightness", brightness);
     // Logging in the UI handler
     auditLog.record("Brightness set to " + brightness + " by " + currentUser);
 });
