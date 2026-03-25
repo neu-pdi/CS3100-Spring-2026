@@ -327,6 +327,10 @@ The **Scene Graph** is a tree of *nodes* — every widget and layout container i
 
 ## Your First JavaFX Application
 
+<div style={{display: 'flex', gap: '2rem', alignItems: 'flex-start'}}>
+
+<div style={{flex: 1, fontSize: '.7em'}}>
+
 ```java
 public class SceneItAllApp extends Application {
 
@@ -356,8 +360,17 @@ public class SceneItAllApp extends Application {
 }
 ```
 
-<p style={{fontSize: '0.8em', marginTop: '0.3em', color: '#9370DB'}}>
-This works — but all the UI construction, event handling, and data are in one method. That won't scale.
+</div>
+
+<div style={{flex: '0 0 40%'}}>
+
+<Img src="/img/lectures/web/l29-javafx1.png" alt="simple SceneItAll GUI" />
+
+</div>
+</div>
+
+<p>
+This works — but all the UI construction, event handling, and data are decalred programmatically in one method. That won't scale.
 </p>
 
 <aside className="notes">
@@ -451,6 +464,22 @@ Same scene graph tree. Different way to define it. FXML separates <strong>struct
 
 </Slide>
 
+<Slide>
+## Poll: Which of these are part of the model?
+
+<PollSlide username='espertus'
+  choices={["the list of devices", "the names of the devices", "the brightness of the ceiling light", "the slider", "the text on the button"]}
+/>
+
+<aside className="notes">
+- multiple answers
+- all but the last two are part of the model
+- the view also has access to them
+- they are made visible through the view
+</aside>
+
+</Slide>
+
 {/* ============================================ */}
 {/* ARC 2: MVC (~15 min) */}
 {/* ============================================ */}
@@ -476,8 +505,7 @@ graph LR
 ```
 
 <p style={{fontSize: '0.8em', color: '#9370DB'}}>
-The Model is cleanly domain-side — no UI imports, fully testable. But the Controller does <em>everything else</em>: it reads from the Model, makes decisions, AND manually pushes updates to View widgets. It straddles the hexagonal boundary. We'll fix this in L30.
-</p>
+The Model is cleanly domain-side — no UI imports, fully testable. But the Controller does <em>everything else</em>: it reads from the Model, makes decisions, AND manually pushes updates to View widgets. It straddles the hexagonal boundary. We'll fix this in L30.</p>
 
 <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1em', fontSize: '0.75em', marginTop: '0.5em'}}>
 
@@ -532,14 +560,13 @@ This is what code looks like when UI and business logic are tangled together:
 ```java
 // Everything in one place — the "Big Ball of Mud"
 dimButton.setOnAction(event -> {
+    // Assume there is a single brightness text field that sets
+    // the brightness of all lights.
     int brightness = Integer.parseInt(brightnessField.getText());
     // Business logic mixed into the click handler
     if (brightness < 0 || brightness > 100) brightness = 50;
-    for (int i = 0; i < deviceList.getItems().size(); i++) {
-        String device = deviceList.getItems().get(i);
-        if (device.contains("Light")) {
-            deviceList.getItems().set(i, device.split(":")[0] + ": " + brightness + "%");
-        }
+    for (SmartDevice device : deviceList) {
+        device.setBrightness(brightness);
     }
     // Network call in the UI handler
     zigbeeController.sendCommand(deviceId, "brightness", brightness);
@@ -556,6 +583,7 @@ How do you unit test the brightness validation logic? You can't — it's trapped
 **Ask students to identify the problems:**
 - What happens when you want to control brightness from a voice command? Rewrite everything.
 - What happens when you change from a list to a grid layout? Business logic breaks.
+- We shouldn't make network calls from the UI thread.
 - How do you test the brightness clamping? You can't — you'd need to simulate a button click.
 - How many reasons does this method have to change? At least four (UI, brightness logic, networking, logging).
 
@@ -578,7 +606,7 @@ public class Light extends SmartDevice {
 
     public void setBrightness(int level) {
         this.brightness = Math.clamp(level, 0, 100);
-        this.isOn = (brightness > 0);
+        this.isOn = brightness > 0;
     }
 
     public void toggle() {
@@ -674,16 +702,17 @@ No business logic here. The View defines <strong>what</strong> appears — not <
 
 <Slide>
 
-## How FXML and Java Find Each Other: @FXML Wiring
+## How FXML and Java Find Each Other: @FXML Wiring (Image)
 
 <Img
   src="/img/lectures/web/l29-fxml-wiring.webp"
+  width={1000}
   prompt="Clean educational diagram (not pixel art), 16:9 aspect ratio. Shows how JavaFX connects an FXML file to a Java Controller class. TWO PANELS side by side with glowing colored lines connecting matching elements between them. LEFT PANEL (labeled 'area-dashboard.fxml', styled like an XML editor with a dark background): Shows five lines of FXML code with key identifiers highlighted in color. Line 1 shows a VBox tag with fx:controller attribute containing 'AreaDashboardController' highlighted in ORANGE. Line 2 shows a Label tag with fx:id 'areaNameLabel' highlighted in BLUE. Line 3 shows a Slider tag with fx:id 'brightnessSlider' highlighted in GREEN. Line 4 shows a ListView tag with fx:id 'deviceList' highlighted in PURPLE. Line 5 shows a Button tag with onAction '#handleActivateScene' highlighted in RED. RIGHT PANEL (labeled 'AreaDashboardController.java', styled like a Java editor with a dark background): Shows matching Java code with same color highlights. Line 1: 'public class AreaDashboardController' with class name in ORANGE. Line 2: '@FXML private Label areaNameLabel;' with field name in BLUE. Line 3: '@FXML private Slider brightnessSlider;' with field name in GREEN. Line 4: '@FXML private ListView deviceList;' with field name in PURPLE. Line 5: '@FXML private void handleActivateScene()' with method name in RED. Curved colored lines connect each matching pair between the two panels. Between the panels a small label reads 'JavaFX runtime matches names automatically'. Below both panels a caption reads: fx:id in FXML equals @FXML field name in Java. Modern flat illustration style with code editor aesthetics."
   alt="Diagram showing FXML on the left and Java Controller on the right, with colored lines connecting fx:id='areaNameLabel' to @FXML Label areaNameLabel, fx:id='brightnessSlider' to @FXML Slider brightnessSlider, and onAction='#handleActivateScene' to @FXML void handleActivateScene(). Caption: JavaFX runtime matches names automatically."
 />
 
 <p style={{fontSize: '0.8em', marginTop: '0.3em', color: '#9370DB'}}>
-<code>fx:controller</code> tells JavaFX which class to create. <code>fx:id</code> matches <code>@FXML</code> fields by name. <code>onAction="#method"</code> matches <code>@FXML</code> methods by name. The framework does the wiring — you just make the names match.
+The framework does the wiring — you just make the names match.
 </p>
 
 <aside className="notes">
@@ -700,6 +729,79 @@ No business logic here. The View defines <strong>what</strong> appears — not <
 **Common student mistake:** Renaming a field in Java but not updating the `fx:id` in FXML (or vice versa). The app compiles fine but crashes at runtime with a null pointer.
 
 > **Transition:** But before we see the full Controller, let's understand *when* each piece of code runs...
+</aside>
+
+</Slide>
+
+
+<Slide>
+
+
+## How FXML and Java Find Each Other: @FXML Wiring (Code)
+
+<div style={{display: 'flex', gap: '1.5rem', fontSize: '.8em', alignItems: 'flex-start'}}>
+
+<div style={{flex: 1}}>
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- areadashboard.fxml -->
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="10" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="sceneitall.AreaDashboardController">
+
+    <Label fx:id="areaNameLabel" style="-fx-font-size: 18px;"/>
+
+    <HBox spacing="5" alignment="CENTER_LEFT">
+        <Label text="Brightness:"/>
+        <Slider fx:id="brightnessSlider" min="0" max="100"/>
+        <Label fx:id="brightnessValueLabel" text="50%"/>
+    </HBox>
+
+    <ListView fx:id="deviceList"/>
+
+    <Button fx:id="sceneButton" text="Activate Scene"
+            onAction="#handleActivateScene"/>
+</VBox>
+```
+
+</div>
+
+<div style={{flex: 1}}>
+```java
+public class AreaDashboardController {
+
+    @FXML
+    private Label areaNameLabel;
+
+    @FXML
+    private Slider brightnessSlider;
+
+    @FXML
+    private ListView<String> deviceList;
+
+    @FXML
+    public void handleActivateScene() {
+        System.out.println("Scene activated!");
+    }
+
+    public void initialize() {
+        deviceList.getItems().addAll(
+            "Ceiling Light: 70%",
+            "Shades: Open",
+            "Fan: Speed 2");
+    }
+}
+```
+
+</div>
+
+</div>
+
+<aside className="notes">
+
 </aside>
 
 </Slide>
@@ -749,22 +851,26 @@ public class AreaDashboardController {
     @FXML private Label brightnessValueLabel;
     @FXML private ListView<String> deviceList;
 
-    private Area model;  // the Controller knows the Model
-
-    public void setModel(Area model) {
-        this.model = model;
-        areaNameLabel.setText(model.getName());
-        updateDeviceList();
-    }
+    private Area model;  // the Controller creates and depends on the Model
 
     @FXML
     private void initialize() {
+        Area livingRoom = new Area("Living Room",
+            List.of(new Light("Ceiling Light", 50), new Shades("Shades",true), new Fan("Fan", 2)));
+        setModel(livingRoom);
+
         // Update label as slider moves
         brightnessSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
             brightnessValueLabel.setText(newVal.intValue() + "%");
             model.setAllLightsBrightness(newVal.intValue()); // delegate to Model
             updateDeviceList();
         });
+    }
+
+    public void setModel(Area model) {
+        this.model = model;
+        areaNameLabel.setText(model.getName());
+        updateDeviceList();
     }
 
     @FXML
@@ -775,8 +881,7 @@ public class AreaDashboardController {
 
     private void updateDeviceList() {
         deviceList.getItems().setAll(
-            model.getDevices().stream()
-                .map(SmartDevice::getStatus).toList()
+            model.getDevices().stream().map(SmartDevice::getStatus).toList()
         );
     }
 }
@@ -795,6 +900,16 @@ public class AreaDashboardController {
 **Compare to the anti-pattern:** The handleActivateScene method is 2 lines. The tangled version was 10+ lines with networking and logging. That's the power of separation.
 
 > **Transition:** Let's trace a complete user interaction through all three layers...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Adding Scene Selection
+
+<aside className="notes">
+
 </aside>
 
 </Slide>
