@@ -1075,18 +1075,48 @@ The Model contains all business logic. The Controller would call `model.turnOffA
 <Slide>
 ## Poll: Controller construction
 
-Given a DashboardController where the constructor and `initialize()` both call `areaNameLabel.setText('Living Room')`,
-what happens when the FXML is loaded?
+<div style={{ fontSize: '.7em' }}>
+Given a DashboardController where the constructor and `initialize()` both call `areaNameLabel.setText('Living Room')`, what happens when the FXML is loaded?
 
-<PollSlide
-  username="espertus"
-  choices={[
-    "The constructor sets the text; initialize() overwrites it with the same value",
-    "The constructor crashes with a NullPointerException; initialize() would have worked",
-    "Both fail — you can only set text from FXML, not from Java",
-    "The constructor works; initialize() is never called because the text is already set",
-  ]}
-/>
+<div style={{display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5em', alignItems: 'start'}}>
+
+<div>
+```java
+public class DashboardController {
+
+    @FXML
+    private Label areaNameLabel;
+
+    public DashboardController() {
+        areaNameLabel.setText("Living Room"); 
+    }
+
+    @FXML
+    private void initialize() {
+        areaNameLabel.setText("Living Room");
+    }
+}
+```
+
+</div>
+
+<div style={{textAlign: 'center'}}>
+  <Img src="/img/lectures/poll-ev/qr-pollev-espertus.png" alt="QR code linking to the PollEV survey for espertus" />
+  <p style={{fontSize: '0.9em', marginTop: '0.5em'}}>
+    Text <strong>espertus</strong> to 22333 if the<br />URL isn't working for you.
+  </p>
+</div>
+
+</div>
+
+<ol>
+  <li>The constructor sets the text; initialize() overwrites it with the same value</li>
+  <li>The constructor crashes with a NullPointerException; initialize() would have worked</li>
+  <li>Both fail — you can only set text from FXML, not from Java</li>
+  <li>The constructor works; initialize() is never called because the text is already set</li>
+</ol>
+
+</div>
 
 <aside className="notes">
 JavaFX creates the Controller (constructor runs) *before* injecting @FXML fields. In the constructor, `areaNameLabel` is still null → NPE. The `initialize()` method runs *after* injection, so the field is populated. This is the #1 lifecycle bug — use `initialize()`, not the constructor, for anything that touches @FXML fields.
@@ -1097,9 +1127,13 @@ JavaFX creates the Controller (constructor runs) *before* injecting @FXML fields
 <Slide>
 ## Poll: Unit testing
 
-You want to unit test: when the user activates the 'Evening' scene, the device list shows 'Ceiling Light: 30%'.
-Is there a problem in our MVC architecture?
+<div style={{ fontSize: '.7em' }}>
+You want to write a unit test that verifies that
+* if the user selects the 'Evening' scene
+* then the device list will show 'Ceiling light: 30%'
 
+How does this work with our MVC architecture?
+</div>
 <PollSlide
   username="espertus"
   choices={[
@@ -1109,6 +1143,10 @@ Is there a problem in our MVC architecture?
     "There's no problem — you can test the Controller the same way you test any Java class",
   ]}
 />
+<aside className="notes">
+
+*Discussion:* B is the key insight that motivates the entire next lecture (L30). The Controller contains the logic we want to test, but it also depends on Slider, Label, ListView, ComboBox — all of which need the JavaFX runtime to instantiate. You can't just `new AreaDashboardController()` and call methods on it. D is what students *want* to be true — and it's exactly what MVVM will make true by extracting the logic into a ViewModel with no widget dependencies. "What if there was a class that had the Controller's logic but none of its widget dependencies? That's next lecture."
+</aside>
 </Slide>
 
 {/* ============================================ */}
