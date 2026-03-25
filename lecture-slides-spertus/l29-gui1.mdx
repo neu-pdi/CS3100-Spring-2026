@@ -52,7 +52,7 @@ import PollSlide from '@site/src/components/PollSlide';
 ## Lecture 29: GUIs in Java
 
 <p style={{marginTop: '2em', fontSize: '0.8em', color: '#666'}}>
-  &copy;2026 Jonathan Bell, CC-BY-SA
+  &copy;2026 Jonathan Bell & Ellen Spertus, CC-BY-SA
 </p>
 
 <aside className="notes">
@@ -909,6 +909,41 @@ public class AreaDashboardController {
 
 ## Adding Scene Selection
 
+<div style={{display: 'flex', gap: '1.5rem', fontSize: '.8em', alignItems: 'flex-start'}}>
+<div style={{flex: 1}}>
+<Img src="/img/lectures/web/l29-javafx2.png" alt="Simple SceneItAlll GUI with dropdown menu for scene selection" />
+
+</div>
+
+<div style={{flex: 1, fontSize: '.6em'}}>
+```xml
+<!-- areadashboard.fxml -->
+
+<VBox spacing="10" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="sceneitall.AreaDashboardController">
+
+    <Label fx:id="areaNameLabel" style="-fx-font-size: 18px;"/>
+
+    <HBox spacing="5" alignment="CENTER_LEFT">
+        <Label text="Brightness:"/>
+        <Slider fx:id="brightnessSlider" min="0" max="100" value="50"/>
+        <Label fx:id="brightnessValueLabel" text="50%"/>
+    </HBox>
+
+    <ListView fx:id="deviceList"/>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <ComboBox fx:id="sceneSelector" promptText="Choose scene..."/>
+        <Button fx:id="sceneButton" text="Activate Scene"
+            onAction="#handleActivateScene"/>
+    </HBox>
+</VBox>
+```
+
+</div>
+
+</div>
+
 <aside className="notes">
 
 </aside>
@@ -974,83 +1009,88 @@ The Model never imports <code>javafx</code>. The View never calls <code>activate
 
 <Slide>
 
-## Comprehension Check
+## Poll: What if a handler is slow?
 
-<p style={{fontSize: '1.1em', textAlign: 'center', marginTop: '2em'}}>
-Open <strong>Poll Everywhere</strong> and answer the next 4 questions.
-</p>
+<div style={{ fontSize: '.7em' }}>
+A user clicks 'Activate Scene' and then immediately drags the brightness slider.
+ The `handleActivateScene()` handler takes 3 seconds to run. What happens to the slider drag?
+</div>
+
+<PollSlide
+  username="espertus"
+  choices={[
+    "The slider moves smoothly — the framework handles both events in parallel",
+    "The slider drag is queued and processed after handleActivateScene() finishes",
+    "The slider drag is silently dropped — the event is lost",
+    "The app throws a ConcurrentModificationException",
+  ]}/>
 
 <aside className="notes">
-**Run 4 multiple-choice questions on Poll Everywhere. Give ~60 seconds per question, then briefly discuss the answer.**
-
----
-
-**Question 1: Event-driven programming**
-
-A user clicks "Activate Scene" and then immediately drags the brightness slider. The `handleActivateScene()` handler takes 3 seconds to run. What happens to the slider drag?
-
-- A. The slider moves smoothly — the framework handles both events in parallel
-- B. The slider drag is queued and processed after `handleActivateScene()` finishes ✅
-- C. The slider drag is silently dropped — the event is lost
-- D. The app throws a ConcurrentModificationException
-
-*Discussion:* The event loop is single-threaded. While `handleActivateScene()` is running, no other events can be processed — the slider drag is queued. The UI appears frozen for 3 seconds. This is why long-running handlers are a problem (and why we'll cover concurrency in L31-32). B and C are both plausible — discuss why it's B: the OS buffers input events in a queue. The event loop isn't ignoring them — it's busy and can't drain the queue yet. Once the handler returns, queued events are processed (the slider may "jump" to the final position). Intermediate move events may get coalesced, but the user's final intent is preserved.
-
----
-
-**Question 2: MVC separation**
-
-You need to add a "turn off all lights" feature. Which MVC component should contain the logic for iterating through devices and setting brightness to 0?
-
-- A. The View (FXML file)
-- B. The Controller
-- C. The Model ✅
-- D. The CSS stylesheet
-
-*Discussion:* The Model contains all business logic. The Controller would call `model.turnOffAllLights()`, and the View would have a button wired to the Controller — but the logic itself (iterating devices, setting brightness) belongs in the Model where it's testable without the UI.
-
----
-
-**Question 3: @FXML and the lifecycle**
-
-Given this Controller, what happens when the FXML is loaded?
-
-```java
-public class DashboardController {
-    @FXML private Label areaNameLabel;
-
-    public DashboardController() {
-        areaNameLabel.setText("Living Room");
-    }
-
-    @FXML private void initialize() {
-        areaNameLabel.setText("Living Room");
-    }
-}
-```
-
-- A. The constructor sets the text; `initialize()` overwrites it with the same value
-- B. The constructor crashes with a NullPointerException; `initialize()` would have worked ✅
-- C. Both fail — you can only set text from FXML, not from Java
-- D. The constructor works; `initialize()` is never called because the text is already set
-
-*Discussion:* JavaFX creates the Controller (constructor runs) *before* injecting @FXML fields. In the constructor, `areaNameLabel` is still null → NPE. The `initialize()` method runs *after* injection, so the field is populated. This is the #1 lifecycle bug — use `initialize()`, not the constructor, for anything that touches @FXML fields.
-
----
-
-**Question 4: Testability (forward-looking)**
-
-You want to write a unit test that verifies: when the user activates the "Evening" scene, the device list shows "Ceiling Light: 30%". In our MVC architecture, what's the problem?
-
-- A. The Model doesn't have an `activateScene` method — you'd need to add one
-- B. The Controller's `handleActivateScene()` depends on `@FXML` widgets, so you can't call it without starting the full JavaFX runtime ✅
-- C. Unit tests can't verify String values in lists — you'd need an E2E test
-- D. There's no problem — you can test the Controller the same way you test any Java class
-
-*Discussion:* B is the key insight that motivates the entire next lecture (L30). The Controller contains the logic we want to test, but it also depends on Slider, Label, ListView, ComboBox — all of which need the JavaFX runtime to instantiate. You can't just `new AreaDashboardController()` and call methods on it. D is what students *want* to be true — and it's exactly what MVVM will make true by extracting the logic into a ViewModel with no widget dependencies. "What if there was a class that had the Controller's logic but none of its widget dependencies? That's next lecture."
-
+The event loop is single-threaded. While `handleActivateScene()` is running, no other events can be processed — the slider drag is queued. The UI appears frozen for 3 seconds. This is why long-running handlers are a problem (and why we'll cover concurrency in L31-32). B and C are both plausible — discuss why it's B: the OS buffers input events in a queue. The event loop isn't ignoring them — it's busy and can't drain the queue yet. Once the handler returns, queued events are processed (the slider may "jump" to the final position). Intermediate move events may get coalesced, but the user's final intent is preserved.
 </aside>
 
+</Slide>
+
+<Slide>
+## Poll: Where should code to turn out all lights live?
+
+<div style={{ fontSize: '.7em' }}>
+You need to add a 'turn off all lights' feature. Which MVC component should contain the logic for iterating through devices and setting brightness to 0?"
+</div>
+
+<PollSlide
+  username="espertus"
+  choices={[
+    "The View (FXML file)",
+    "The Controller",
+    "The Model",
+    "The CSS stylesheet",
+  ]}
+  />
+
+<aside className="notes">
+The Model contains all business logic. The Controller would call `model.turnOffAllLights()`, and the View would have a button wired to the Controller — but the logic itself (iterating devices, setting brightness) belongs in the Model where it's testable without the UI.
+</aside>
+
+</Slide>
+
+<Slide>
+## Poll: Controller construction
+
+Given a DashboardController where the constructor and `initialize()` both call `areaNameLabel.setText('Living Room')`,
+what happens when the FXML is loaded?
+
+<PollSlide
+  username="espertus"
+  choices={[
+    "The constructor sets the text; initialize() overwrites it with the same value",
+    "The constructor crashes with a NullPointerException; initialize() would have worked",
+    "Both fail — you can only set text from FXML, not from Java",
+    "The constructor works; initialize() is never called because the text is already set",
+  ]}
+/>
+
+<aside className="notes">
+JavaFX creates the Controller (constructor runs) *before* injecting @FXML fields. In the constructor, `areaNameLabel` is still null → NPE. The `initialize()` method runs *after* injection, so the field is populated. This is the #1 lifecycle bug — use `initialize()`, not the constructor, for anything that touches @FXML fields.
+</aside>
+
+</Slide>
+
+<Slide>
+## Poll: Unit testing
+
+You want to unit test: when the user activates the 'Evening' scene, the device list shows 'Ceiling Light: 30%'.
+Is there a problem in our MVC architecture?
+
+<PollSlide
+  username="espertus"
+  choices={[
+    "The Model doesn't have an activateScene method — you'd need to add one",
+    "The Controller's handleActivateScene() depends on @FXML widgets, so you can't call it without starting the full JavaFX runtime",
+    "Unit tests can't verify String values in lists — you'd need an E2E test",
+    "There's no problem — you can test the Controller the same way you test any Java class",
+  ]}
+/>
 </Slide>
 
 {/* ============================================ */}
@@ -1118,112 +1158,96 @@ All of these support Tab navigation, Enter/Space activation, and screen reader a
 </Slide>
 
 <Slide>
+## Can We Make it Look Better?
 
-## Building the Area Dashboard: Putting It All Together
+<div style={{display: 'flex', gap: '1.5rem', alignItems: 'flex-start'}}>
+<Img src="/img/lectures/web/l29-javafx2.png" alt="Ugly gray and white SceneItAll GUI" />
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.6em'}}>
+<div className='fragment'>
 
-<div>
-
-<Img
-  style={{maxWidth: '45%'}}
-  src="/img/lectures/web/l29-dashboard-mockup.webp"
-  prompt="Clean UI mockup (not pixel art) of a simple smart home area dashboard application window. 16:9 aspect ratio. The window title bar reads 'SceneItAll — Living Room'. Inside: at the top, a bold label 'Living Room'. Below that, a horizontal row with 'Brightness:' label, a slider set to about 70%, and a '70%' label next to it. Below that, a ListView showing three device statuses: 'Ceiling Light: 70%', 'Window Shades: Open', 'Floor Fan: Speed 2'. At the bottom, a horizontal row with a ComboBox dropdown showing 'Choose scene...' and a button labeled 'Activate'. Clean, minimal, standard platform UI widgets — looks like a real desktop application. Light gray background, standard UI chrome. Modern flat style, not pixel art."
-  alt="Mockup of the SceneItAll area dashboard: Living Room header, brightness slider at 70%, device list showing three devices, and a scene selector dropdown with Activate button."
-/>
-
-**area-dashboard.fxml**
-```xml
-<VBox spacing="10"
-  fx:controller="sceneitall.AreaDashboardController">
-
-  <Label fx:id="areaNameLabel"
-         style="-fx-font-size: 20px;
-                -fx-font-weight: bold;"/>
-
-  <HBox spacing="5" alignment="CENTER_LEFT">
-    <Label text="Brightness:"/>
-    <Slider fx:id="brightnessSlider"
-            min="0" max="100"/>
-    <Label fx:id="brightnessValueLabel"/>
-  </HBox>
-
-  <ListView fx:id="deviceList"
-            prefHeight="200"/>
-
-  <HBox spacing="5">
-    <ComboBox fx:id="sceneSelector"
-              promptText="Choose scene..."/>
-    <Button text="Activate"
-            onAction="#handleActivateScene"/>
-  </HBox>
-</VBox>
-```
-
+<Img src="/img/lectures/web/l29-javafx3.png" alt="Snazzy slate, blue, and white SceneItAll GUI" />
+</div>
 </div>
 
-<div>
+</Slide>
 
-**AreaDashboardController.java**
-```java
-public class AreaDashboardController {
-  @FXML private Label areaNameLabel;
-  @FXML private Slider brightnessSlider;
-  @FXML private Label brightnessValueLabel;
-  @FXML private ListView<String> deviceList;
-  @FXML private ComboBox<String> sceneSelector;
-  private Area model;
+<Slide>
+## Styling with CSS
 
-  public void setModel(Area model) {
-    this.model = model;
-    areaNameLabel.setText(model.getName());
-    sceneSelector.getItems().setAll(
-      model.getSceneNames());
-    updateDeviceList();
-  }
+<div style={{display: 'flex', gap: '0rem', alignItems: 'flex-start'}}>
 
-  @FXML private void initialize() {
-    brightnessSlider.valueProperty()
-      .addListener((obs, old, val) -> {
-        int level = val.intValue();
-        brightnessValueLabel.setText(level + "%");
-        model.setAllLightsBrightness(level);
-        updateDeviceList();
-    });
-  }
+<div style={{flex: 1}}>
+```css
+/* styles.css */
 
-  @FXML private void handleActivateScene() {
-    String scene = sceneSelector.getValue();
-    if (scene != null) {
-      model.activateScene(scene);
-      updateDeviceList();
-    }
-  }
-
-  private void updateDeviceList() {
-    deviceList.getItems().setAll(
-      model.getDevices().stream()
-        .map(SmartDevice::getStatus).toList());
-  }
+.root {
+    -fx-font-family: "Inter", sans-serif;
+    -fx-base: #1a1a2e;
+    -fx-accent: #0f3460;
+    -fx-padding: 16px;
 }
+
+/* Buttons */
+.button {
+    -fx-background-color: #0f3460;
+    -fx-text-fill: white;
+    -fx-padding: 8px 16px;
+    -fx-cursor: hand;
+}
+.button:hover {
+    -fx-background-color: #16213e;
+}
+
+
+```
+
+</div>
+
+<div style={{flex: 1}}>
+```css
+/* ComboBox */
+.combo-box,
+.combo-box .arrow-button,
+.combo-box .list-cell {
+    -fx-background-color: #0f3460;
+    -fx-text-fill: white;
+}
+.combo-box .arrow { -fx-background-color: white; }
+.combo-box:focused {
+    -fx-border-color: #888;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+}
+
+/* ListView */
+.list-cell { -fx-text-fill: white; -fx-background-color: transparent; }
+.list-cell:selected { -fx-background-color: #e94560; }
+
+/* Slider */
+.slider .track { -fx-background-color: #666; }
+.slider .thumb { -fx-background-color: #e94560; }
 ```
 
 </div>
 
 </div>
+
+```xml
+<!-- Link the stylesheet in FXML -->
+<VBox stylesheets="@styles.css">
+```
 
 <aside className="notes">
-**This is the complete working example.** If you have time and a projector, run it live. If not, walk through the code explaining how each piece connects.
+**Keep this brief — 2 minutes.** Students will learn CSS by doing in GA1. The point here is: styling is separate from structure and behavior. That's the third separation (after Model from View and View from Controller).
 
-**Key things to point out:**
-- The FXML and Controller are two halves of the same feature — the FXML defines structure, the Controller defines behavior
-- `@FXML` annotations match `fx:id` values — this is the wiring
-- `onAction="#handleActivateScene"` in FXML calls `handleActivateScene()` in the Controller
-- The Controller calls `model.activateScene()` — it doesn't implement scene logic
-- The ComboBox is populated from the Model — scene names come from `model.getSceneNames()`
-- `updateDeviceList()` is the manual refresh — we'll automate this with binding next
+**Dark theme for SceneItAll** makes sense — smart home dashboards often use dark themes for ambient use. This also shows students that CSS can dramatically change the look without touching any Java code.
 
-> **Transition:** That manual refresh is annoying. What if the View could update automatically?
+**Key JavaFX CSS differences from web CSS:**
+- Properties are prefixed with `-fx-` (e.g., `-fx-background-color` not `background-color`)
+- Selectors use JavaFX class names (`.button` not `button`)
+- No flexbox/grid — layout is done with containers, not CSS
+
+> **Transition:** Now let's connect this to what we learned about accessibility in L28...
 </aside>
 
 </Slide>
@@ -1288,71 +1312,6 @@ Bind once. Never call <code>updateUI()</code> again. The View and Model stay in 
 
 </Slide>
 
-<Slide>
-
-## CSS Styling: Your App Doesn't Have to Look Like 1997
-
-<p style={{fontSize: '0.85em'}}>
-JavaFX supports CSS — the same language used to style websites:
-</p>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.75em'}}>
-
-<div style={{backgroundColor: 'rgba(200,74,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
-
-**Before (default styling)**
-
-Gray widgets, system font, no visual hierarchy. Functional but uninviting.
-
-</div>
-
-<div style={{backgroundColor: 'rgba(74,153,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
-
-**After (with CSS)**
-
-Dark theme for a smart home dashboard, accent colors for active devices, hover effects. Same widgets, different experience.
-
-</div>
-
-</div>
-
-```css
-/* styles.css */
-.root {
-    -fx-font-family: "Inter", sans-serif;
-    -fx-base: #1a1a2e;           /* dark background */
-    -fx-accent: #e94560;          /* accent color */
-}
-.button {
-    -fx-background-color: #0f3460;
-    -fx-text-fill: white;
-    -fx-padding: 8px 16px;
-    -fx-cursor: hand;
-}
-.button:hover { -fx-background-color: #16213e; }
-.slider .track { -fx-background-color: #333; }
-.slider .thumb { -fx-background-color: #e94560; }
-```
-
-```xml
-<!-- Link the stylesheet in FXML -->
-<VBox stylesheets="@styles.css">
-```
-
-<aside className="notes">
-**Keep this brief — 2 minutes.** Students will learn CSS by doing in GA1. The point here is: styling is separate from structure and behavior. That's the third separation (after Model from View and View from Controller).
-
-**Dark theme for SceneItAll** makes sense — smart home dashboards often use dark themes for ambient use. This also shows students that CSS can dramatically change the look without touching any Java code.
-
-**Key JavaFX CSS differences from web CSS:**
-- Properties are prefixed with `-fx-` (e.g., `-fx-background-color` not `background-color`)
-- Selectors use JavaFX class names (`.button` not `button`)
-- No flexbox/grid — layout is done with containers, not CSS
-
-> **Transition:** Now let's connect this to what we learned about accessibility in L28...
-</aside>
-
-</Slide>
 
 {/* ============================================ */}
 {/* ARC 4: ACCESSIBILITY FROM THE START (~8 min) */}
@@ -1568,9 +1527,9 @@ graph TB
 
 <div style={{fontSize: '0.85em'}}>
 
-**Lab 12 (next Monday): Hands-on GUI practice**
-- Build SceneItAll GUI components yourself — using the examples from this lecture and L30
-- Bring your laptop with Scene Builder installed
+**Lab 12 (next Tuesday): Hands-on GUI practice**
+- You all get full credit. Have a good holiday!
+- But I'll be adjusting Lab 7 credit to match Lab 6.5.
 
 **Next up: GUI Patterns and Testing (L30)**
 - Model-View-ViewModel (MVVM) — the testable evolution of MVC
@@ -1596,6 +1555,14 @@ Today you learned the architecture. Next, you learn to test it. Then you build i
 > That's it for today. Questions?
 </aside>
 
+</Slide>
+
+<Slide>
+## Bonus Slide
+
+<Img src='/img/lectures/web/l29-scared-of-css.jpg'
+  alt="A six-panel SpongeBob SquarePants meme. Panel 1: Patrick says 'I'm a backend developer.' Panel 2: Squidward asks 'What is a backend developer?' Panel 3: SpongeBob says 'It mean he is afraid of CSS.' Panel 4: Patrick yells 'No I'm not!!!' Panel 5: Squidward says 'Float: left.' Panel 6: SpongeBob screams 'Stop it Patrick, you're scaring him.'"
+/>
 </Slide>
 
 </RevealJS>
