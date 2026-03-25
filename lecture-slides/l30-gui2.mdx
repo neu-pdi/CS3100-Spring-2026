@@ -749,7 +749,77 @@ If your test imports <code>javafx.scene</code>, it's probably testing the wrong 
 
 **Common mistake:** Testing that a property value appears in a specific label at a specific pixel position. That's a View concern — the ViewModel doesn't know labels exist.
 
-> **Transition:** ViewModel tests cover logic. But who tests that the bindings actually work?
+> **Transition:** Let's check your understanding before we move to E2E testing...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* COMPREHENSION CHECK */}
+{/* ============================================ */}
+
+<Slide>
+
+## Comprehension Check
+
+<p style={{fontSize: '1.1em', textAlign: 'center', marginTop: '2em'}}>
+Open <strong>Poll Everywhere</strong> and answer the next 4 questions.
+</p>
+
+<aside className="notes">
+**Run 4 multiple-choice questions on Poll Everywhere. Give ~60 seconds per question, then briefly discuss the answer.**
+
+---
+
+**Question 1: MVC vs MVVM dependencies**
+
+In our MVVM implementation, what does the ViewModel depend on?
+
+- A. The Model and the View (FXML widgets)
+- B. The Model only ✅
+- C. The View only (it reads widget values directly)
+- D. Nothing — it's completely standalone
+
+*Discussion:* This is the core insight of the lecture. The MVC Controller depends on Model + View widgets. The ViewModel depends on Model only — it exposes observable properties but has no reference to any widget. D is tempting but wrong — the ViewModel does read from and update the Model. If students picked A, revisit the comparison slide: that's the MVC Controller, not the ViewModel.
+
+---
+
+**Question 2: ObservableList behavior**
+
+You have an `ObservableList<String>` of device statuses bound to a ListView. A Light in your Model changes brightness from 70% to 30%. What happens to the ListView?
+
+- A. It updates automatically — ObservableList detects the brightness change
+- B. Nothing — ObservableList only fires on add/remove/replace, not on changes inside existing items ✅
+- C. It throws a ConcurrentModificationException
+- D. The ListView goes blank because the binding is broken
+
+*Discussion:* This is the gotcha we covered. ObservableList fires when you `add()`, `remove()`, or `setAll()` — but it does NOT fire when a property inside an existing item changes. The fix: call `setAll()` in the ViewModel to replace the entire list contents after the model changes. Students who got this wrong should revisit the ObservableList slide.
+
+---
+
+**Question 3: What to test where**
+
+You want to verify that activating the "Evening" scene sets brightness to 30%. Where should this test live?
+
+- A. ViewModel unit test — call `viewModel.activateScene("Evening")` and assert `brightnessProperty().get() == 30` ✅
+- B. E2E test with TestFX — click the Activate button and check the slider position
+- C. Model unit test — call `area.activateScene("Evening")` and check device brightness
+- D. Both A and C are correct, but not B
+
+*Discussion:* A is the best answer — it tests the ViewModel's responsibility (translating model state into UI-ready properties) without starting the UI. C tests the Model's logic but not the ViewModel's property update. B works but is slow and brittle — save E2E tests for critical user journeys that span the full stack. D is a reasonable argument (both A and C test valuable things) but A is the most direct test of the behavior described.
+
+---
+
+**Question 4: E2E test locators**
+
+You're writing a TestFX E2E test. You need to click the "Activate" button. Which locator strategy is most resilient to UI refactoring?
+
+- A. `clickOn("#activateButton")` — find by fx:id
+- B. `clickOn(".button")` — find by CSS class
+- C. `clickOn("Activate")` — find by visible text
+- D. `clickOn(hasAccessibleText("Activate scene"))` — find by accessibility label ✅
+
+*Discussion:* A breaks when a developer renames the fx:id. B matches every button on screen. C breaks when the label text changes (e.g., "Activate" → "Apply Scene") and may match other text on the page. D uses the accessibility label, which describes what the element *does* — that doesn't change when you refactor. Bonus: this is the same `accessibleText` you added in L28 for screen reader users. Your accessibility work makes your tests more stable — they reinforce each other.
 </aside>
 
 </Slide>

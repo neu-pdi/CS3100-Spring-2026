@@ -809,7 +809,91 @@ The Model never imports <code>javafx</code>. The View never calls <code>activate
 
 **Ask:** "Which section is the one we'd like to eliminate?" Answer: section 4 — the manual refresh. Every time you change the model, you have to remember to call `updateDeviceList()`. That's the problem MVVM will solve in L30.
 
-> **Transition:** Now let's get hands-on with the JavaFX components you'll use to build Views...
+> **Transition:** Let's check your understanding before we start building...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* COMPREHENSION CHECK */}
+{/* ============================================ */}
+
+<Slide>
+
+## Comprehension Check
+
+<p style={{fontSize: '1.1em', textAlign: 'center', marginTop: '2em'}}>
+Open <strong>Poll Everywhere</strong> and answer the next 4 questions.
+</p>
+
+<aside className="notes">
+**Run 4 multiple-choice questions on Poll Everywhere. Give ~60 seconds per question, then briefly discuss the answer.**
+
+---
+
+**Question 1: Event-driven programming**
+
+A user clicks "Activate Scene" and then immediately drags the brightness slider. The `handleActivateScene()` handler takes 3 seconds to run. What happens to the slider drag?
+
+- A. The slider moves smoothly — the framework handles both events in parallel
+- B. The slider drag is queued and processed after `handleActivateScene()` finishes ✅
+- C. The slider drag is silently dropped — the event is lost
+- D. The app throws a ConcurrentModificationException
+
+*Discussion:* The event loop is single-threaded. While `handleActivateScene()` is running, no other events can be processed — the slider drag is queued. The UI appears frozen for 3 seconds. This is why long-running handlers are a problem (and why we'll cover concurrency in L31-32). B and C are both plausible — discuss why it's B: the OS buffers input events in a queue. The event loop isn't ignoring them — it's busy and can't drain the queue yet. Once the handler returns, queued events are processed (the slider may "jump" to the final position). Intermediate move events may get coalesced, but the user's final intent is preserved.
+
+---
+
+**Question 2: MVC separation**
+
+You need to add a "turn off all lights" feature. Which MVC component should contain the logic for iterating through devices and setting brightness to 0?
+
+- A. The View (FXML file)
+- B. The Controller
+- C. The Model ✅
+- D. The CSS stylesheet
+
+*Discussion:* The Model contains all business logic. The Controller would call `model.turnOffAllLights()`, and the View would have a button wired to the Controller — but the logic itself (iterating devices, setting brightness) belongs in the Model where it's testable without the UI.
+
+---
+
+**Question 3: @FXML and the lifecycle**
+
+Given this Controller, what happens when the FXML is loaded?
+
+```java
+public class DashboardController {
+    @FXML private Label areaNameLabel;
+
+    public DashboardController() {
+        areaNameLabel.setText("Living Room");
+    }
+
+    @FXML private void initialize() {
+        areaNameLabel.setText("Living Room");
+    }
+}
+```
+
+- A. The constructor sets the text; `initialize()` overwrites it with the same value
+- B. The constructor crashes with a NullPointerException; `initialize()` would have worked ✅
+- C. Both fail — you can only set text from FXML, not from Java
+- D. The constructor works; `initialize()` is never called because the text is already set
+
+*Discussion:* JavaFX creates the Controller (constructor runs) *before* injecting @FXML fields. In the constructor, `areaNameLabel` is still null → NPE. The `initialize()` method runs *after* injection, so the field is populated. This is the #1 lifecycle bug — use `initialize()`, not the constructor, for anything that touches @FXML fields.
+
+---
+
+**Question 4: Testability (forward-looking)**
+
+You want to write a unit test that verifies: when the user activates the "Evening" scene, the device list shows "Ceiling Light: 30%". In our MVC architecture, what's the problem?
+
+- A. The Model doesn't have an `activateScene` method — you'd need to add one
+- B. The Controller's `handleActivateScene()` depends on `@FXML` widgets, so you can't call it without starting the full JavaFX runtime ✅
+- C. Unit tests can't verify String values in lists — you'd need an E2E test
+- D. There's no problem — you can test the Controller the same way you test any Java class
+
+*Discussion:* B is the key insight that motivates the entire next lecture (L30). The Controller contains the logic we want to test, but it also depends on Slider, Label, ListView, ComboBox — all of which need the JavaFX runtime to instantiate. You can't just `new AreaDashboardController()` and call methods on it. D is what students *want* to be true — and it's exactly what MVVM will make true by extracting the logic into a ViewModel with no widget dependencies. "What if there was a class that had the Controller's logic but none of its widget dependencies? That's next lecture."
 </aside>
 
 </Slide>
