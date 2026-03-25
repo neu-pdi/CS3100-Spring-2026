@@ -369,9 +369,13 @@ public class SceneItAllApp extends Application {
 </div>
 </div>
 
-<p>
+<div style={{ fontSize: '.8em' }}>
 This works — but all the UI construction, event handling, and data are decalred programmatically in one method. That won't scale.
-</p>
+
+
+
+https://github.com/cs3100-spertus-s26/javafx-examples/blob/slide9/app/src/main/java/org/example/demo/SceneItAllApp.java
+</div>
 
 <aside className="notes">
 **This is the "everything in one place" starting point.** Students see a complete, runnable JavaFX app in 20 lines. The `start()` method builds the tree, wires an event, and shows the window.
@@ -439,6 +443,8 @@ Build the tree with constructor calls. Mix structure with behavior.
 ```
 
 Declare what exists. Behavior lives elsewhere (Controller).
+
+https://github.com/cs3100-spertus-s26/javafx-examples/blob/slide10/app/src/main/resources/sceneitall/areadashboard.fxml
 
 </div>
 
@@ -801,6 +807,11 @@ public class AreaDashboardController {
 
 </div>
 
+<div style={{ fontSize: '.75em' }}>
+https://github.com/cs3100-spertus-s26/javafx-examples/blob/slide17/app/src/main/resources/sceneitall/areadashboard.fxml
+
+https://github.com/cs3100-spertus-s26/javafx-examples/blob/slide17/app/src/main/java/sceneitall/AreaDashboardController.java
+</div>
 <aside className="notes">
 
 </aside>
@@ -843,21 +854,18 @@ public class AreaDashboardController {
 
 ## The Controller: The Translator Between User Actions and Business Logic
 
+<div style={{ marginTop: '-1em', marginBottom: '-1.5em', fontSize: '.6em' }}>
 ```java
-// Controller: AreaDashboardController.java
 public class AreaDashboardController {
-
     @FXML private Label areaNameLabel;
     @FXML private Slider brightnessSlider;
     @FXML private Label brightnessValueLabel;
     @FXML private ListView<String> deviceList;
-
     private Area model;  // the Controller creates and depends on the Model
 
     @FXML
     private void initialize() {
-        Area livingRoom = new Area("Living Room",
-            List.of(new Light("Ceiling Light", 50), new Shades("Shades",true), new Fan("Fan", 2)));
+        Area livingRoom = new Area("Living Room", List.of(new Light("Ceiling Light", 50), new Shades("Shades",true), new Fan("Fan", 2)));
         setModel(livingRoom);
 
         // Update label as slider moves
@@ -881,12 +889,15 @@ public class AreaDashboardController {
     }
 
     private void updateDeviceList() {
-        deviceList.getItems().setAll(
-            model.getDevices().stream().map(SmartDevice::getStatus).toList()
-        );
+        deviceList.getItems().setAll( model.getDevices().stream().map(SmartDevice::getStatus).toList());
     }
 }
 ```
+
+</div>
+<div style={{ fontSize: '.6em' }}>
+https://github.com/cs3100-spertus-s26/javafx-examples/blob/slide19/app/src/main/java/sceneitall/AreaDashboardController.java
+</div>
 
 <aside className="notes">
 **The Controller is thin.** It does three things:
@@ -943,6 +954,9 @@ public class AreaDashboardController {
 </div>
 
 </div>
+<div style={{ fontSize: '.6em' }}>
+https://github.com/cs3100-spertus-s26/javafx-examples/blob/slide20/app/src/main/resources/sceneitall/areadashboard.fxml
+</div>
 
 <aside className="notes">
 
@@ -954,11 +968,11 @@ public class AreaDashboardController {
 
 ## Following a Click Through All Three Layers
 
-<p style={{fontSize: '0.85em'}}>
+<p style={{fontSize: '0.85em', marginTop: '-1em' }}>
 User clicks "Activate Scene" for the "Evening" scene. Trace the code:
 </p>
 
-<div style={{fontSize: '0.75em'}}>
+<div style={{fontSize: '0.75em', marginTop: '-1em', marginBottom: '-1.5em' }}>
 
 ```java
 // 1. VIEW (FXML) — button wired to Controller method
@@ -988,9 +1002,11 @@ private void updateDeviceList() {
 
 </div>
 
-<p style={{fontSize: '0.8em', marginTop: '0.3em', color: '#9370DB'}}>
+<div style={{fontSize: '0.8em', marginTop: '0.3em', color: '#9370DB'}}>
 The Model never imports <code>javafx</code>. The View never calls <code>activateScene()</code>. Each layer does one job.
-</p>
+
+https://github.com/cs3100-spertus-s26/javafx-examples/tree/slide20/app/src/main
+</div>
 
 <aside className="notes">
 **Walk through each numbered section.** This is real code students can trace — not a diagram.
@@ -1187,7 +1203,6 @@ All of these support Tab navigation, Enter/Space activation, and screen reader a
     -fx-padding: 16px;
 }
 
-/* Buttons */
 .button {
     -fx-background-color: #0f3460;
     -fx-text-fill: white;
@@ -1198,14 +1213,12 @@ All of these support Tab navigation, Enter/Space activation, and screen reader a
     -fx-background-color: #16213e;
 }
 
-
 ```
 
 </div>
 
 <div style={{flex: 1}}>
 ```css
-/* ComboBox */
 .combo-box,
 .combo-box .arrow-button,
 .combo-box .list-cell {
@@ -1219,13 +1232,12 @@ All of these support Tab navigation, Enter/Space activation, and screen reader a
     -fx-border-radius: 3px;
 }
 
-/* ListView */
 .list-cell { -fx-text-fill: white; -fx-background-color: transparent; }
 .list-cell:selected { -fx-background-color: #e94560; }
 
-/* Slider */
 .slider .track { -fx-background-color: #666; }
 .slider .thumb { -fx-background-color: #e94560; }
+
 ```
 
 </div>
@@ -1236,6 +1248,10 @@ All of these support Tab navigation, Enter/Space activation, and screen reader a
 <!-- Link the stylesheet in FXML -->
 <VBox stylesheets="@styles.css">
 ```
+
+<div style={{ fontSize: '.7em' }}>
+https://github.com/cs3100-spertus-s26/javafx-examples/tree/slide29/app/src/main/resources/sceneitall
+</div>
 
 <aside className="notes">
 **Keep this brief — 2 minutes.** Students will learn CSS by doing in GA1. The point here is: styling is separate from structure and behavior. That's the third separation (after Model from View and View from Controller).
@@ -1561,6 +1577,7 @@ Today you learned the architecture. Next, you learn to test it. Then you build i
 ## Bonus Slide
 
 <Img src='/img/lectures/web/l29-scared-of-css.jpg'
+  width={700}
   alt="A six-panel SpongeBob SquarePants meme. Panel 1: Patrick says 'I'm a backend developer.' Panel 2: Squidward asks 'What is a backend developer?' Panel 3: SpongeBob says 'It mean he is afraid of CSS.' Panel 4: Patrick yells 'No I'm not!!!' Panel 5: Squidward says 'Float: left.' Panel 6: SpongeBob screams 'Stop it Patrick, you're scaring him.'"
 />
 </Slide>
