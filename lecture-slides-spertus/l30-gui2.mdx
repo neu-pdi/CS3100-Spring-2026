@@ -1205,7 +1205,7 @@ void userCanSetTargetTemperature() {
 | Refactoring | ID-based test | Accessibility-based test |
 |-------------|---------------|--------------------------|
 | Rename `fx:id` from `targetSlider` to `tempSlider` | **Breaks** ❌ | **Still passes** ✅ |
-| Change label format from `Target: 25.0 °C` to `Set: 25.0°` | **Breaks** ❌ | **Still passes** ✅ |
+| Change label format from `Target: 25.0 °C` to `Set: 25.0°` | **Breaks** ❌ | **Breaks** unless assertion avoids exact UI text ⚠️ |
 | Move slider from bottom to top of layout | **Breaks** (position) ❌ | **Still passes** ✅ |
 
 </div>
