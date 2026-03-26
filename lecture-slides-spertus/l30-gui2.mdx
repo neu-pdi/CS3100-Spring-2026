@@ -910,14 +910,12 @@ class ThermostatViewModelTest {
     // 1. State initialization
     @Test
     void setModel_populatesTargetTemp() {
-        model.setActualTemp(22.0);
-        assertEquals(20.0, vm.targetTempProperty().get());
-    }
+            assertEquals(model.getTargetTemp(), vm.targetTempProperty().get());
+      }
 
     @Test
     void setModel_populatesActualTemp() {
-        model.setActualTemp(18.0);
-        assertEquals(18.0, vm.actualTempProperty().get());
+        assertEquals(model.getActualTemp(), vm.actualTempProperty().get());
     }
 
     // 2. User action → model update
@@ -925,6 +923,19 @@ class ThermostatViewModelTest {
     void setTargetTemp_updatesModel() {
         vm.targetTempProperty().set(25.0);
         assertEquals(25.0, model.getTargetTemp());
+    }
+
+    // 3. Edge cases
+    @Test
+    void setTargetTemp_belowMinimum_clampsToMin() {
+        vm.targetTempProperty().set(ThermostatModel.MIN_TEMP - 1);
+        assertEquals(ThermostatModel.MIN_TEMP, model.getTargetTemp());
+    }
+
+    @Test
+    void setTargetTemp_aboveMaximum_clampsToMax() {
+        vm.targetTempProperty().set(ThermostatModel.MAX_TEMP + 1);
+        assertEquals(ThermostatModel.MAX_TEMP, model.getTargetTemp());
     }
 }
 ```
