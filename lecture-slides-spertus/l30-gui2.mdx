@@ -100,6 +100,21 @@ After this lecture, you will be able to:
 
 </Slide>
 
+<Slide>
+
+## Corrections
+
+* Wednesday morning, I said that slider drags during a long handler were lost. That was wrong. They are queued.
+
+* In both sections, I said the view does not have an `javafx` imports. That was no longer true once we got to
+  observable propreties (`BooleanProperty`, `SimpleBooleanProperty`, etc.)
+
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
 {/* ============================================ */}
 {/* ARC 1: THE PROBLEM WITH MVC (~8 min) */}
 {/* ============================================ */}
@@ -163,7 +178,7 @@ As the app grows, the number of sync points grows linearly. Each one is a potent
 
 </div>
 
-<div style={{backgroundColor: 'rgba(200,74,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+<div className='fragment' style={{backgroundColor: 'rgba(200,74,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
 
 **Problem 2: Untestable Controller**
 
@@ -183,7 +198,7 @@ That's an integration test, not a unit test.
 
 </div>
 
-<p style={{fontSize: '0.85em', marginTop: '0.8em'}}>
+<p className='fragment' style={{fontSize: '0.85em', marginTop: '0.8em'}}>
 Recall from <a href="/lecture-notes/l16-testing2">L16</a>: testable code has high <strong>observability</strong> (can inspect state) and high <strong>controllability</strong> (can set state directly). MVC Controllers have neither.
 </p>
 
@@ -262,213 +277,426 @@ Declaratively binds to ViewModel properties. Contains no logic.
 
 <Slide>
 
-## The ViewModel: UI State Without the UI
+## Introducing the Thermostat App
 
-<p style={{fontSize: '0.7em', color: '#888', fontStyle: 'italic'}}>
-Note: Code examples in these slides omit import statements and some boilerplate for clarity. See the lecture notes for complete versions.
-</p>
+A thermostat has an **actual temperature** and a **target temperature**.
 
-```java
-// ViewModel: AreaDashboardViewModel.java
-// Note: ZERO imports from javafx.scene — no widgets, no FXML
-public class AreaDashboardViewModel {
-    private final StringProperty areaName = new SimpleStringProperty();
-    private final IntegerProperty brightness = new SimpleIntegerProperty();
-    private final ObservableList<String> deviceStatuses =
-        FXCollections.observableArrayList();
-    private final ObservableList<String> sceneNames =
-        FXCollections.observableArrayList();
+<div style={{display: 'flex', gap: '2em', alignItems: 'flex-start', fontSize: '.8em'}}>
+<div>
 
-    private Area model;
+We want the view to:
+* show the actual temperature
+* show the target temperature
+* change the target temperature
 
-    public void setModel(Area model) {
-        this.model = model;
-        areaName.set(model.getName());
-        brightness.set(model.getAverageBrightness());
-        sceneNames.setAll(model.getSceneNames());
-        refreshDeviceStatuses();
+We want the model to:
+* own the actual and target temperatures
+* validate them
+* communicate with devices
 
-        // When brightness changes, update the model automatically
-        brightness.addListener((obs, oldVal, newVal) -> {
-            model.setAllLightsBrightness(newVal.intValue());
-            refreshDeviceStatuses();
-        });
-    }
+</div>
 
-    public void activateScene(String sceneName) {
-        model.activateScene(sceneName);
-        brightness.set(model.getAverageBrightness());
-        refreshDeviceStatuses();
-    }
-
-    private void refreshDeviceStatuses() {
-        deviceStatuses.setAll(
-            model.getDevices().stream()
-                .map(SmartDevice::getStatus).toList());
-    }
-
-    // Property accessors for binding
-    public StringProperty areaNameProperty() { return areaName; }
-    public IntegerProperty brightnessProperty() { return brightness; }
-    public ObservableList<String> getDeviceStatuses() { return deviceStatuses; }
-    public ObservableList<String> getSceneNames() { return sceneNames; }
-}
-```
-
-<aside className="notes">
-**Point out what's NOT here:** No `@FXML`. No `Slider`. No `Label`. No `ListView`. The ViewModel has no idea what widgets display its data. It just exposes properties.
-
-**Point out what IS here:** `StringProperty`, `IntegerProperty`, `ObservableList` — these are JavaFX *property* types, but they live in `javafx.beans` and `javafx.collections`, not `javafx.scene`. They're observable values, not UI widgets.
-
-**The `activateScene` method:** This is the command that the button will trigger. In MVC, this logic lived in the Controller mixed with `@FXML` references. Here it's a plain method on a plain class.
-
-> **Transition:** Now the View just wires up bindings...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## The View Just Binds — No Logic
-
-<p style={{fontSize: '0.85em'}}>
-The Controller becomes a thin wiring layer — it connects widgets to ViewModel properties and that's it:
-</p>
-
-```java
-// Controller: now just wiring, no logic
-public class AreaDashboardController {
-    @FXML private Label areaNameLabel;
-    @FXML private Slider brightnessSlider;
-    @FXML private Label brightnessValueLabel;
-    @FXML private ListView<String> deviceList;
-    @FXML private ComboBox<String> sceneSelector;
-
-    private AreaDashboardViewModel viewModel;
-
-    public void setViewModel(AreaDashboardViewModel viewModel) {
-        this.viewModel = viewModel;
-
-        // Bind widgets to ViewModel properties — done once, never again
-        areaNameLabel.textProperty().bind(viewModel.areaNameProperty());
-        brightnessSlider.valueProperty().bindBidirectional(
-            viewModel.brightnessProperty());
-        brightnessValueLabel.textProperty().bind(
-            viewModel.brightnessProperty().asString("%d%%"));
-        deviceList.setItems(viewModel.getDeviceStatuses());
-        sceneSelector.setItems(viewModel.getSceneNames());
-    }
-
-    @FXML private void handleActivateScene() {
-        String scene = sceneSelector.getValue();
-        if (scene != null) {
-            viewModel.activateScene(scene);
-            // No updateDeviceList() needed — binding handles it!
-        }
-    }
-}
-```
-
-<aside className="notes">
-**The "aha" moment:** `handleActivateScene()` is now 3 lines — validate input, call ViewModel, done. No manual view updates. The binding takes care of everything.
-
-**Compare to L29's MVC Controller:** The MVC version had `updateDeviceList()` called in multiple places. This version calls it zero times in the Controller.
-
-**Where did the logic go?** Into the ViewModel. The Controller's job is now purely mechanical: wire up bindings in `setViewModel()` and forward user actions to the ViewModel. A student could almost generate this code automatically from the ViewModel's property list.
-
-> **Transition:** Let's see the magic in action...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Data Binding in Action: Change the Model, Watch the UI Update
-
-<Img
-  src="/img/lectures/web/l30-binding-flow.webp"
-  prompt="Clean educational diagram (not pixel art), 16:9 aspect ratio. Shows the data binding flow in MVVM when a user activates a scene. THREE COLUMNS flowing left to right. LEFT COLUMN (labeled 'User Action', amber background): A hand clicking an 'Activate' button. CENTER COLUMN (labeled 'ViewModel', orange background): Three property boxes stacked vertically — 'brightness: 30' with a change event lightning bolt icon, 'deviceStatuses: [Ceiling: 30%, Shades: 80%, Fan: Off]' with a change event lightning bolt, and 'areaName: Living Room' (no lightning bolt, unchanged). RIGHT COLUMN (labeled 'View — updates automatically', green background): Three UI widgets that correspond to each property — a Slider moved to 30%, a ListView showing the three device statuses, and a Label showing Living Room. Curved arrows connect each ViewModel property to its bound widget, labeled 'bind'. Between the User Action and ViewModel columns, a single arrow labeled 'viewModel.activateScene(Evening)'. A caption at the bottom: 'The Controller calls one method. Binding updates three widgets. Zero manual sync.' Modern flat illustration style, clean arrows, good contrast."
-  alt="Data binding flow: user clicks Activate, Controller calls viewModel.activateScene, ViewModel properties change (brightness, deviceStatuses), bound widgets (Slider, ListView, Label) update automatically."
+<Img src='/img/lectures/web/l30-thermostat1.png'
+  width={300}
+  alt='A JavaFX thermostat app showing actual temperature of 18.0°C, a target temperature label of 20.0°C, and a slider set to 20.0.'
 />
-
-<p style={{fontSize: '0.85em'}}>
-In L29 you wrote <code>updateDeviceList()</code> calls after every Model change. With MVVM, the Controller calls <strong>one method</strong>. Binding updates every widget automatically.
-</p>
+</div>
 
 <aside className="notes">
-**Walk through the diagram left to right.** User clicks → Controller calls `viewModel.activateScene("Evening")` → ViewModel sets `brightness.set(30)` and `deviceStatuses.setAll(...)` → properties fire change events → bound widgets react automatically.
 
-**The slider physically moves.** This is the moment that impresses students. The slider isn't being dragged by the user — it moves because the `brightness` property changed and it's bound bidirectionally.
-
-**Connection to L29:** "You already saw basic binding in L29 — `brightnessSlider.valueProperty().bindBidirectional(...)`. The difference now is that the ViewModel *centralizes* all bindable state. The Controller doesn't manage any state — it just wires the bindings once."
-
-> **Transition:** What about collections of data?
 </aside>
 
 </Slide>
 
 <Slide>
 
-## ObservableList: When Your Data Is a Collection
+## Data Flow
 
-<p style={{fontSize: '0.85em'}}>
-Individual properties work for single values. But what about the device list?
-</p>
+<div style={{ fontSize: '.8em' }}>
+Logically, we want something like this:
 
-```java
-// In the ViewModel
-private final ObservableList<String> deviceStatuses =
-    FXCollections.observableArrayList();
-
-// Adding a device → ListView updates automatically
-deviceStatuses.add("New Light: 100%");
-
-// Removing a device → ListView updates automatically
-deviceStatuses.remove(0);
-
-// Replacing all items → ListView updates automatically
-deviceStatuses.setAll("Ceiling Light: 30%", "Shades: 80%", "Fan: Off");
+```mermaid
+flowchart LR
+    View <-->|targetTemp| Model
+    Model -->|actualTemp| View
 ```
 
-```java
-// In the Controller — bind once
-deviceList.setItems(viewModel.getDeviceStatuses());
-// Never touch deviceList again. Ever.
+<div className='fragment'>
+
+We achieve this with a ViewModel:
+```mermaid
+flowchart LR
+    View <-->|targetTemp| ViewModel
+    ViewModel <-->|targetTemp| Model
+    Model -->|actualTemp| ViewModel
+    ViewModel -->|actualTemp| View
 ```
+</div>
+</div>
 
-<div style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+<aside className="notes">
 
-<p><code>ObservableList</code> fires change events on add, remove, and replace. The ListView updates automatically.</p>
+</aside>
 
-<p style={{color: '#9370DB'}}>
-<strong>Gotcha:</strong> ObservableList fires when items are added or removed — but NOT when a property <em>inside</em> an existing item changes. If a Light's brightness changes from 70% to 30%, the list doesn't know.
-</p>
+</Slide>
+<Slide>
+
+## MVVM Responsibilities
+
+<div style={{display: 'flex', flexDirection: 'column', gap: '0.5em', fontSize: '0.8em'}}>
+
+<div style={{backgroundColor: 'rgba(74,153,153,0.15)', padding: '0.4em 0.8em', borderRadius: '8px'}}>
+
+<p style={{margin: '0'}}>**Model** owns and validates the</p>
+<ul style={{margin: '0.2em 0'}}>
+<li>actual temperature, which it gets from a device</li>
+<li>target temperature</li>
+</ul>
+</div>
+
+<div style={{backgroundColor: 'rgba(148,74,170,0.15)', padding: '0.4em 0.8em', borderRadius: '8px'}}>
+
+<p style={{margin: '0'}}>**View**</p>
+<ul style={{margin: '0.2em 0'}}>
+<li>displays the actual temperature</li>
+<li>sets and displays the target temperature</li>
+</ul>
+</div>
+
+<div style={{backgroundColor: 'rgba(169,148,74,0.15)', padding: '0.4em 0.8em', borderRadius: '8px'}}>
+
+<p style={{margin: '0'}}>**ViewModel**</p>
+<ul style={{margin: '0.2em 0'}}>
+<li>exposes targetTemp as a DoubleProperty (read/write)</li>
+<li>exposes actualTemp as a DoubleProperty (conventionally read-only)</li>
+<li>listens for changes to targetTemp and forwards them to the model</li>
+</ul>
+</div>
+
+<div style={{backgroundColor: 'rgba(74,100,170,0.15)', padding: '0.4em 0.8em', borderRadius: '8px'}}>
+
+<p style={{margin: '0'}}>**Controller**</p>
+<ul style={{margin: '0.2em 0'}}>
+<li>creates and connects the Model and ViewModel</li>
+<li>binds the UI elements to the ViewModel's properties</li>
+</ul>
+</div>
 
 </div>
 
 <aside className="notes">
-**This gotcha is critical.** Students will hit this in GA1. The list notices `add()`, `remove()`, and `setAll()`, but if you mutate an object that's already in the list, nothing fires.
 
-**Two solutions:**
+</aside>
 
-1. **Use `setAll()` to refresh** — replace the entire list contents whenever the underlying data changes. Simple, slightly wasteful, but reliable. This is what our `refreshDeviceStatuses()` does in the ViewModel:
+</Slide>
+
+<Slide>
+
+## The View
+
+<div style={{display: 'flex', gap: '2em', alignItems: 'flex-start'}}>
+```xml
+<!-- thermostat.fxml -->
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="10" xmlns:fx="http://javafx.com/fxml"
+      stylesheets="@styles.css"
+      fx:controller="thermostat.ThermostatController">
+    <Label fx:id="actualLabel"/>
+    <Label fx:id="targetLabel"/>
+    <Slider fx:id="targetSlider" min="10" max="35" value="20"/>
+</VBox>
+```
+
+<Img src='/img/lectures/web/l30-thermostat1.png'
+  width={300}
+  alt='A JavaFX thermostat app showing actual temperature of 18.0°C, a target temperature label of 18.8°C, and a slider set to 18.8.'
+/>
+
+</div>
+
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+<Slide>
+## The Model
+
+<div style={{ fontSize: '.8em' }}>
 ```java
-private void refreshDeviceStatuses() {
-    deviceStatuses.setAll(
-        model.getDevices().stream()
-            .map(SmartDevice::getStatus).toList());
+public class ThermostatModel {
+  public static final int MIN_TEMP = 10;
+  public static final int MAX_TEMP = 35;
+  private double targetTemp = 20.0;
+  private double actualTemp = 18.0;
+
+  public double getTargetTemp() {
+    return targetTemp;
+  }
+
+  public void setTargetTemp(double temp) {
+    this.targetTemp = Math.clamp(temp, MIN_TEMP, MAX_TEMP);
+    System.out.println("Target temperature set to: " + this.targetTemp);
+
+    // Occasionally simulate updating the actual temperature.
+    if (Math.random() < 0.05) {
+      updateActualTemp();
+    }
+  }
+
+  public double getActualTemp() {
+    return actualTemp;
+  }
+
+  public void setActualTemp(double temp) {
+    this.actualTemp = temp;
+  }
+
+  public void updateActualTemp() {
+    // Simulate the actual temperature moving towards the target temperature.
+    if (actualTemp < targetTemp) {
+      actualTemp += 0.5;
+    } else if (actualTemp > targetTemp) {
+      actualTemp -= 0.5;
+    }
+    System.out.println("Actual temperature updated to: " + this.actualTemp);
+  }
+}
+```
+</div>
+
+<aside className="notes">
+Note that updating the targetTemp could cause the actualTemp to be updated.
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Observable Properties
+
+<div style={{ fontSize: '.65em' }}>
+To connect the View and Model, JavaFX provides **observable properties** —
+values that notify listeners when they change.
+
+```mermaid
+classDiagram
+    class ObservableValue {
+        <<interface>>
+        +addListener(ChangeListener)
+        +getValue() Object
+    }
+    class DoubleProperty {
+        <<abstract>>
+        +get() double
+        +set(double)
+        +bind(ObservableValue)
+        +bindBidirectional(Property)
+        +addListener(ChangeListener)
+    }
+    class SimpleDoubleProperty {
+        +SimpleDoubleProperty(double initialValue)
+    }
+
+    ObservableValue <|-- DoubleProperty
+    DoubleProperty <|-- SimpleDoubleProperty
+    style ObservableValue fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+```
+
+The ViewModel is the bridge between the View and the Model, so each can
+react to changes caused by the other.
+</div>
+
+</Slide>
+
+<Slide>
+
+## The ViewModel
+
+```java
+public class ThermostatViewModel {
+    private final DoubleProperty targetTemp = new SimpleDoubleProperty();
+    private final DoubleProperty actualTemp = new SimpleDoubleProperty();
+
+    private ThermostatModel model;
+
+    public void setModel(ThermostatModel model) {
+        this.model = model;
+        targetTemp.set(model.getTargetTemp());  // initialize from model
+        actualTemp.set(model.getActualTemp());  // initialize from model
+
+        // When the user changes targetTemp, forward the new value to the model
+        targetTemp.addListener((obs, oldVal, newVal) -> {
+            model.setTargetTemp(newVal.doubleValue());
+            // Check for other changes in the model.
+            refresh();
+        });
+    }
+
+    private void refresh() {
+        actualTemp.set(model.getActualTemp());
+    }
+
+    public DoubleProperty targetTempProperty() { return targetTemp; }
+    public DoubleProperty actualTempProperty() { return actualTemp; }
+}
+
+```
+
+<aside className="notes">
+- ObservableValues like DoubleProperty can have listeners.
+- setModel() is called from the application, which we'll get to later.
+- the getters are called by the controller...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Controller
+
+```java
+package thermostat;
+
+import javafx.fxml.FXML;
+import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
+
+public class ThermostatController {
+    @FXML private Slider targetSlider;
+    @FXML private Label targetLabel;
+    @FXML private Label actualLabel;
+
+    private ThermostatViewModel viewModel;
+
+    public void setViewModel(ThermostatViewModel viewModel) {
+        this.viewModel = viewModel;
+
+        // bidirectional: slider and targetTemp stay in sync
+        targetSlider.valueProperty().bindBidirectional(viewModel.targetTempProperty());
+
+        // one-way: labels just display the values
+        targetLabel.textProperty().bind(
+            viewModel.targetTempProperty().asString("Target: %.1f °C"));
+        actualLabel.textProperty().bind(
+            viewModel.actualTempProperty().asString("Actual: %.1f °C"));
+    }
 }
 ```
 
-2. **Use an extractor** — `FXCollections.observableArrayList(item -> new Observable[] { item.statusProperty() })` creates a list that fires change events when specified properties of its items change. More elegant but harder to understand.
+<aside className="notes">
+bidirectional binding
+* targetSlider.valueProperty() — gets the observable property representing the slider's current position
+* bindBidirectional(...) — links two properties so that when either one changes, the other updates automatically
+* viewModel.targetTempProperty() — the ViewModel's observable property for the target temperature
 
-For GA1, recommend solution 1. It's simpler and students can reason about when it runs.
+one-way binding
+* targetLabel.textProperty() — gets the observable property representing the label's displayed text
+* bind(...) — one-way: whenever the right-hand side changes, the label updates automatically
+* viewModel.targetTempProperty() — the ViewModel's observable double property
+* .asString("Target: %.1f °C") — converts the double to a formatted string, e.g. "Target: 22.5 °C". The %.1f is standard Java format syntax meaning one decimal place.
 
-**Key method: `setItems()`** — this binds the ListView to the ObservableList. After this call, the ListView is permanently synchronized. You modify the ObservableList in the ViewModel; the ListView reflects the change.
-
-> **Transition:** Let's compare the two patterns directly...
 </aside>
 
+</Slide>
+
+<Slide>
+
+## Listening vs. Binding
+
+<div style={{display: 'flex', flexDirection: 'column', gap: '0.5em', fontSize: '0.8em'}}>
+
+<div style={{backgroundColor: 'rgba(148,74,170,0.15)', padding: '0.4em 0.8em', borderRadius: '8px'}}>
+
+<p style={{margin: '0'}}>**Listening** — imperative: "when this changes, do something"</p>
+<ul style={{margin: '0.2em 0'}}>
+<li>You provide code to run when the value changes</li>
+<li>Used when a change requires an action, not just a value update</li>
+</ul>
+```java
+// when targetTemp changes, forward the new value to the model
+targetTemp.addListener((obs, oldVal, newVal) -> {
+    model.setTargetTemp(newVal.doubleValue());
+    refresh();
+});
+```
+
+</div>
+
+<div className='fragment' style={{backgroundColor: 'rgba(74,153,153,0.15)', padding: '0.4em 0.8em', borderRadius: '8px'}}>
+
+<p style={{margin: '0'}}>**Binding** — declarative: "always reflect this value"</p>
+<ul style={{margin: '0.2em 0'}}>
+<li>JavaFX maintains the relationship automatically</li>
+<li>Used to keep UI elements in sync with ViewModel properties</li>
+</ul>
+```java
+// one-way: label always shows the current actualTemp
+actualLabel.textProperty().bind(
+    viewModel.actualTempProperty().asString("Actual: %.1f °C"));
+
+// bidirectional: slider and targetTemp stay in sync
+targetSlider.valueProperty().bindBidirectional(viewModel.targetTempProperty());
+```
+
+</div>
+
+</div>
+
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Application
+```java
+public class ThermostatApp extends Application {
+
+    @Override
+    public void start(Stage stage) throws Exception {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("thermostat.fxml"));
+        Parent root = loader.load();
+
+        ThermostatModel model = new ThermostatModel();
+        ThermostatViewModel viewModel = new ThermostatViewModel();
+        viewModel.setModel(model);
+
+        ThermostatController controller = loader.getController();
+        controller.setViewModel(viewModel);
+
+        stage.setScene(new Scene(root, 300, 200));
+        stage.setTitle("Thermostat");
+        stage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
+```
+
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+<Slide>
+## Transition to Prof. Bell's Slides
+
+* Prof. Bell has a bigger example with SceneItAll.
+* You can always go through his lectures and notes.
+* The main difference is his contains ObservableLists.
+* Let's now go back to his slides...
 </Slide>
 
 <Slide>
@@ -487,28 +715,26 @@ The same "Activate Scene" feature. Look at what each class <strong>depends on</s
 
 ```java
 public class AreaDashboardController {
-    // Depends on View widgets ↓
-    @FXML private Slider brightnessSlider;
-    @FXML private Label brightnessValueLabel;
-    @FXML private ListView<String> deviceList;
-    @FXML private ComboBox<String> sceneSelector;
+  // Depends on View widgets ↓
+  @FXML private Slider brightnessSlider;
+  @FXML private Label brightnessValueLabel;
+  @FXML private ListView<String> deviceList;
+  @FXML private ComboBox<String> sceneSelector;
 
-    // AND depends on the Model ↓
-    private Area model;
+  // AND depends on the Model ↓
+  private Area model;
 
-    @FXML private void handleActivateScene() {
-        model.activateScene(sceneSelector.getValue());
-        // Must know about EVERY widget to update
-        brightnessSlider.setValue(model.getAvgBrightness());
-        brightnessValueLabel.setText(model.getAvgBrightness() + "%");
-        deviceList.getItems().setAll(/* ... */);
-    }
+  @FXML private void handleActivateScene() {
+    model.activateScene(sceneSelector.getValue());
+    // Must know about EVERY widget to update
+    brightnessSlider.setValue(model.getAvgBrightness());
+    brightnessValueLabel.setText(model.getAvgBrightness() + "%");
+    deviceList.getItems().setAll(/* ... */);
+  }
 }
 ```
 
 **Depends on:** Model + Slider + Label + ListView + ComboBox
-
-**To test:** need JavaFX runtime, FXML, all widgets instantiated
 
 </div>
 
@@ -518,33 +744,27 @@ public class AreaDashboardController {
 
 ```java
 public class AreaDashboardViewModel {
-    // Depends on the Model only ↓
-    private Area model;
+  // Depends on the Model only ↓
+  private Area model;
 
-    // Exposes observable properties (no widgets!)
-    private final IntegerProperty brightness = ...;
-    private final ObservableList<String> statuses = ...;
+  // Exposes observable properties (no widgets!)
+  private final IntegerProperty brightness = ...;
+  private final ObservableList<String> statuses = ...;
 
-    public void activateScene(String name) {
-        model.activateScene(name);
-        brightness.set(model.getAvgBrightness());
-        statuses.setAll(/* ... */);
-        // View updates automatically via binding
-    }
+  public void activateScene(String name) {
+    model.activateScene(name);
+    brightness.set(model.getAvgBrightness());
+    statuses.setAll(/* ... */);
+    // View updates automatically via binding
+  }
 }
 ```
 
 **Depends on:** Model only
 
-**To test:** `new AreaDashboardViewModel()` — no UI needed
-
 </div>
 
 </div>
-
-<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
-Same logic. But the MVC Controller <strong>depends on the View</strong> — it names specific widgets. The ViewModel depends on <strong>nothing but the Model</strong>. That's why one is testable and the other isn't.
-</p>
 
 <aside className="notes">
 **The punchline is the dependency arrows.** MVC Controller depends on both Model AND View widgets. ViewModel depends on Model only. That's the entire difference — and it's what makes one testable and the other not.
@@ -572,36 +792,6 @@ Same logic. But the MVC Controller <strong>depends on the View</strong> — it n
 
 <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.7em'}}>
 
-<div style={{backgroundColor: 'rgba(74,153,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
-
-**ViewModel test — pure Java, no UI**
-
-```java
-@Test
-void activateScene_updatesDeviceStatuses() {
-    // Arrange
-    AreaDashboardViewModel vm =
-        new AreaDashboardViewModel();
-    Area area = new Area("Living Room");
-    area.addDevice(new Light("Ceiling", 100));
-    area.addDevice(new Fan("Floor Fan", true));
-    area.addScene("Evening",
-        Map.of("Ceiling", 30));
-    vm.setModel(area);
-
-    // Act
-    vm.activateScene("Evening");
-
-    // Assert
-    assertEquals(30, vm.brightnessProperty().get());
-    assertTrue(vm.getDeviceStatuses()
-        .contains("Ceiling: 30%"));
-}
-```
-
-**Runs in: ~5 ms**
-
-</div>
 
 <div style={{backgroundColor: 'rgba(200,74,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
 
@@ -610,30 +800,61 @@ void activateScene_updatesDeviceStatuses() {
 ```java
 @Test
 void activateScene_updatesDeviceStatuses() {
-    // Arrange — need JavaFX runtime!
-    Platform.startup(() -> {});
-    FXMLLoader loader = new FXMLLoader(
-        getClass().getResource(
-            "/area-dashboard.fxml"));
-    Parent root = loader.load();
-    Stage stage = new Stage();
-    stage.setScene(new Scene(root));
-    stage.show();
-    // ... set up model, find widgets ...
+  // Arrange — need JavaFX runtime!
+  Platform.startup(() -> {});
+  FXMLLoader loader = new FXMLLoader(
+    getClass().getResource(
+        "/area-dashboard.fxml"));
+  Parent root = loader.load();
+  Stage stage = new Stage();
+  stage.setScene(new Scene(root));
+  stage.show();
+  // ... set up model, find widgets ...
 
-    // Act — simulate button click
-    clickOn("#sceneButton");
+  // Act — simulate button click
+  clickOn("#sceneButton");
 
-    // Assert — inspect widget state
-    ListView list = lookup("#deviceList")
-        .query();
-    // ... check list items ...
+  // Assert — inspect widget state
+  ListView list = lookup("#deviceList").query();
+  // ... check list items ...
 }
 ```
 
 **Runs in: ~2000 ms** (if it doesn't flake)
 
 </div>
+
+<div className='fragment' style={{backgroundColor: 'rgba(74,153,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+**ViewModel test — pure Java, no UI**
+
+```java
+@Test
+void activateScene_updatesDeviceStatuses() {
+  // Arrange
+  AreaDashboardViewModel vm =
+      new AreaDashboardViewModel();
+  Area area = new Area("Living Room");
+  area.addDevice(new Light("Ceiling", 100));
+  area.addDevice(new Fan("Floor Fan", true));
+  area.addScene("Evening",
+        Map.of("Ceiling", 30));
+  vm.setModel(area);
+
+  // Act
+  vm.activateScene("Evening");
+
+  // Assert
+  assertEquals(30, vm.brightnessProperty().get());
+  assertTrue(vm.getDeviceStatuses()
+      .contains("Ceiling: 30%"));
+}
+```
+
+**Runs in: ~5 ms**
+
+</div>
+
 
 </div>
 
@@ -658,7 +879,7 @@ void activateScene_updatesDeviceStatuses() {
 
 <Slide>
 
-## What ViewModel Tests Should Cover
+## Good ViewModel Tests
 
 ```java
 // 1. State initialization
@@ -711,11 +932,24 @@ void activateScene_withNullName_doesNothing() {
 
 <Slide>
 
-## What ViewModel Tests Should NOT Cover
+## What ViewModel Tests Should and Should NOT Cover
 
 <div style={{fontSize: '0.8em'}}>
 
-<div style={{backgroundColor: 'rgba(200,74,74,0.15)', padding: '0.8em', borderRadius: '8px', marginBottom: '1em'}}>
+<div style={{backgroundColor: 'rgba(74,153,74,0.15)', padding: '0.8em', borderRadius: '8px', marginBottom: '1em'}}>
+
+**Do test ViewModel logic:**
+
+- Does setting brightness to 150 clamp to 100?
+- Does activating a scene update the correct properties?
+- Does an empty area show an empty device list?
+- Does a null scene name get handled gracefully?
+
+These are decisions the ViewModel makes, independent of how the View displays them.
+
+</div>
+
+<div style={{backgroundColor: 'rgba(200,74,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
 
 **Don't test View concerns in ViewModel tests:**
 
@@ -726,19 +960,6 @@ void activateScene_withNullName_doesNothing() {
 - Focus order or tab behavior
 
 These are View responsibilities. Test them in E2E tests (sparingly) or manual testing.
-
-</div>
-
-<div style={{backgroundColor: 'rgba(74,153,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
-
-**Do test ViewModel logic:**
-
-- Does setting brightness to 150 clamp to 100?
-- Does activating a scene update the correct properties?
-- Does an empty area show an empty device list?
-- Does a null scene name get handled gracefully?
-
-These are decisions the ViewModel makes, independent of how the View displays them.
 
 </div>
 
@@ -758,75 +979,6 @@ If your test imports <code>javafx.scene</code>, it's probably testing the wrong 
 
 </Slide>
 
-{/* ============================================ */}
-{/* COMPREHENSION CHECK */}
-{/* ============================================ */}
-
-<Slide>
-
-## Comprehension Check
-
-<p style={{fontSize: '1.1em', textAlign: 'center', marginTop: '2em'}}>
-Open <strong>Poll Everywhere</strong> and answer the next 4 questions.
-</p>
-
-<aside className="notes">
-**Run 4 multiple-choice questions on Poll Everywhere. Give ~60 seconds per question, then briefly discuss the answer.**
-
----
-
-**Question 1: MVC vs MVVM dependencies**
-
-In our MVVM implementation, what does the ViewModel depend on?
-
-- A. The Model and the View (FXML widgets)
-- B. The Model only ✅
-- C. The View only (it reads widget values directly)
-- D. Nothing — it's completely standalone
-
-*Discussion:* This is the core insight of the lecture. The MVC Controller depends on Model + View widgets. The ViewModel depends on Model only — it exposes observable properties but has no reference to any widget. D is tempting but wrong — the ViewModel does read from and update the Model. If students picked A, revisit the comparison slide: that's the MVC Controller, not the ViewModel.
-
----
-
-**Question 2: ObservableList behavior**
-
-You have an `ObservableList<String>` of device statuses bound to a ListView. A Light in your Model changes brightness from 70% to 30%. What happens to the ListView?
-
-- A. It updates automatically — ObservableList detects the brightness change
-- B. Nothing — ObservableList only fires on add/remove/replace, not on changes inside existing items ✅
-- C. It throws a ConcurrentModificationException
-- D. The ListView goes blank because the binding is broken
-
-*Discussion:* This is the gotcha we covered. ObservableList fires when you `add()`, `remove()`, or `setAll()` — but it does NOT fire when a property inside an existing item changes. The fix: call `setAll()` in the ViewModel to replace the entire list contents after the model changes. Students who got this wrong should revisit the ObservableList slide.
-
----
-
-**Question 3: What to test where**
-
-You want to verify that activating the "Evening" scene sets brightness to 30%. Where should this test live?
-
-- A. ViewModel unit test — call `viewModel.activateScene("Evening")` and assert `brightnessProperty().get() == 30` ✅
-- B. E2E test with TestFX — click the Activate button and check the slider position
-- C. Model unit test — call `area.activateScene("Evening")` and check device brightness
-- D. Both A and C are correct, but not B
-
-*Discussion:* A is the best answer — it tests the ViewModel's responsibility (translating model state into UI-ready properties) without starting the UI. C tests the Model's logic but not the ViewModel's property update. B works but is slow and brittle — save E2E tests for critical user journeys that span the full stack. D is a reasonable argument (both A and C test valuable things) but A is the most direct test of the behavior described.
-
----
-
-**Question 4: E2E test locators**
-
-You're writing a TestFX E2E test. You need to click the "Activate" button. Which locator strategy is most resilient to UI refactoring?
-
-- A. `clickOn("#activateButton")` — find by fx:id
-- B. `clickOn(".button")` — find by CSS class
-- C. `clickOn("Activate")` — find by visible text
-- D. `clickOn(hasAccessibleText("Activate scene"))` — find by accessibility label ✅
-
-*Discussion:* A breaks when a developer renames the fx:id. B matches every button on screen. C breaks when the label text changes (e.g., "Activate" → "Apply Scene") and may match other text on the page. D uses the accessibility label, which describes what the element *does* — that doesn't change when you refactor. Bonus: this is the same `accessibleText` you added in L28 for screen reader users. Your accessibility work makes your tests more stable — they reinforce each other.
-</aside>
-
-</Slide>
 
 {/* ============================================ */}
 {/* ARC 4: E2E TESTING WITH TESTFX (~12 min) */}
@@ -908,8 +1060,7 @@ public class AreaDashboardE2ETest extends ApplicationTest {
     @Override
     public void start(Stage stage) throws Exception {
         // Load the real FXML, create real widgets
-        FXMLLoader loader = new FXMLLoader(
-            getClass().getResource("/area-dashboard.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/area-dashboard.fxml"));
         stage.setScene(new Scene(loader.load()));
 
         // Set up test data
@@ -1159,7 +1310,7 @@ void selectCookbook_populatesRecipeNames() {
 
 <div style={{fontSize: '0.85em'}}>
 
-**Lab 12 (next Monday): Hands-on GUI practice**
+~~**Lab 12 (next Monday/Tuesday): Hands-on GUI practice**~~
 - Build SceneItAll GUI components using MVC and MVVM patterns from L29 and L30
 - Practice ViewModel testing and FXML binding
 - Bring your laptop with Scene Builder installed
@@ -1190,6 +1341,15 @@ Today you learned to separate what the UI shows from how it works, and to test b
 > That's it for today. Questions?
 </aside>
 
+</Slide>
+
+<Slide>
+## Bonus Slide
+
+<Img src='/img/lectures/web/l30-mvvm-meme.webp'
+  width={800}
+alt="Comic strip by Jeff Lofvers (Don't Hit Save, 2015). Panel 1: A woman tells a man at a laptop 'they'll need you to use the MVVM pattern for this project.' He replies 'MVVM? I can't wait!' Panel 2: She asks 'Do you even know what MVVM stands for?' He deflects: 'Do you?' She says 'I asked first.' Panel 3: He types frantically and says 'It's um... Very technical. I totally know it, though.' Panel 4: She says 'Dude, I can see you googling.' He says 'No, no. I was just checking my emai--' His screen shows 'Model View ViewModel?!? Those words don't even make sense.'"
+/>
 </Slide>
 
 </RevealJS>
