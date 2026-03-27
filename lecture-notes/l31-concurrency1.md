@@ -524,114 +524,43 @@ sequenceDiagram
 
 Both threads are now stuck forever. Thread A holds `room` and waits for `device`. Thread B holds `device` and waits for `room`. Neither will ever release their lock because they're both waiting.
 
-### Four Conditions for Deadlock
+### Preventing Deadlock: Break the Circular Wait
 
-Deadlock requires all four of these conditions (known as the Coffman conditions):
+The core of deadlock is a **circular wait**: Thread A holds lock X and waits for lock Y, while Thread B holds lock Y and waits for lock X. The simplest and most reliable prevention is to eliminate the cycle by **always acquiring locks in the same order**.
 
-1. **Mutual exclusion**: Resources cannot be shared (only one thread can hold a lock)
-2. **Hold and wait**: Threads hold resources while waiting for others
-3. **No preemption**: Resources can't be forcibly taken from threads
-4. **Circular wait**: A cycle exists in the resource dependency graph
-
-To prevent deadlock, break any one of these conditions.
-
-### Preventing Deadlock
-
-**Strategy 1: Consistent Lock Ordering**
-
-The simplest prevention is to always acquire locks in the same order:
+In our example, `activateScene()` acquires room then device, but `firmwareUpdate()` acquires device then room. The fix: make both methods acquire room first:
 
 ```java
-public class SafeSmartHomeService {
-
-    private void acquireLocksInOrder(Area room, Device device,
-                                      Runnable action) {
-        // Always lock in order: room first, then device
-        // Use System.identityHashCode to create a consistent ordering
-        Object first, second;
-        if (System.identityHashCode(room) < System.identityHashCode(device)) {
-            first = room;
-            second = device;
-        } else {
-            first = device;
-            second = room;
-        }
-
-        synchronized (first) {
-            synchronized (second) {
-                action.run();
-            }
-        }
-    }
-
-    public void activateScene(Scene scene, Area room, Device device) {
-        acquireLocksInOrder(room, device, () -> {
+// BEFORE: different lock orders → deadlock possible
+public void activateScene(Scene scene, Area room, Device device) {
+    synchronized (room) {          // room first
+        synchronized (device) {    // device second
             device.setState(scene.getTargetState(device));
-        });
+        }
     }
+}
 
-    public void firmwareUpdate(Device device, Area room, FirmwarePackage firmware) {
-        acquireLocksInOrder(room, device, () -> {
+public void firmwareUpdate(Device device, Area room, FirmwarePackage firmware) {
+    synchronized (device) {        // device first — WRONG ORDER
+        synchronized (room) {      // room second
             device.applyFirmware(firmware);
             room.updateDeviceManifest(device);
-        });
-    }
-}
-```
-
-**Strategy 2: Lock Timeouts**
-
-Use `tryLock()` with a timeout to avoid waiting forever:
-
-```java
-public boolean activateSceneWithTimeout(Scene scene, Area room, Device device,
-                                         Duration timeout) {
-    long deadline = System.currentTimeMillis() + timeout.toMillis();
-
-    while (System.currentTimeMillis() < deadline) {
-        if (roomLock.tryLock()) {
-            try {
-                if (deviceLock.tryLock()) {
-                    try {
-                        device.setState(scene.getTargetState(device));
-                        return true;
-                    } finally {
-                        deviceLock.unlock();
-                    }
-                }
-            } finally {
-                roomLock.unlock();
-            }
         }
-        // Didn't get both locks; sleep briefly and retry
-        Thread.sleep(10);
     }
-    return false;  // Timed out
 }
-```
 
-**Strategy 3: Reduce Lock Scope**
-
-Hold locks for the shortest time possible:
-
-```java
-public void firmwareUpdateSafely(Device device, Area room, FirmwarePackage firmware) {
-    // Apply firmware with only the device lock
-    synchronized (device) {
-        device.applyFirmware(firmware);
-    }
-    // Release device lock before acquiring room lock
-    synchronized (room) {
-        room.updateDeviceManifest(device);
+// AFTER: same lock order → no circular wait → no deadlock
+public void firmwareUpdate(Device device, Area room, FirmwarePackage firmware) {
+    synchronized (room) {          // room first — SAME ORDER
+        synchronized (device) {    // device second
+            device.applyFirmware(firmware);
+            room.updateDeviceManifest(device);
+        }
     }
 }
 ```
 
-This approach breaks the "hold and wait" condition, but introduces a new problem: the two updates are no longer atomic. If the system crashes between them, we'd have an inconsistent state.
-
-:::note Recall
-In [Lecture 35 (Safety and Reliability)](/lecture-notes/l35-safety-reliability), we discussed how concurrency bugs in a smart home system can have real consequences—lights flickering unexpectedly, shades stuck in the wrong position, devices becoming unresponsive. Deadlocks are particularly problematic because they cause the system to hang rather than fail fast. A user might tap "activate scene" and see nothing happen, with no error message explaining why.
-:::
+Consistent lock ordering is a convention, not a language mechanism — you enforce it through code review and documentation. "In this codebase, we always lock rooms before devices." Simple rule, prevents an entire class of bugs.
 
 ### Race Conditions Revisited
 
