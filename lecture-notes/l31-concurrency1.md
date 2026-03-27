@@ -4,17 +4,15 @@ lecture_number: 31
 title: "Concurrency I: Threads and Synchronization"
 ---
 
-Software systems rarely do just one thing at a time. A web server handles multiple requests simultaneously. A desktop application keeps its UI responsive while loading data in the background. An autograder processes dozens of student submissions in parallel as a deadline approaches.
+Software systems rarely do just one thing at a time. A web server handles multiple requests simultaneously. A desktop application keeps its UI responsive while loading data in the background. A smart home hub processes device commands from multiple users at the same time as everyone arrives home in the evening.
 
-This lecture introduces **concurrency**—the ability to manage multiple tasks that overlap in time—and its primary mechanism in Java: **threads**. We'll use Pawtograder as our running example, exploring both the power of concurrent execution and the subtle bugs it can introduce.
+This lecture introduces **concurrency**—the ability to manage multiple tasks that overlap in time—and its primary mechanism in Java: **threads**. We'll use SceneItAll as our running example, exploring both the power of concurrent execution and the subtle bugs it can introduce.
 
-:::note Architectural Simplification
-The real Pawtograder is a TypeScript microservices application that uses GitHub Actions to run grading jobs in isolated containers. For these lectures, we'll imagine Pawtograder as a **Java monolith**—a single application handling submissions, grading, and notifications in one process. This simplification lets us focus on core concurrency concepts without the added complexity of distributed systems. The concurrency challenges we explore here (race conditions, deadlocks, synchronization) apply equally to both architectures, but are easier to reason about in a single-process context.
-:::
+SceneItAll is a smart home control application that manages IoT devices—lights (switched, dimmable, RGBW), fans (on/off, speeds 1–4), shades (0–100%), organized into areas (rooms, which can be nested). Users define **scenes**—preset conditions across multiple devices (e.g., "Evening" dims lights to 30% and closes shades). The hub communicates with devices over Zigbee and must handle commands from multiple users simultaneously.
 
 ## Describe the role of threads as a concurrency mechanism and understand the concept of "interrupts" (15 minutes)
 
-Consider what happens when Pawtograder approaches an assignment deadline. Hundreds of students submit their code within the final hour. If the autograder processes submissions sequentially—one at a time—students who submit early might wait hours for feedback while the system works through the queue. But if the autograder can process multiple submissions *concurrently*, it can provide faster feedback to everyone.
+Consider what happens when SceneItAll's hub receives a burst of commands. Multiple family members arrive home and activate their preferred scenes from their phones. If the hub processes device commands sequentially—one at a time—activating a scene that controls 15 devices could block all other commands for seconds. But if the hub can send commands to multiple devices *concurrently*, it can keep the whole house responsive.
 
 ### What Is a Thread?
 
@@ -27,17 +25,17 @@ sequenceDiagram
     participant Main as Main Thread
     participant T1 as Worker Thread 1
     participant T2 as Worker Thread 2
-    
-    Note over Main: Sequential: Process one at a time
-    Main->>Main: Process Submission A (3 sec)
-    Main->>Main: Process Submission B (3 sec)
-    Main->>Main: Process Submission C (3 sec)
+
+    Note over Main: Sequential: Send one at a time
+    Main->>Main: Send command to Light A (3 sec)
+    Main->>Main: Send command to Fan B (3 sec)
+    Main->>Main: Send command to Shade C (3 sec)
     Note over Main: Total: 9 seconds
-    
-    Note over Main,T2: Concurrent: Process in parallel
-    Main->>T1: Start Submission A
-    Main->>T2: Start Submission B
-    Main->>Main: Process Submission C
+
+    Note over Main,T2: Concurrent: Send in parallel
+    Main->>T1: Start command to Light A
+    Main->>T2: Start command to Fan B
+    Main->>Main: Send command to Shade C
     T1-->>Main: Done (3 sec)
     T2-->>Main: Done (3 sec)
     Note over Main,T2: Total: ~3 seconds
@@ -50,45 +48,45 @@ Java provides two primary ways to create threads:
 **Option 1: Extend the Thread class**
 
 ```java
-public class SubmissionProcessor extends Thread {
-    private final Submission submission;
-    
-    public SubmissionProcessor(Submission submission) {
-        this.submission = submission;
+public class DeviceCommandSender extends Thread {
+    private final DeviceCommand command;
+
+    public DeviceCommandSender(DeviceCommand command) {
+        this.command = command;
     }
-    
+
     @Override
     public void run() {
         // This code runs in a separate thread
-        TestResult result = runTests(submission);
-        submission.setTestResult(result);
+        DeviceResponse response = sendViaZigbee(command);
+        command.setResponse(response);
     }
 }
 
 // Usage
-SubmissionProcessor processor = new SubmissionProcessor(submission);
-processor.start();  // Starts the new thread
+DeviceCommandSender sender = new DeviceCommandSender(command);
+sender.start();  // Starts the new thread
 ```
 
 **Option 2: Implement the Runnable interface**
 
 ```java
-public class SubmissionTask implements Runnable {
-    private final Submission submission;
-    
-    public SubmissionTask(Submission submission) {
-        this.submission = submission;
+public class DeviceCommandTask implements Runnable {
+    private final DeviceCommand command;
+
+    public DeviceCommandTask(DeviceCommand command) {
+        this.command = command;
     }
-    
+
     @Override
     public void run() {
-        TestResult result = runTests(submission);
-        submission.setTestResult(result);
+        DeviceResponse response = sendViaZigbee(command);
+        command.setResponse(response);
     }
 }
 
 // Usage
-Thread thread = new Thread(new SubmissionTask(submission));
+Thread thread = new Thread(new DeviceCommandTask(command));
 thread.start();
 ```
 
@@ -96,22 +94,21 @@ The `Runnable` approach is generally preferred because Java doesn't support mult
 
 ### Thread Pools: Managing Many Threads
 
-Creating a new thread for every task has overhead—memory allocation, OS scheduling, etc. For systems like Pawtograder that process many submissions, we use **thread pools**: a collection of reusable worker threads.
+Creating a new thread for every task has overhead—memory allocation, OS scheduling, etc. For systems like SceneItAll that send many device commands over Zigbee, we use **thread pools**: a collection of reusable worker threads.
 
 ```java
-public class AutograderService {
-    // A pool of 10 worker threads
+public class HubCommandService {
+    // A pool of 10 command worker threads
     private final ExecutorService executor = Executors.newFixedThreadPool(10);
-    
-    public void processSubmission(Submission submission) {
+
+    public void sendDeviceCommand(DeviceCommand command) {
         executor.submit(() -> {
-            TestResult result = runTests(submission);
-            LintResult lint = runLinter(submission);
-            GradingResult grade = calculateGrade(result, lint);
-            submission.setGradingResult(grade);
+            DeviceResponse response = sendViaZigbee(command);
+            DeviceStatus status = parseResponse(response);
+            command.getDevice().updateStatus(status);
         });
     }
-    
+
     public void shutdown() {
         executor.shutdown();
     }
@@ -122,24 +119,24 @@ The `ExecutorService` manages the threads for us. When we `submit()` a task, it 
 
 ### Interrupts: Canceling Long-Running Work
 
-What happens when a student's submission contains an infinite loop? Without intervention, the autograder thread would run forever. Java provides **interrupts** as a cooperative mechanism for canceling threads.
+What happens when a device stops responding during a firmware update? Without intervention, the command thread would block forever waiting for a Zigbee response. Java provides **interrupts** as a cooperative mechanism for canceling threads.
 
 ```java
-public class TimedTestRunner {
+public class TimedCommandSender {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
-    
-    public TestResult runWithTimeout(Submission submission, Duration timeout) {
-        Future<TestResult> future = executor.submit(() -> runTests(submission));
-        
+
+    public DeviceResponse sendWithTimeout(DeviceCommand command, Duration timeout) {
+        Future<DeviceResponse> future = executor.submit(() -> sendViaZigbee(command));
+
         try {
-            // Wait at most 'timeout' for the result
+            // Wait at most 'timeout' for the response
             return future.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {
-            // Tests took too long—interrupt the thread
+            // Device took too long—interrupt the thread
             future.cancel(true);  // 'true' means interrupt if running
-            return TestResult.timeout("Tests exceeded " + timeout.toSeconds() + " seconds");
+            return DeviceResponse.timeout("Device exceeded " + timeout.toSeconds() + " seconds");
         } catch (InterruptedException | ExecutionException e) {
-            return TestResult.error(e.getMessage());
+            return DeviceResponse.error(e.getMessage());
         }
     }
 }
@@ -148,13 +145,13 @@ public class TimedTestRunner {
 When `cancel(true)` is called, Java sets the thread's **interrupt flag**. Well-behaved code checks this flag periodically:
 
 ```java
-public void runTests(Submission submission) {
-    for (TestCase test : testSuite) {
+public void applyFirmwareUpdate(Device device, FirmwarePackage firmware) {
+    for (FirmwareChunk chunk : firmware.getChunks()) {
         // Check if we've been interrupted
         if (Thread.currentThread().isInterrupted()) {
-            throw new InterruptedException("Test execution cancelled");
+            throw new InterruptedException("Firmware update cancelled");
         }
-        executeTest(test, submission);
+        sendChunkToDevice(device, chunk);
     }
 }
 ```
@@ -162,56 +159,60 @@ public void runTests(Submission submission) {
 Interrupts are *cooperative*—the running code must check for and respond to them. Code that ignores interrupts (or catches `InterruptedException` without acting on it) can't be reliably cancelled.
 
 :::tip History of Programming
-Java's interrupt mechanism reflects a deliberate design choice. Early versions of Java included `Thread.stop()`, which forcibly terminated threads. This turned out to be dangerous—stopping a thread mid-operation could leave shared data in an inconsistent state (imagine stopping a thread halfway through updating a database record). The method was deprecated in Java 1.2 (1998), and cooperative interruption became the standard approach.
+Java's interrupt mechanism reflects a deliberate design choice. Early versions of Java included `Thread.stop()`, which forcibly terminated threads. This turned out to be dangerous—stopping a thread mid-operation could leave shared data in an inconsistent state (imagine stopping a thread halfway through updating a device's firmware). The method was deprecated in Java 1.2 (1998), and cooperative interruption became the standard approach.
 :::
 
 ## Recognize the need for synchronization in concurrent programs and understand the concept of "atomicity" (15 minutes)
 
 Threads introduce a subtle but critical problem: when multiple threads access shared data, things can go wrong in surprising ways.
 
-### The Problem: A Race to Grade
+### The Problem: A Race to Control Devices
 
-Consider this scenario in Pawtograder: a submission is ready to be graded, and two TAs—Alice and Bob—both see it in their queue. They both click "Claim" at nearly the same moment.
+Consider this scenario in SceneItAll: two users—Alice and Bob—both activate different scenes at the same time on the same room. Alice activates "Evening" (dims lights to 30%, closes shades) while Bob activates "Movie Night" (turns lights off, closes shades to 80%).
 
 ```java
-public class GraderAssignmentService {
-    
-    public boolean claimSubmission(Grader grader, Submission submission) {
-        // Check if submission is available
-        if (submission.getAssignedGrader() == null) {
-            // Assign it to this grader
-            submission.setAssignedGrader(grader);
-            return true;
+public class SceneService {
+
+    public boolean activateScene(Scene scene, Area room) {
+        // Check current device states in the room
+        for (Device device : room.getDevices()) {
+            DeviceState targetState = scene.getTargetState(device);
+            if (targetState != null) {
+                // Read current state, then set new state
+                device.setState(targetState);
+            }
         }
-        return false;
+        return true;
     }
 }
 ```
 
-This code looks correct. It checks if the submission is unassigned, and if so, assigns it. But when two threads execute this method simultaneously, something unexpected can happen:
+This code looks correct. It iterates through devices and sets each to the scene's target state. But when two threads execute this method simultaneously on the same room, something unexpected can happen:
 
 ```
-Time    Thread A (Alice)                    Thread B (Bob)
+Time    Thread A (Alice: "Evening")         Thread B (Bob: "Movie Night")
 ────    ────────────────────────────────    ────────────────────────────────
- 1      if (getAssignedGrader() == null)    
- 2          → true, enter if block          if (getAssignedGrader() == null)
- 3                                              → true, enter if block
- 4      setAssignedGrader(Alice)            
- 5                                          setAssignedGrader(Bob)
- 6      return true                         return true
+ 1      Read light state (on, 100%)
+ 2          → set brightness to 30%         Read light state (on, 100%)
+ 3                                              → set brightness to 0% (off)
+ 4      Read shade state (open, 0%)
+ 5                                          Read shade state (open, 0%)
+ 6      Set shade to 100% (closed)
+ 7                                          Set shade to 80%
+ 8      return true                         return true
 ```
 
-Both Alice and Bob see the submission as unassigned (steps 2-3), so both proceed to assign it. Bob's assignment (step 5) overwrites Alice's (step 4). Both methods return `true`, both TAs think they've claimed the submission, but only Bob's assignment persists. Alice might start grading a submission that's actually assigned to Bob.
+The light ends up off (Bob's command wins), and the shades end up at 80% (Bob's command also wins). Alice's "Evening" scene reports success, but the room is actually in "Movie Night" state. Worse, the devices could end up in a mixed state that matches *neither* scene—imagine if the timing were slightly different and Alice's shade command landed after Bob's.
 
 This is a **race condition**: the program's behavior depends on the relative timing of operations, which is unpredictable.
 
 :::note Recall
-In [Lecture 12 (Domain Modeling)](/lecture-notes/l12-domain-modeling), we encountered a similar scenario: a student resubmits while a grader is reviewing their work. That was a domain modeling challenge—how do we represent these competing actions? Here we see the technical challenge: even with a good domain model, concurrent access to shared state can corrupt our data.
+In [Lecture 12 (Domain Modeling)](/lecture-notes/l12-domain-modeling), we encountered a similar scenario: competing actions that affect the same domain objects. That was a domain modeling challenge—how do we represent these competing actions? Here we see the technical challenge: even with a good domain model, concurrent access to shared state can corrupt our data.
 :::
 
 ### Atomicity: Indivisible Operations
 
-The problem with `claimSubmission` is that "check then act" is not **atomic**—it's not a single indivisible operation. The check (`getAssignedGrader() == null`) and the action (`setAssignedGrader(grader)`) are separate steps, and another thread can intervene between them.
+The problem with `activateScene` is that reading and writing device state across multiple devices is not **atomic**—it's not a single indivisible operation. Reading a device's current state and writing the new state are separate steps, and another thread can intervene between them.
 
 An operation is **atomic** if it appears to happen instantaneously from the perspective of all other threads. No other thread can see a partial result or intermediate state.
 
@@ -219,31 +220,31 @@ Some operations are naturally atomic. In Java, reading or writing a single primi
 
 ```java
 // NOT atomic: read-modify-write
-counter++;  // Actually: read counter, add 1, write counter
+deviceCount++;  // Actually: read deviceCount, add 1, write deviceCount
 
 // NOT atomic: check-then-act
-if (map.get(key) == null) {
-    map.put(key, value);
+if (registry.get(deviceId) == null) {
+    registry.put(deviceId, device);
 }
 
 // NOT atomic: updating multiple fields
-submission.setStatus(Status.GRADED);
-submission.setGradedAt(LocalDateTime.now());
+light.setBrightness(30);
+light.setColorTemp(2700);
 ```
 
 ### Visualizing the Race
 
-Here's what happens when two threads increment a shared counter:
+Here's what happens when two threads increment a shared device counter during device registration:
 
 ```mermaid
 sequenceDiagram
-    participant Counter as counter = 0
+    participant Counter as deviceCount = 0
     participant A as Thread A
     participant B as Thread B
-    
-    Note over A,B: Both want to execute counter++
-    A->>Counter: Read counter (gets 0)
-    B->>Counter: Read counter (gets 0)
+
+    Note over A,B: Both want to execute deviceCount++
+    A->>Counter: Read deviceCount (gets 0)
+    B->>Counter: Read deviceCount (gets 0)
     A->>A: Add 1 (calculates 1)
     B->>B: Add 1 (calculates 1)
     A->>Counter: Write 1
@@ -262,25 +263,25 @@ Without proper synchronization, there's no guarantee that Thread B will ever see
 ```java
 public class StaleDataExample {
     private boolean ready = false;
-    private int value = 0;
-    
+    private int brightness = 0;
+
     // Thread A
     public void writer() {
-        value = 42;
+        brightness = 30;
         ready = true;
     }
-    
+
     // Thread B
     public void reader() {
         while (!ready) {
             // spin-wait
         }
-        System.out.println(value);  // Might print 0!
+        System.out.println(brightness);  // Might print 0!
     }
 }
 ```
 
-Without synchronization, Thread B might see `ready = true` but still read `value = 0`, because the writes might be reordered or cached differently across CPUs.
+Without synchronization, Thread B might see `ready = true` but still read `brightness = 0`, because the writes might be reordered or cached differently across CPUs.
 
 ## Utilize locks and concurrent collections to implement basic thread-safe code (15 minutes)
 
@@ -291,14 +292,16 @@ Java provides several mechanisms for ensuring thread safety. Let's start with th
 The simplest way to make code thread-safe is the `synchronized` keyword. It ensures that only one thread can execute the synchronized code at a time.
 
 ```java
-public class GraderAssignmentService {
-    
-    public synchronized boolean claimSubmission(Grader grader, Submission submission) {
-        if (submission.getAssignedGrader() == null) {
-            submission.setAssignedGrader(grader);
-            return true;
+public class SceneService {
+
+    public synchronized boolean activateScene(Scene scene, Area room) {
+        for (Device device : room.getDevices()) {
+            DeviceState targetState = scene.getTargetState(device);
+            if (targetState != null) {
+                device.setState(targetState);
+            }
         }
-        return false;
+        return true;
     }
 }
 ```
@@ -306,40 +309,39 @@ public class GraderAssignmentService {
 When a method is `synchronized`, Java acquires a **lock** (also called a **monitor**) on the object before executing the method. If another thread already holds the lock, the calling thread waits.
 
 ```
-Time    Thread A (Alice)                    Thread B (Bob)
+Time    Thread A (Alice: "Evening")         Thread B (Bob: "Movie Night")
 ────    ────────────────────────────────    ────────────────────────────────
- 1      Acquire lock on service             
- 2      if (getAssignedGrader() == null)    Try to acquire lock → BLOCKED
- 3          → true                          (waiting...)
- 4      setAssignedGrader(Alice)            (waiting...)
- 5      return true                         (waiting...)
- 6      Release lock                        Acquire lock
- 7                                          if (getAssignedGrader() == null)
- 8                                              → false (Alice is assigned)
- 9                                          return false
-10                                          Release lock
+ 1      Acquire lock on service
+ 2      Set light brightness to 30%         Try to acquire lock → BLOCKED
+ 3      Set shade to 100%                   (waiting...)
+ 4      return true                         (waiting...)
+ 5      Release lock                        Acquire lock
+ 6                                          Set light brightness to 0%
+ 7                                          Set shade to 80%
+ 8                                          return true
+ 9                                          Release lock
 ```
 
-Now the check-then-act operation is atomic. Bob's thread can't check the assignment status until Alice's thread has finished both checking and assigning.
+Now the scene activation is atomic. Bob's thread can't start modifying devices until Alice's thread has finished applying her entire scene. The room will be in a consistent state—either fully "Evening" then fully "Movie Night", never a mix.
 
 ### Synchronizing on Specific Objects
 
 Instance methods synchronize on `this`. But sometimes we need finer-grained control:
 
 ```java
-public class SubmissionService {
-    private final Map<String, Submission> submissions = new HashMap<>();
-    private final Object submissionsLock = new Object();
-    
-    public void addSubmission(Submission submission) {
-        synchronized (submissionsLock) {
-            submissions.put(submission.getId(), submission);
+public class DeviceRegistryService {
+    private final Map<String, Device> devices = new HashMap<>();
+    private final Object registryLock = new Object();
+
+    public void registerDevice(Device device) {
+        synchronized (registryLock) {
+            devices.put(device.getId(), device);
         }
     }
-    
-    public Submission getSubmission(String id) {
-        synchronized (submissionsLock) {
-            return submissions.get(id);
+
+    public Device getDevice(String id) {
+        synchronized (registryLock) {
+            return devices.get(id);
         }
     }
 }
@@ -355,16 +357,16 @@ Using a dedicated lock object has several advantages:
 Java's `ReentrantLock` class provides more features than `synchronized`:
 
 ```java
-public class GradingSessionManager {
+public class SceneActivationManager {
     private final ReentrantLock lock = new ReentrantLock();
-    private final Map<String, GradingSession> activeSessions = new HashMap<>();
-    
-    public boolean startGrading(Grader grader, Submission submission) {
+    private final Map<String, Scene> activeScenes = new HashMap<>();
+
+    public boolean activateScene(Scene scene, Area room) {
         lock.lock();
         try {
-            if (!activeSessions.containsKey(submission.getId())) {
-                GradingSession session = new GradingSession(grader, submission);
-                activeSessions.put(submission.getId(), session);
+            if (!activeScenes.containsKey(room.getId())) {
+                activeScenes.put(room.getId(), scene);
+                applySceneToDevices(scene, room);
                 return true;
             }
             return false;
@@ -372,8 +374,8 @@ public class GradingSessionManager {
             lock.unlock();  // Always unlock, even if an exception is thrown
         }
     }
-    
-    public boolean tryStartGrading(Grader grader, Submission submission, Duration timeout) {
+
+    public boolean tryActivateScene(Scene scene, Area room, Duration timeout) {
         try {
             // Try to acquire lock, but don't wait forever
             if (lock.tryLock(timeout.toMillis(), TimeUnit.MILLISECONDS)) {
@@ -401,32 +403,31 @@ public class GradingSessionManager {
 Java's `java.util.concurrent` package provides thread-safe collections that handle synchronization internally:
 
 ```java
-public class ActiveGradingTracker {
+public class DeviceRegistry {
     // Thread-safe map without external synchronization
-    private final ConcurrentHashMap<String, GradingSession> activeSessions = 
+    private final ConcurrentHashMap<String, Device> devices =
         new ConcurrentHashMap<>();
-    
-    public void startSession(Submission submission, Grader grader) {
+
+    public void registerDevice(Device device) {
         // putIfAbsent is atomic: check and put in one operation
-        GradingSession newSession = new GradingSession(grader, submission);
-        GradingSession existing = activeSessions.putIfAbsent(
-            submission.getId(), 
-            newSession
+        Device existing = devices.putIfAbsent(
+            device.getId(),
+            device
         );
-        
+
         if (existing != null) {
-            throw new AlreadyBeingGradedException(
-                "Submission " + submission.getId() + " is already being graded"
+            throw new DeviceAlreadyRegisteredException(
+                "Device " + device.getId() + " is already registered"
             );
         }
     }
-    
-    public void endSession(Submission submission) {
-        activeSessions.remove(submission.getId());
+
+    public void removeDevice(String deviceId) {
+        devices.remove(deviceId);
     }
-    
-    public boolean isBeingGraded(Submission submission) {
-        return activeSessions.containsKey(submission.getId());
+
+    public boolean isRegistered(String deviceId) {
+        return devices.containsKey(deviceId);
     }
 }
 ```
@@ -446,23 +447,23 @@ Java's concurrent collections were added in Java 5 (2004) as part of JSR-166, le
 For simple counters and flags, `java.util.concurrent.atomic` provides atomic wrapper classes:
 
 ```java
-public class SubmissionStatistics {
-    private final AtomicInteger totalSubmissions = new AtomicInteger(0);
-    private final AtomicInteger successfulGrades = new AtomicInteger(0);
-    private final AtomicLong totalProcessingTimeMs = new AtomicLong(0);
-    
-    public void recordSubmission() {
-        totalSubmissions.incrementAndGet();  // Atomic increment
+public class HubStatistics {
+    private final AtomicInteger deviceCount = new AtomicInteger(0);
+    private final AtomicInteger commandsSent = new AtomicInteger(0);
+    private final AtomicLong totalResponseTimeMs = new AtomicLong(0);
+
+    public void recordDeviceRegistered() {
+        deviceCount.incrementAndGet();  // Atomic increment
     }
-    
-    public void recordGrade(long processingTimeMs) {
-        successfulGrades.incrementAndGet();
-        totalProcessingTimeMs.addAndGet(processingTimeMs);
+
+    public void recordCommandSent(long responseTimeMs) {
+        commandsSent.incrementAndGet();
+        totalResponseTimeMs.addAndGet(responseTimeMs);
     }
-    
-    public double getAverageProcessingTime() {
-        int count = successfulGrades.get();
-        return count == 0 ? 0 : (double) totalProcessingTimeMs.get() / count;
+
+    public double getAverageResponseTime() {
+        int count = commandsSent.get();
+        return count == 0 ? 0 : (double) totalResponseTimeMs.get() / count;
     }
 }
 ```
@@ -477,50 +478,51 @@ We've seen race conditions—bugs where behavior depends on timing. Now let's ex
 
 Deadlock occurs when two or more threads are each waiting for resources held by the others, creating a cycle of dependencies that can never be resolved.
 
-Consider this scenario in Pawtograder: when a TA needs to reassign a submission, the system must update both the original grading session and the submission record.
+Consider this scenario in SceneItAll: `activateScene` locks the room first, then locks individual devices to apply state changes. Meanwhile, a `firmwareUpdate` operation locks the device first, then locks the room to update the room's device manifest.
 
 ```java
-public class ReassignmentService {
-    
-    public void reassign(GradingSession session, Submission submission, Grader newGrader) {
-        synchronized (session) {
-            synchronized (submission) {
-                session.setStatus(GradingStatus.REASSIGNED);
-                submission.setAssignedGrader(newGrader);
+public class SmartHomeService {
+
+    public void activateScene(Scene scene, Area room) {
+        synchronized (room) {
+            for (Device device : room.getDevices()) {
+                synchronized (device) {
+                    device.setState(scene.getTargetState(device));
+                }
             }
         }
     }
-    
-    public void updateGrade(GradingSession session, Submission submission, Grade grade) {
-        synchronized (submission) {
-            synchronized (session) {
-                submission.setGrade(grade);
-                session.setStatus(GradingStatus.COMPLETED);
+
+    public void firmwareUpdate(Device device, Area room, FirmwarePackage firmware) {
+        synchronized (device) {
+            synchronized (room) {
+                device.applyFirmware(firmware);
+                room.updateDeviceManifest(device);
             }
         }
     }
 }
 ```
 
-Can you spot the problem? `reassign()` acquires locks in the order `session → submission`, while `updateGrade()` acquires them in the order `submission → session`. If two threads call these methods simultaneously:
+Can you spot the problem? `activateScene()` acquires locks in the order `room → device`, while `firmwareUpdate()` acquires them in the order `device → room`. If two threads call these methods simultaneously:
 
 ```mermaid
 sequenceDiagram
-    participant A as Thread A (reassign)
-    participant S as session lock
-    participant U as submission lock
-    participant B as Thread B (updateGrade)
-    
-    A->>S: Acquire session lock ✓
-    B->>U: Acquire submission lock ✓
-    A->>U: Try to acquire submission lock...
-    Note over A,U: BLOCKED (B holds it)
-    B->>S: Try to acquire session lock...
-    Note over B,S: BLOCKED (A holds it)
+    participant A as Thread A (activateScene)
+    participant R as room lock
+    participant D as device lock
+    participant B as Thread B (firmwareUpdate)
+
+    A->>R: Acquire room lock ✓
+    B->>D: Acquire device lock ✓
+    A->>D: Try to acquire device lock...
+    Note over A,D: BLOCKED (B holds it)
+    B->>R: Try to acquire room lock...
+    Note over B,R: BLOCKED (A holds it)
     Note over A,B: DEADLOCK! Neither can proceed.
 ```
 
-Both threads are now stuck forever. Thread A holds `session` and waits for `submission`. Thread B holds `submission` and waits for `session`. Neither will ever release their lock because they're both waiting.
+Both threads are now stuck forever. Thread A holds `room` and waits for `device`. Thread B holds `device` and waits for `room`. Neither will ever release their lock because they're both waiting.
 
 ### Four Conditions for Deadlock
 
@@ -540,39 +542,38 @@ To prevent deadlock, break any one of these conditions.
 The simplest prevention is to always acquire locks in the same order:
 
 ```java
-public class SafeReassignmentService {
-    
-    private void acquireLocksInOrder(GradingSession session, Submission submission, 
+public class SafeSmartHomeService {
+
+    private void acquireLocksInOrder(Area room, Device device,
                                       Runnable action) {
-        // Always lock in order: submission first, then session
+        // Always lock in order: room first, then device
         // Use System.identityHashCode to create a consistent ordering
         Object first, second;
-        if (System.identityHashCode(submission) < System.identityHashCode(session)) {
-            first = submission;
-            second = session;
+        if (System.identityHashCode(room) < System.identityHashCode(device)) {
+            first = room;
+            second = device;
         } else {
-            first = session;
-            second = submission;
+            first = device;
+            second = room;
         }
-        
+
         synchronized (first) {
             synchronized (second) {
                 action.run();
             }
         }
     }
-    
-    public void reassign(GradingSession session, Submission submission, Grader newGrader) {
-        acquireLocksInOrder(session, submission, () -> {
-            session.setStatus(GradingStatus.REASSIGNED);
-            submission.setAssignedGrader(newGrader);
+
+    public void activateScene(Scene scene, Area room, Device device) {
+        acquireLocksInOrder(room, device, () -> {
+            device.setState(scene.getTargetState(device));
         });
     }
-    
-    public void updateGrade(GradingSession session, Submission submission, Grade grade) {
-        acquireLocksInOrder(session, submission, () -> {
-            submission.setGrade(grade);
-            session.setStatus(GradingStatus.COMPLETED);
+
+    public void firmwareUpdate(Device device, Area room, FirmwarePackage firmware) {
+        acquireLocksInOrder(room, device, () -> {
+            device.applyFirmware(firmware);
+            room.updateDeviceManifest(device);
         });
     }
 }
@@ -583,24 +584,23 @@ public class SafeReassignmentService {
 Use `tryLock()` with a timeout to avoid waiting forever:
 
 ```java
-public boolean reassignWithTimeout(GradingSession session, Submission submission, 
-                                    Grader newGrader, Duration timeout) {
+public boolean activateSceneWithTimeout(Scene scene, Area room, Device device,
+                                         Duration timeout) {
     long deadline = System.currentTimeMillis() + timeout.toMillis();
-    
+
     while (System.currentTimeMillis() < deadline) {
-        if (sessionLock.tryLock()) {
+        if (roomLock.tryLock()) {
             try {
-                if (submissionLock.tryLock()) {
+                if (deviceLock.tryLock()) {
                     try {
-                        session.setStatus(GradingStatus.REASSIGNED);
-                        submission.setAssignedGrader(newGrader);
+                        device.setState(scene.getTargetState(device));
                         return true;
                     } finally {
-                        submissionLock.unlock();
+                        deviceLock.unlock();
                     }
                 }
             } finally {
-                sessionLock.unlock();
+                roomLock.unlock();
             }
         }
         // Didn't get both locks; sleep briefly and retry
@@ -615,17 +615,14 @@ public boolean reassignWithTimeout(GradingSession session, Submission submission
 Hold locks for the shortest time possible:
 
 ```java
-public void reassignSafely(GradingSession session, Submission submission, Grader newGrader) {
-    // Prepare new state without locks
-    GradingStatus newStatus = GradingStatus.REASSIGNED;
-    
-    // Acquire locks only for the actual updates
-    synchronized (session) {
-        session.setStatus(newStatus);
+public void firmwareUpdateSafely(Device device, Area room, FirmwarePackage firmware) {
+    // Apply firmware with only the device lock
+    synchronized (device) {
+        device.applyFirmware(firmware);
     }
-    // Release session lock before acquiring submission lock
-    synchronized (submission) {
-        submission.setAssignedGrader(newGrader);
+    // Release device lock before acquiring room lock
+    synchronized (room) {
+        room.updateDeviceManifest(device);
     }
 }
 ```
@@ -633,7 +630,7 @@ public void reassignSafely(GradingSession session, Submission submission, Grader
 This approach breaks the "hold and wait" condition, but introduces a new problem: the two updates are no longer atomic. If the system crashes between them, we'd have an inconsistent state.
 
 :::note Recall
-In [Lecture 35 (Safety and Reliability)](/lecture-notes/l35-safety-reliability), we discussed how concurrency bugs in Pawtograder can have real consequences—incorrect grades, lost feedback, frustrated students. Deadlocks are particularly problematic because they cause the system to hang rather than fail fast. A student might see their submission stuck in "processing" indefinitely, with no error message explaining why.
+In [Lecture 35 (Safety and Reliability)](/lecture-notes/l35-safety-reliability), we discussed how concurrency bugs in a smart home system can have real consequences—lights flickering unexpectedly, shades stuck in the wrong position, devices becoming unresponsive. Deadlocks are particularly problematic because they cause the system to hang rather than fail fast. A user might tap "activate scene" and see nothing happen, with no error message explaining why.
 :::
 
 ### Race Conditions Revisited
@@ -642,15 +639,15 @@ We've seen one type of race condition (check-then-act), but there are others:
 
 **Read-Modify-Write**:
 ```java
-// Two threads incrementing a counter
-totalSubmissions++;  // Not atomic: read, add, write
+// Two threads incrementing a counter when registering devices
+deviceCount++;  // Not atomic: read, add, write
 ```
 
 **Compound Actions**:
 ```java
 // Check and update must be atomic
-if (!grades.containsKey(studentId)) {
-    grades.put(studentId, calculateGrade());  // Another thread might put first
+if (!registry.containsKey(deviceId)) {
+    registry.put(deviceId, newDevice);  // Another thread might put first
 }
 ```
 
@@ -678,4 +675,11 @@ Some strategies for detection:
 4. **Thread sanitizers**: Some JVM options can detect race conditions at runtime
 
 In the next lecture, we'll explore an alternative to threads—**asynchronous programming**—which can simplify concurrent code for certain types of work, particularly I/O-bound operations.
+
+### Want to go deeper?
+
+This lecture covers the fundamentals of concurrent programming, but there's much more to explore:
+
+- **[CS 3650: Computer Systems](https://catalog.northeastern.edu/course-descriptions/cs/)** — How the operating system manages processes, threads, virtual memory, and scheduling. The low-level mental model for what happens when you call `Thread.start()`.
+- **[CS 4730: Distributed Systems](https://catalog.northeastern.edu/course-descriptions/cs/)** — Concurrency across machines, not just threads. Consensus algorithms, fault tolerance, distributed transactions.
 
