@@ -613,21 +613,40 @@ or using time-slicing on a single core?
 
 <Slide>
 
+## Poll: What should happen if users make conflicting requests?
+
+<div style={{ fontSize: '.7em' }}>
+What if these requests are made at the same time by different people:
+* Activate Party scene (lights to 10%, music loud)
+* Activate Study scene (lights to 100%, music off)
+</div>
+
+<PollSlide username='espertus'
+  choices={["Evening scene is activated", "Movie Night scene is activated", "Either of the above", "A mixture occurs", "No changes are made"]}
+/>
+
+<aside className="notes">
+- multiple select
+</aside>
+
+</Slide>
+
+<Slide>
+
 ## Two Users Activate Different Scenes at the Same Time
 
 <p style={{fontSize: '0.85em'}}>
-Alice activates "Evening" (lights to 30%, shades closed). Bob activates "Movie Night" (lights off, shades to 80%). Same room, same instant. This code handles it:
+Alice activates "Party" (lights to 10%, music loud). Bob activates "Study" (lights to 100%, music off). Same room, same instant. This code handles it:
 </p>
 
 <div style={{fontSize: '0.72em'}}>
-
 ```java
 public class SceneService {
     public boolean activateScene(Scene scene, Area room) {
         for (Device device : room.getDevices()) {
             DeviceState targetState = scene.getTargetState(device);
             if (targetState != null) {
-                device.setState(targetState);  // Read current, write new
+                device.setState(targetState);
             }
         }
         return true;
@@ -652,55 +671,47 @@ Looks correct. What could go wrong?
 <Slide>
 
 ## The Interleaving (1/3): Alice Goes First
-
 ```mermaid
 sequenceDiagram
-    participant A as Alice (Evening)
-    participant B as Bob (Movie Night)
+    participant A as Alice (Party)
+    participant B as Bob (Study)
     participant Light as Ceiling Light
-    participant Shade as Window Shade
+    participant Music as Music Player
 
-    A->>Light: Read brightness (gets 100%)
-    A->>Light: Set brightness to 30%
+    A->>Light: Set brightness to 10%
 ```
 
 <p style={{fontSize: '0.85em'}}>
-Alice reads the light at 100%, sets it to 30%. So far so good...
+Alice sets the lights to 10%. So far so good...
 </p>
 
 <aside className="notes">
-**Pause here.** "Nothing wrong yet. Alice reads 100%, sets 30%. Normal. What happens if Bob arrives right now?"
+**Pause here.** "Nothing wrong yet. Alice sets lights to 10%. What happens if Bob arrives right now?"
 </aside>
 
 </Slide>
 
 <Slide>
 
-## The Interleaving (2/3): Bob Reads Stale Data
-
+## The Interleaving (2/3): Bob Overwrites Alice
 ```mermaid
 sequenceDiagram
-    participant A as Alice (Evening)
-    participant B as Bob (Movie Night)
+    participant A as Alice (Party)
+    participant B as Bob (Study)
     participant Light as Ceiling Light
-    participant Shade as Window Shade
+    participant Music as Music Player
 
-    A->>Light: Read brightness (gets 100%)
-    A->>Light: Set brightness to 30%
-    B->>Light: Read brightness (gets 100%)
-    Note over B,Light: Alice set 30%, but Bob<br/>still read the old 100%
-    B->>Light: Set brightness to 0%
-    Note over Light: Light is 0% — Bob overwrites Alice
+    A->>Light: Set brightness to 10%
+    B->>Light: Set brightness to 100%
+    Note over Light: Light is 100% — Bob overwrites Alice
 ```
 
 <p style={{fontSize: '0.85em', color: '#e06c75'}}>
-Bob reads <strong>100%</strong> — not Alice's 30%. His write overwrites hers. The light is now 0%.
+Bob overwrites Alice's light setting. The lights are now 100% — Study mode wins on lights.
 </p>
 
 <aside className="notes">
-**This is the key moment.** Bob read the light's brightness *before* Alice's write was visible to him (or between Alice's reads of different devices). His `setBrightness(0)` overwrites Alice's `setBrightness(30)`. Alice's change to the light is silently lost.
-
-"And the same thing is about to happen with the shades..."
+**This is the key moment.** Bob's write simply overwrites Alice's. "And the same thing is about to happen with the music..."
 </aside>
 
 </Slide>
@@ -708,41 +719,32 @@ Bob reads <strong>100%</strong> — not Alice's 30%. His write overwrites hers. 
 <Slide>
 
 ## The Interleaving (3/3): Nobody Got What They Wanted
-
 ```mermaid
 sequenceDiagram
-    participant A as Alice (Evening)
-    participant B as Bob (Movie Night)
+    participant A as Alice (Party)
+    participant B as Bob (Study)
     participant Light as Ceiling Light
-    participant Shade as Window Shade
+    participant Music as Music Player
 
-    A->>Light: Read brightness (gets 100%)
-    A->>Light: Set brightness to 30%
-    B->>Light: Read brightness (gets 100%)
-    Note over B,Light: Alice set 30%, but Bob<br/>still read the old 100%
-    B->>Light: Set brightness to 0%
-    Note over Light: Light is 0% — Bob overwrites Alice
-
-    A->>Shade: Read position (gets open)
-    B->>Shade: Read position (gets open)
-    A->>Shade: Set to 100% closed
-    B->>Shade: Set to 80%
-    Note over Shade: Shade is 80% — Bob overwrites again
+    A->>Light: Set brightness to 10%
+    B->>Light: Set brightness to 100%
+    Note over Light: Light is 100% — Bob overwrites Alice
+    B->>Music: Turn off
+    A->>Music: Set volume to loud
+    Note over Music: Music is loud — Alice overwrites Bob
 
     Note over A: return true
     Note over B: return true
 ```
 
 <p style={{fontSize: '0.8em', color: '#e06c75', marginTop: '0.3em'}}>
-Light = 0% (Bob wins). Shades = 80% (Bob wins). Both got <code>true</code>. <strong>Neither scene actually applied.</strong>
+Light = 100% (Study). Music = loud (Party). Both got <code>true</code>. <strong>Neither scene actually applied.</strong>
 </p>
 
 <aside className="notes">
-**The scary part:** Both methods return `true`. No exception. No crash. The room is silently in a mixed state. Alice thinks "Evening" is active. Bob thinks "Movie Night" is active. Neither is correct.
+**The scary part:** Both methods return `true`. No exception. No crash. The room is silently in a mixed state — Study-mode lighting with Party-mode music. Alice and Bob each think their scene is active. Neither is correct.
 
-**Key question to ask:** "How would you even know this happened? No error was thrown. The only way to discover it is to look at the room and notice the lights and shades don't match any scene."
-
-**Connect to L12:** In L12 (Domain Modeling) we discussed competing actions on shared domain objects. That was a modeling challenge. Here's the technical manifestation — even with a correct domain model, concurrent access corrupts state.
+**Key question to ask:** "How would you even know this happened? No error was thrown. The only way to discover it is to walk into the room."
 
 > **Transition:** This has a name...
 </aside>
@@ -755,7 +757,9 @@ Light = 0% (Bob wins). Shades = 80% (Bob wins). Both got <code>true</code>. <str
 
 <div style={{fontSize: '0.8em'}}>
 
-A **race condition** occurs when the program's behavior depends on the relative timing of operations, which is unpredictable. The core issue: operations that need to be **atomic** (indivisible — no other thread can see them mid-execution) are actually multiple steps that can be interleaved.
+A **race condition** occurs when the program's behavior depends on the relative timing of operations,
+which is unpredictable. The core issue: operations (such as activating a scene) that should be **atomic**
+(all or nothing) are actually multiple steps that can be interleaved.
 
 </div>
 
@@ -772,7 +776,7 @@ Common patterns:
 </div>
 
 <p style={{fontSize: '0.85em', marginTop: '0.8em', color: '#e06c75'}}>
-"These bugs are timing-dependent — your tests pass 99 times, fail once, and you can't reproduce it."
+These bugs are timing-dependent — your tests pass 99 times, fail once, and you can't reproduce it.
 </p>
 
 <aside className="notes">
@@ -842,7 +846,7 @@ sequenceDiagram
     Note over C: value = 1 (should be 2!)
 ```
 
-<p style={{fontSize: '0.85em', color: '#e06c75', marginTop: '0.3em'}}>
+<p style={{fontSize: '0.8em', color: '#e06c75', marginTop: '0.3em'}}>
 <strong>Lost update:</strong> Thread A writes 1. Thread B writes 1 — overwrites A's result with the same stale computation. One increment is silently lost. If you can't trust <code>deviceCount++</code>, how do you trust anything?
 </p>
 
@@ -860,19 +864,11 @@ sequenceDiagram
 
 ## The Java Memory Model: It Gets Worse
 
-<p style={{fontSize: '0.85em'}}>
-Beyond interleaving, there's a <strong>visibility</strong> problem. Modern CPUs have caches — writes by one thread may not be visible to another thread, even in the same process.
-</p>
-
 <Img
-  src="/img/lectures/web/l31-memory-model.png"
+  src="/img/lectures/web/l31-memory-model2.png"
   prompt="Clean educational diagram (not pixel art), 16:9 aspect ratio. Two CPUs side by side, each with a small cache box on top. Both CPUs are inside the same computer (the SceneItAll hub). CPU 1 (Core 1) labeled 'Thread A (scene worker)' has cache showing 'brightness = 30, ready = true'. CPU 2 (Core 2) labeled 'Thread B (UI refresh)' has cache showing 'brightness = 0, ready = false' with a red 'STALE' label. Below both CPUs is a shared main memory box showing 'brightness = 30, ready = true'. Arrows show that Core 1 has written to main memory but Core 2's cache has not been updated yet. A label at the top reads 'Same process, same heap — but different CPU caches'. Clean flat design, white background, not pixel art."
   alt="Diagram showing two CPU cores in the same hub with separate caches. Thread A's cache has updated brightness, but Thread B's cache still has stale data."
 />
-
-<p style={{fontSize: '0.8em', color: '#e06c75'}}>
-Thread A writes <code>brightness = 30</code>. Thread B reads <code>brightness</code> — and gets <code>0</code>. Same object, same heap. Different CPU caches.
-</p>
 
 <aside className="notes">
 **This is counterintuitive.** Students expect that if Thread A writes `brightness = 30`, Thread B will eventually see 30. But the JVM and CPU are allowed to cache writes, reorder instructions, and delay flushing to main memory — all for performance.
