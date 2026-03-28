@@ -6,6 +6,7 @@ image: /img/lectures/web/l31.png
 
 import RevealJS, { Slide } from '@site/src/components/RevealJS';
 import Img from '@site/src/components/Img';
+import PollSlide from '@site/src/components/PollSlide';
 
 <RevealJS transition="slide">
 
@@ -123,21 +124,19 @@ Three family members walk in and activate scenes **simultaneously** from differe
 
 </div>
 
-<p style={{fontSize: '0.85em', marginTop: '0.8em'}}>
+<div style={{fontSize: '0.85em', marginTop: '0.8em'}}>
 <strong>Sequential:</strong> 10 seconds of delay — Alice waits, Bob waits longer, Carol waits longest.<br/>
-<strong>Concurrent:</strong> All three scenes activate within ~5 seconds.
-</p>
 
-<p style={{fontSize: '0.8em', color: '#9370DB', marginTop: '0.5em'}}>
+<strong>Concurrent:</strong> All three scenes activate within ~5 seconds.
+
 Remember L29: "long handlers freeze the UI." Same problem — now the hub <em>is</em> the UI.
-</p>
+
+</div>
 
 <aside className="notes">
-**The hook:** Students know SceneItAll well from L29/L30 and Labs 11-12. The motivating scenario is concrete: three people arrive home, tap their phones, and expect instant responses. Sequential processing means Carol waits 10 seconds for her desk lamp.
+To be clear, we're not talking about JavaFX scenes.
 
-**L29 callback:** In L29 we said if an event handler takes too long, the whole UI freezes. The hub has the same problem — if it processes commands one at a time, every user waits for every other user.
-
-> **Transition:** This week we solve this problem in three steps...
+→ This week is about conccurrency...
 </aside>
 
 </Slide>
@@ -150,7 +149,7 @@ Remember L29: "long handlers freeze the UI." Same problem — now the hub <em>is
 
 | Lecture | Topic | The question it answers |
 |---------|-------|------------------------|
-| **L31 (today)** | Threads, shared state, synchronization, deadlock | *"Why does my GUI freeze when I load data?"* |
+| **L31 (Mon)** | Threads, shared state, synchronization, deadlock | *"Why does my GUI freeze when I load data?"* |
 | **L32 (Wed)** | Async programming, CompletableFuture, `Platform.runLater()` | *"How do I load data in the background and update my GUI when it's ready?"* |
 | **L33 (Thu)** | Event-driven architecture, consistency, resilience | *"What happens when the service I depend on is slow or down?"* |
 
@@ -176,35 +175,45 @@ Remember L29: "long handlers freeze the UI." Same problem — now the hub <em>is
 
 <Slide>
 
-## Concurrency Is Not Parallelism
+## Poll: Do multiple apps on your laptop take turns or run simultaneously?
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.7em'}}>
+<PollSlide username='espertus'
+  choices={["they take turns", "they run at the same time", "some of both", "no idea"]}
+/>
 
-<div style={{backgroundColor: 'rgba(100,149,237,0.15)', padding: '0.5em 0.7em', borderRadius: '8px'}}>
+For example, you might have Spotify, VSCode, and Discord all open at once.
 
-**Concurrency** = managing overlapping tasks (*structure*)
+<aside className="notes">
 
-</div>
+</aside>
 
-<div style={{backgroundColor: 'rgba(50,205,50,0.15)', padding: '0.5em 0.7em', borderRadius: '8px'}}>
+</Slide>
 
-**Parallelism** = executing simultaneously (*execution*)
+<Slide>
 
-</div>
+## Concurrency with and without Parallelism
 
+<div style={{ fontSize: 'em' }}>
+
+**Concurrency**: a program or system with multiple overlapping tasks
+* **Time-slicing**: a single core rapidly switching among tasks
+* **Parallelism**: multiple cores simultaneously executing different tasks
 </div>
 
 <Img
-  src="/img/lectures/web/l31-concurrency-vs-parallelism.png"
+  src="/img/lectures/web/l31-concurrency-vs-parallelism2.png"
   prompt="Clean educational diagram (not pixel art), 16:9 aspect ratio. Three rows showing different scenarios. ROW 1 labeled 'Concurrency only (1 core, 3 threads)': a single horizontal timeline with three color-coded task blocks (blue, orange, green) interleaved — switching back and forth, showing time-slicing on one core. ROW 2 labeled 'Parallelism (3 cores, 3 threads)': three horizontal timelines stacked, each a solid color running simultaneously on its own core. ROW 3 labeled 'Real world: both (8 cores, 100+ threads)': eight horizontal timelines stacked, each showing multiple interleaved color blocks — many more threads than cores, so each core time-slices between several threads while all cores run in parallel. A label on row 3 says 'Your laptop right now'. Clean flat design, labeled clearly, white background, no pixel art."
   alt="Three-row diagram: row 1 shows concurrency (1 core, interleaved threads), row 2 shows parallelism (3 cores, 3 threads), row 3 shows both (8 cores, 100+ threads interleaved across cores — the real world)."
 />
+
+
+
+<aside className="notes">
 
 <p style={{fontSize: '0.8em', color: '#9370DB'}}>
 Your laptop has ~8 cores but hundreds of threads running right now. You get <strong>both</strong>: parallelism across cores, concurrency within each core. The bugs we'll see today apply to all of it.
 </p>
 
-<aside className="notes">
 **Key distinction:** Concurrency is about *structure* — designing your program to handle multiple things. Parallelism is about *execution* — actually running things at the same time on multiple cores.
 
 **The real world is row 3.** A modern laptop has 8-16 cores, but the OS is running hundreds of threads. Each core time-slices between many threads. You get parallelism (multiple cores) AND concurrency (many threads per core). This is why concurrency bugs are so hard to reproduce — the exact interleaving depends on how the OS schedules threads across cores, which varies every time.
@@ -212,6 +221,70 @@ Your laptop has ~8 cores but hundreds of threads running right now. You get <str
 **Analogy:** A single chef (1 core) can manage 3 dishes concurrently by switching between them. Three chefs (3 cores) can work on all three dishes in parallel. A real restaurant kitchen (8 cores, 50 orders) has both — chefs switch between dishes AND work in parallel. If two chefs grab the same pan, you have a problem regardless.
 
 > **Transition:** Let's look at the mechanism Java gives us for concurrency...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Time-Slicing vs. Parallelism
+
+<Img src='/img/lectures/web/l31-concurrency-cooks.png'
+  prompt="A clean, modern flat illustration in 16:9 aspect ratio, divided into two equal panels.
+
+Left panel, labeled 'Concurrency' in bold sans-serif text at the top: One chef stands at a kitchen counter, actively stirring a pot. Around them are several unfinished tasks — a cutting board with half-chopped vegetables, a pan waiting on the stove, a bowl mid-mix — suggesting the chef juggles tasks by switching between them one at a time. The cook looks a little harried.
+
+Right panel, labeled 'Parallelism' in bold sans-serif text at the top: Three chefs stand at separate stations, each calmly completing a different task simultaneously — one stirring, one chopping, one plating. Each chef is relaxed and focused on their own task.
+
+A thin vertical line separates the two panels. Warm, inviting color palette with muted oranges, creams, and soft greens. Smooth vector illustration style with soft shading, rounded shapes, and clean lines — similar to a modern textbook or app onboarding illustration. No additional text beyond the two panel labels."
+  alt="Two-panel image. The left panel is labelled 'Time-Slicing' and shows a worried chef stirring a pot, with other tasks nearby.
+  The right panel is labelled 'Parallelism' and shows 3 chefs serenely working on different tasks."
+/>
+
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Multiple cores
+
+<div style={{ fontSize: '.8em' }}>
+Modern processors have multiple "cores" (mini-processors), each of which can
+run a different task, giving true parallelism.
+
+<div style={{display: 'flex', gap: '5rem', alignItems: 'center'}}>
+  <Img src='/img/lectures/web/l31-multicore-cpu.png'
+    width={400}
+    alt="Clip art showing a square microchip labeled 'CPU' with 6 dark rectangles on it, representing cores"
+  />
+  <Img src='/img/lectures/web/l31-time-slicing-parallelism.png'
+    alt='TODO'
+  />
+</div>
+
+
+Both parallelism and time-slicing are used.
+</div>
+
+<aside className="notes">
+Left image is licensed from freepik and does not require attribution.
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Poll: Do you use parallelism or time-slicing for taking multiple courses in a semester?
+
+<PollSlide username='espertus'
+  choices={["parallelism", "time-slicing", "both", "neither", "not sure" ]}
+/>
+
+<aside className="notes">
+
 </aside>
 
 </Slide>
@@ -224,43 +297,50 @@ Your laptop has ~8 cores but hundreds of threads running right now. You get <str
 
 ## A Thread Is an Independent Path of Execution
 
-<p style={{fontSize: '0.85em'}}>
-Every Java program has a <strong>main thread</strong>. You can create additional threads that run simultaneously. Threads share the <strong>heap</strong> (device state, scene definitions) but have their <strong>own stack</strong> (local variables).
+<p style={{fontSize: '0.8em'}}>
+Every Java program has a <strong>main thread</strong>. You can create additional threads that run simultaneously. Threads share the <strong>heap</strong> (device state, scene definitions) but have their <strong>own stack</strong> (local variables and call history).
 </p>
 
+<div style={{display: 'flex', gap: '2rem', alignItems: 'flex-start'}}>
+
+<div style={{transform: 'scale(1.0)', transformOrigin: 'top left', flex: '0 0 auto'}}>
 ```mermaid
 sequenceDiagram
     participant Main as Main Thread
-    participant W1 as Worker 1
-    participant W2 as Worker 2
 
     Note over Main: Sequential: 9 seconds total
     Main->>Main: Light A (3 sec)
     Main->>Main: Fan B (3 sec)
     Main->>Main: Shade C (3 sec)
-
-    Note over Main,W2: Concurrent: ~3 seconds total
-    Main->>W1: Start Fan B
-    Main->>W2: Start Shade C
-    Main->>Main: Light A (3 sec)
-    W1-->>Main: Done (3 sec)
-    W2-->>Main: Done (3 sec)
 ```
+
+</div>
+
+<div style={{transform: 'scale(2.4)', transformOrigin: 'top left', flex: '0 0 auto'}}>
+```mermaid
+sequenceDiagram
+    participant Main as Main Thread
+    participant W1 as Worker 1
+    participant W2 as Worker 2
+    participant W3 as Worker 3
+
+    Note over Main,W3: Concurrent: ~3 seconds total
+    Main->>W1: Start Light A
+    Main->>W2: Start Fan B
+    Main->>W3: Start Shade C
+    W1-->>Main: Done
+    W2-->>Main: Done
+    W3-->>Main: Done
+```
+
+</div>
+
+</div>
 
 <aside className="notes">
 **Shared heap, separate stacks:** This is the key mental model. The heap is where objects live — Device objects, Scene objects, the ConcurrentHashMap of registered devices. Every thread can see and modify these. The stack is local — each thread's method call frames, local variables, parameters. This is private to each thread.
 
 **The shared heap is what makes concurrency dangerous.** If threads only used their own stacks, there would be no concurrency bugs. The problems start when two threads read and write the same heap objects.
-
-**Full imports for the code in this section (if students ask):**
-```java
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.time.Duration;
-```
 
 > **Transition:** Let's see the three ways to create threads in Java...
 </aside>
@@ -269,41 +349,34 @@ import java.time.Duration;
 
 <Slide>
 
-## Creating Threads in Java
+## Creating a thread
 
-<div style={{fontSize: '0.7em'}}>
-
-```java
-// Option 1: Extend Thread (not recommended — limits inheritance)
-public class DeviceCommandSender extends Thread {
-    private final DeviceCommand command;
-    public DeviceCommandSender(DeviceCommand command) { this.command = command; }
-
-    @Override
-    public void run() {
-        DeviceResponse response = sendViaZigbee(command);
-        command.setResponse(response);
+```mermaid
+classDiagram
+    direction LR
+    class Thread {
+        +Thread()
+        +Thread(Runnable)
+        +start()
+        +run()*
     }
-}
-new DeviceCommandSender(command).start();
 
-// Option 2: Implement Runnable (preferred — doesn't burn your one superclass)
-Thread thread = new Thread(new DeviceCommandTask(command));
-thread.start();
+    class Runnable {
+        <<interface>>
+        +run()*
+    }
 
-// Option 3: Lambda (most concise — use for simple tasks)
-new Thread(() -> {
-    DeviceResponse response = sendViaZigbee(dimLightsCommand);
-    log.info("Light dimmed: " + response.getStatus());
-}).start();
+    Thread o-- Runnable : wraps
 ```
 
+<div style={{ fontSize: '.7em' }}>
+<p>1. Create a thread by:</p>
+<ul style={{listStyleType: 'disc', marginLeft: '0em', marginTop: '-0.8em'}}>
+  <li>subclassing <code>Thread</code> and overriding <code>run()</code></li>
+  <li>implementing <code>Runnable</code> and passing that to the <code>Thread</code> constructor</li>
+</ul>
+<p>2. Call the <code>start()</code> method</p>
 </div>
-
-<p style={{fontSize: '0.85em', marginTop: '0.8em'}}>
-Prefer <code>Runnable</code> / lambda. Java has single inheritance — extending <code>Thread</code> means you can't extend anything else.
-</p>
-
 <aside className="notes">
 **Option 3 (lambda) is what students will actually use.** But they need to know Options 1-2 to read legacy code and understand what's happening under the hood.
 
@@ -318,7 +391,153 @@ Prefer <code>Runnable</code> / lambda. Java has single inheritance — extending
 
 <Slide>
 
-## Thread Pools: Don't Create a Thread Per Device
+## Creating Threads 1: Extend Thread (not recommended)
+
+<div style={{fontSize: '0.7em', transform: 'scale(0.8)', transformOrigin: 'top left'}}>
+```java
+// Extend Thread (not recommended — limits inheritance)
+public class DeviceCommandSender extends Thread {
+    private final DeviceCommand command;
+    public DeviceCommandSender(DeviceCommand command) { this.command = command; }
+
+    @Override
+    public void run() {
+        DeviceResponse response = sendViaZigbee(command);
+        command.setResponse(response);
+    }
+}
+new DeviceCommandSender(command).start();
+```
+<p>1. Create a thread by:</p>
+<ul style={{listStyleType: 'disc', marginLeft: '2em', marginTop: '-0.8em'}}>
+  <li>subclassing <code>Thread</code> and overriding <code>run()</code></li>
+  <li>implementing <code>Runnable</code> and passing that to the <code>Thread</code> constructor</li>
+</ul>
+<p>2. Call the <code>start()</code> method</p>
+</div>
+
+```mermaid
+classDiagram
+    class Thread {
+        +start()
+        +run()*
+    }
+    class DeviceCommandSender {
+        -DeviceCommand command
+        +run()
+    }
+    Thread <|-- DeviceCommandSender : extends
+```
+
+<br/><br/>
+
+<aside className="notes">
+**Not recommended** because it burns your one superclass. If `DeviceCommandSender` ever needs to extend something else (e.g. a base sensor class), you're stuck.
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Creating Threads 2: Implement Runnable Explicitly
+
+<div style={{fontSize: '0.75em'}}>
+```java
+// Implement Runnable (preferred — doesn't burn your one superclass)
+public class DeviceCommandTask implements Runnable {
+    private final DeviceCommand command;
+    public DeviceCommandTask(DeviceCommand command) { this.command = command; }
+
+    @Override
+    public void run() {
+        DeviceResponse response = sendViaZigbee(command);
+        command.setResponse(response);
+    }
+}
+Thread thread = new Thread(new DeviceCommandTask(command));
+thread.start();
+```
+
+</div>
+```mermaid
+classDiagram
+    direction LR
+    class Runnable {
+        <<interface>>
+        +run()*
+    }
+    class DeviceCommandTask {
+        -DeviceCommand command
+        +run()
+    }
+    class Thread {
+        +start()
+        +run()
+    }
+    Runnable <|.. DeviceCommandTask : implements
+    Thread o-- Runnable : wraps
+    style Runnable fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+```
+
+<aside className="notes">
+**Preferred over Option 1.** Separates the task (what to do) from the thread (how to run it). `DeviceCommandTask` is just a plain object that happens to be runnable — it can be tested without a thread.
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Creating Threads 3: Implement Runnable Implicitly
+
+<div style={{fontSize: '0.75em'}}>
+```java
+// Lambda (most concise — use for simple tasks)
+new Thread(() -> {
+    DeviceResponse response = sendViaZigbee(dimLightsCommand);
+    log.info("Light dimmed: " + response.getStatus());
+}).start();
+```
+
+</div>
+```mermaid
+classDiagram
+    direction LR
+    class Runnable {
+        <<interface>>
+        +run()*
+    }
+    class Thread {
+        +start()
+        +run()
+    }
+    class λ {
+        <<lambda>>
+        +run()
+    }
+    Runnable <|.. λ : implements
+    Thread o-- Runnable : wraps
+    style Runnable fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+```
+
+<p style={{fontSize: '0.75em', marginTop: '0.5em'}}>
+A lambda is just an anonymous implementation of <code>Runnable</code> — syntactic sugar for Option 2. Prefer this for simple tasks; use a named class when the task needs fields or testing.
+</p>
+
+<aside className="notes">
+**Option 3 is what students will actually use.** The lambda is compiled into an anonymous class that implements `Runnable` — it's identical to Option 2 under the hood.
+
+**Common misconception:** Calling `run()` directly does NOT start a new thread — it executes on the current thread. You must call `start()`.
+
+**But don't do any of these in production.** Next slide: thread pools. Creating raw threads is like opening raw sockets — you can, but you almost never should.
+
+> **Transition:** But creating a thread per device command has problems...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Thread Pools: Reuse a Fixed Number of Threads
 
 <div style={{fontSize: '0.75em'}}>
 
@@ -348,7 +567,11 @@ public class HubCommandService {
 </div>
 
 <p style={{fontSize: '0.8em', marginTop: '0.5em'}}>
-"Evening" scene sends 15 device commands. Pool processes 10 at once, 5 queue up. Like a kitchen with fixed staff — orders go on a queue, cooks grab the next one when they're free.
+This creates a pool of 10 worker threads managed by an `ExecutorService`.
+
+The first 10 requests start right away, but later requests have to wait until a thread is available.
+
+It's kind of like a kitchen with 10 cooks.
 </p>
 
 <aside className="notes">
@@ -362,12 +585,6 @@ public class HubCommandService {
 
 **The kitchen analogy:** A restaurant doesn't hire a new cook for every order. It has a fixed staff (the pool) and orders queue up on the pass. Same idea.
 
-**Full imports:**
-```java
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-```
-
 > **Transition:** What if a device stops responding?
 </aside>
 
@@ -375,69 +592,17 @@ import java.util.concurrent.Executors;
 
 <Slide>
 
-## Interrupts: What If a Device Stops Responding?
+## Poll: Do Java threads run in parallel (at the same time)?
 
-<div style={{fontSize: '0.72em'}}>
+If there are ten concurrent threads, do they run in parallel (on 10 different cores)
+or using time-slicing on a single core?
 
-```java
-public class TimedCommandSender {
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
-
-    public DeviceResponse sendWithTimeout(DeviceCommand command,
-                                           Duration timeout) {
-        Future<DeviceResponse> future = executor.submit(
-            () -> sendViaZigbee(command)
-        );
-        try {
-            return future.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
-        } catch (TimeoutException e) {
-            future.cancel(true);  // Sets the thread's interrupt flag
-            return DeviceResponse.timeout(
-                "Device exceeded " + timeout.toSeconds() + "s"
-            );
-        }
-    }
-}
-```
-
-</div>
-
-<div style={{fontSize: '0.72em'}}>
-
-```java
-// The other side: the worker must CHECK for interrupts
-public void applyFirmwareChunks(Device device, List<byte[]> chunks) {
-    for (byte[] chunk : chunks) {
-        if (Thread.currentThread().isInterrupted()) { return; }  // cooperative!
-        device.writeChunk(chunk);
-    }
-}
-```
-
-</div>
-
-<p style={{fontSize: '0.8em', marginTop: '0.3em'}}>
-Interrupts are <strong>cooperative</strong> — <code>cancel(true)</code> sets a flag, but the worker must check it. <code>Thread.stop()</code> was deprecated in 1998 — forcibly killing threads corrupts shared state.
-</p>
+<PollSlide username='espertus'
+  choices={["they run on 10 different cores", "they run on a single core", "it depends"]}
+/>
 
 <aside className="notes">
-**The scenario:** A smart bulb hangs during a firmware update. The command thread blocks on `sendViaZigbee()` forever. Without intervention, that thread is gone from the pool permanently.
 
-**`cancel(true)`** sets the thread's interrupt flag. Well-behaved blocking operations (like `Thread.sleep()`, `BlockingQueue.take()`, I/O) throw `InterruptedException` when interrupted. The thread can then clean up and exit.
-
-**Why not `Thread.stop()`?** Imagine stopping a thread halfway through updating a device's firmware. The device is now in an unknown state — partially updated firmware. The method was deprecated in Java 1.2 (1998) because forcible termination corrupts shared state.
-
-**Full imports:**
-```java
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.time.Duration;
-```
-
-> **Transition:** Now we know how to create and manage threads. But there's a problem lurking...
 </aside>
 
 </Slide>
