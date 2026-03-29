@@ -187,12 +187,6 @@ non-null local reference NullAway is happy with. :::
 
 None of these indicate a problem with your code. :::
 
-:::tip Known build warnings You'll see **some warnings** when you build — this is normal:
-- **UnusedVariable / UnusedMethod** false positives on `@FXML` fields and `private` handler methods
-  (called reflectively by FXMLLoader, so Error Prone can't see the usages)
-- **"Unknown module: javafx.graphics"** and **"Unsupported JavaFX configuration"** during tests (harmless TestFX/module-system noise)
-
-None of these indicate a problem with your code. :::
 
 ---
 
