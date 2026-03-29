@@ -277,7 +277,9 @@ Left image is licensed from freepik and does not require attribution.
 
 <Slide>
 
-## Poll: Do you use parallelism or time-slicing for taking multiple courses in a semester?
+## Poll: Parallelism vs. Time-Slicing
+
+Do you use parallelism or time-slicing for taking multiple courses in a semester?
 
 <PollSlide username='espertus'
   choices={["parallelism", "time-slicing", "both", "neither", "not sure" ]}
@@ -285,6 +287,564 @@ Left image is licensed from freepik and does not require attribution.
 
 <aside className="notes">
 
+</aside>
+
+</Slide>
+
+
+
+
+{/* ============================================ */}
+{/* ARC 1.5: Minimal Running Examples */}
+{/* ============================================ */}
+
+<Slide>
+
+## Counter Example A
+
+<div style={{display: 'flex', gap: '1.5rem', alignItems: 'flex-start'}}>
+<div>
+```java
+public class Counter extends Thread {
+  private final String name;
+  private int count;
+  private final int limit;
+
+  public Counter(String name, int limit) {
+    this.name = name;
+    count = 0;
+    this.limit = limit;
+  }
+
+  @Override
+  public void run() {
+    while (count < limit) {
+      count++;
+      System.out.println(name + ": " + count);
+    }
+  }
+
+  public static void main(String[] args) {
+    Counter counter1 = new Counter("Counter A", 5);
+    counter1.start();
+  }
+}
+```
+
+</div>
+<div className='fragment' style={{fontSize: '.8em'}}>
+<pre>
+Counter A: 1
+Counter A: 2
+Counter A: 3
+Counter A: 4
+Counter A: 5
+</pre>
+
+| Step | Main thread | counter1 thread |
+|------|-------------|-----------------|
+| 1 | `new Counter("A", 5)` | |
+| 2 | `counter1.start()` → | spawned |
+| 3 | (continues) | `run()` — counts 1→5 |
+
+</div>
+</div>
+
+
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Counter Example B
+
+<div style={{display: 'flex', gap: '1.5rem', alignItems: 'flex-start'}}>
+<div>
+```java
+public class Counter extends Thread {
+  private final String name;
+  private int count;
+  private final int limit;
+
+  public Counter(String name, int limit) { ... }
+
+  private static void printThread(String msg) {
+    System.out.println(String.format("thread %s: %s",
+        Thread.currentThread().getName(), msg));
+  }
+
+  @Override
+  public void run() {
+    while (count < limit) {
+      count++;
+      printThread(name + ": " + count);
+    }
+  }
+
+  public static void main(String[] args) {
+    printThread("At start of main()");
+    Counter counter1 = new Counter("Counter A", 5);
+    counter1.start();
+  }
+}
+```
+
+</div>
+<div className='fragment' style={{fontSize: '.8em'}}>
+<pre>
+<span style={{color: '#4ac'}}>thread main: At start of main()</span><br/>
+<span style={{color: '#4ac'}}>thread main: At end of main()</span><br/>
+<span style={{color: '#e06c75'}}>thread Thread-0: Counter A: 1</span><br/>
+<span style={{color: '#e06c75'}}>thread Thread-0: Counter A: 2</span><br/>
+<span style={{color: '#e06c75'}}>thread Thread-0: Counter A: 3</span><br/>
+<span style={{color: '#e06c75'}}>thread Thread-0: Counter A: 4</span><br/>
+<span style={{color: '#e06c75'}}>thread Thread-0: Counter A: 5</span><br/>
+</pre>
+
+</div>
+</div>
+
+
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Poll: What could be the last line printed?
+
+<PollSlide
+  code={`
+  @Override
+  public void run() {
+    while (count < limit) {
+      count++;
+      printThread(name + ": " + count);
+    }
+  }
+
+  public static void main(String[] args) {
+    printThread("At start of main()");
+    Counter counter1 = new Counter("Counter A", 5);
+    counter1.start();
+    printThread("At end of main()");
+  }
+  `}
+  choices={[
+    "thread main: At end of main()",
+    "thread Thread-0: At end of main()",
+    "thread Thread-0: Counter A: 4",
+    "thread Thread-0: Counter A: 5",
+    "I have no idea"]}
+  username="espertus"/>
+
+<aside className="notes">
+- multiple answer poll
+- counter1c
+</aside>
+
+</Slide>
+<Slide>
+
+## Counter Example C
+
+<div style={{display: 'flex', gap: '1.5rem', alignItems: 'flex-start'}}>
+<div>
+```java
+public class Counter extends Thread {
+  private final String name;
+  private int count;
+  private final int limit;
+
+  public Counter(String name, int limit) { ... }
+
+  private static void printThread(String msg) {
+    System.out.println(String.format("thread %s: %s",
+        Thread.currentThread().getName(), msg));
+  }
+
+  @Override
+  public void run() {
+    while (count < limit) {
+      count++;
+      printThread(name + ": " + count);
+    }
+  }
+
+  public static void main(String[] args) {
+    printThread("At start of main()");
+    Counter counter1 = new Counter("Counter A", 3);
+    counter1.start();
+    printThread("At end of main()");
+  }
+}
+```
+
+</div>
+<div style={{display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '.8em'}}>
+
+<div className='fragment' style={{fontSize: '.8em'}}>
+<pre>
+<span style={{color: '#4ac'}}>thread main: At start of main()</span><br/>
+<span style={{color: '#4ac'}}>thread main: At end of main()</span><br/>
+<span style={{color: '#e06c75'}}>thread Thread-0: Counter A: 1</span><br/>
+<span style={{color: '#e06c75'}}>thread Thread-0: Counter A: 2</span><br/>
+<span style={{color: '#e06c75'}}>thread Thread-0: Counter A: 3</span><br/>
+</pre>
+</div>
+
+
+<div className='fragment' style={{fontSize: '.8em'}}>
+<pre>
+<span style={{color: '#4ac'}}>thread main: At start of main()</span><br/>
+<span style={{color: '#e06c75'}}>thread Thread-0: Counter A: 1</span><br/>
+<span style={{color: '#4ac'}}>thread main: At end of main()</span><br/>
+<span style={{color: '#e06c75'}}>thread Thread-0: Counter A: 2</span><br/>
+<span style={{color: '#e06c75'}}>thread Thread-0: Counter A: 3</span><br/>
+</pre>
+</div>
+
+<div className='fragment' style={{fontSize: '.8em'}}>
+<pre>
+<span style={{color: '#4ac'}}>thread main: At start of main()</span><br/>
+<span style={{color: '#e06c75'}}>thread Thread-0: Counter A: 1</span><br/>
+<span style={{color: '#e06c75'}}>thread Thread-0: Counter A: 2</span><br/>
+<span style={{color: '#4ac'}}>thread main: At end of main()</span><br/>
+<span style={{color: '#e06c75'}}>thread Thread-0: Counter A: 3</span><br/>
+</pre>
+</div>
+
+<div className='fragment' style={{fontSize: '.8em'}}>
+<pre>
+<span style={{color: '#4ac'}}>thread main: At start of main()</span><br/>
+<span style={{color: '#e06c75'}}>thread Thread-0: Counter A: 1</span><br/>
+<span style={{color: '#e06c75'}}>thread Thread-0: Counter A: 2</span><br/>
+<span style={{color: '#e06c75'}}>thread Thread-0: Counter A: 3</span><br/>
+<span style={{color: '#4ac'}}>thread main: At end of main()</span><br/>
+</pre>
+</div>
+
+<div className='fragment' style={{fontSize: '.8em'}}>
+The output is **nondeterministic**.
+</div>
+</div>
+</div>
+
+
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Big Picture
+
+<div style={{ fontSize: '.75em' }}>
+* Java programs can have multiple threads.
+
+* Code in different threads can run concurrently, which can be
+   * in parallel (simultaneously) on different cores
+   * using time-slicing (interleaving) on a single core
+
+* This can lead to **nondeterministic** (unpredictable) behavior.
+
+* Why is nondeterminism a problem?
+
+</div>
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Complex Number Example A
+
+<div style={{display: 'flex', gap: '1.5rem', alignItems: 'flex-start'}}>
+<div>
+```java
+public class ComplexNumber {
+  private int real;
+  private int imaginary;
+
+  public ComplexNumber(int real, int imaginary) {
+    this.real = real;
+    this.imaginary = imaginary;
+  }
+
+  public void negate() {
+    printThread("At start of negate()");
+    real = -real;
+    imaginary = -imaginary;
+    printThread("At end of negate()");
+  }
+
+  @Override
+  public String toString() {
+    return String.format("%d + %di", real, imaginary);
+  }
+
+  public static void main(String[] args) {
+      ComplexNumber c = new ComplexNumber(1, 1);
+      printThread("Original: " + c);
+      c.negate();
+      printThread("Negated: " + c);
+  }
+}
+```
+
+</div>
+<div className='fragment' style={{fontSize: '.8em'}}>
+<pre>
+thread main: Original: 1 + 1i
+thread main: At start of negate()
+thread main: At end of negate()
+thread main: Negated: -1 + -1i
+</pre>
+</div>
+</div>
+
+
+<aside className="notes">
+- This is an ordinary single-threaded program.
+→ Let's make it into a multi-threaded program
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Complex Number Example B
+
+<div style={{display: 'flex', gap: '1.5rem', alignItems: 'flex-start'}}>
+
+<div style={{flex: '0 0 55%'}}>
+```java
+public class ComplexNumber {
+  private int real;
+  private int imaginary;
+
+  public ComplexNumber(int real, int imaginary) { .. }
+
+  public void negate() {
+    printThread("At start of negate()");
+    real = -real;
+    imaginary = -imaginary;
+    printThread("At end of negate()");
+  }
+
+  @Override
+  public String toString() {
+    return String.format("%d + %di", real, imaginary);
+  }
+
+  public static void main(String[] args) {
+    ComplexNumber c = new ComplexNumber(1, 1);
+    printThread("Original: " + c);
+    new Thread(c::negate).start(); // easy way to create thread
+    printThread("Negated: " + c);
+  }
+}
+```
+
+</div>
+
+<div style={{flex: '0 0 40%'}}>
+```mermaid
+sequenceDiagram
+    participant M as Main thread
+    participant T as Thread-0
+
+    M->>M: printThread("Original: " + c)
+    M->>T: new Thread(..).start()
+    M->>M: printThread("Negated: " + c)
+    T->>T: real = -real
+    T->>T: imag = -imag
+```
+
+</div>
+</div>
+<div style={{ fontSize: '.8em' }}>
+Poll: What can be printed at the end of `main()` for the negated value?
+</div>
+</Slide>
+
+<Slide>
+
+## Poll: What can be printed for the negated value?
+
+<PollSlide username='espertus'
+  code={`
+  public static void main(String[] args) {
+    ComplexNumber c = new ComplexNumber(1, 1);
+    printThread("Original: " + c);
+    new Thread(c::negate).start();
+    printThread("Negated: " + c);
+  }
+  `}
+  choices={["1 + 1i", "-1 + 1i", "1 + -1i", "-1 + -1i", "no idea"]}
+/>
+
+<aside className="notes">
+- multiple answer
+</aside>
+
+</Slide>
+<Slide>
+
+## Possible Outputs: Complex Number Example B
+
+<div style={{display: 'flex', gap: '1rem', flexWrap: 'wrap', fontSize: '0.7em'}}>
+
+<div>
+<pre>
+<span style={{color: '#4ac'}}>thread main: Original: 1 + 1i</span><br/>
+<span style={{color: '#4ac'}}>thread main: Negated: 1 + 1i</span><br/>
+<span style={{color: '#e06c75'}}>thread Thread-0: At start of negate()</span><br/>
+<span style={{color: '#e06c75'}}>thread Thread-0: At end of negate()</span><br/>
+</pre>
+</div>
+
+<div className='fragment'>
+<pre>
+<span style={{color: '#4ac'}}>thread main: Original: 1 + 1i</span><br/>
+<span style={{color: '#e06c75'}}>thread Thread-0: At start of negate()</span><br/>
+<span style={{color: '#4ac'}}>thread main: Negated: 1 + 1i</span><br/>
+<span style={{color: '#e06c75'}}>thread Thread-0: At end of negate()</span><br/>
+</pre>
+</div>
+
+<div className='fragment'>
+<pre>
+<span style={{color: '#4ac'}}>thread main: Original: 1 + 1i</span><br/>
+<span style={{color: '#e06c75'}}>thread Thread-0: At start of negate()</span><br/>
+<span style={{color: '#e06c75'}}>thread Thread-0: At end of negate()</span><br/>
+<span style={{color: '#4ac'}}>thread main: Negated: -1 + -1i</span><br/>
+</pre>
+</div>
+
+<div className='fragment'>
+<pre>
+<span style={{color: '#4ac'}}>thread main: Original: 1 + 1i</span><br/>
+<span style={{color: '#e06c75'}}>thread Thread-0: At start of negate()</span><br/>
+<span style={{color: '#4ac'}}>thread main: Negated: -1 + 1i</span><br/>
+<span style={{color: '#e06c75'}}>thread Thread-0: At end of negate()</span><br/>
+</pre>
+</div>
+
+</div>
+<div className='fragment' style={{ fontSize: '.8em' }}>
+This program is not only nondetermistic but has a **race condition**:<br/>
+We can get a **wrong result** due to timing.
+</div>
+
+<div className='fragment' style={{ fontSize: '.6em' }}>
+There's an additional problem I'm not revealing yet.
+</div>
+
+<aside className="notes">
+The 4th output is a torn read — main reads `real` after it's been negated but `imaginary` before, producing `-1 + 1i`. This is the scariest one: not only is neither scene applied, the object is in a state that was never valid.
+</aside>
+
+</Slide>
+<Slide>
+
+## Problem 1: Order of Execution
+
+<div style={{display: 'flex', gap: '1.5rem', alignItems: 'flex-start'}}>
+
+<div style={{flex: '0 0 45%'}}>
+```java
+public static void main(String[] args) {
+    ComplexNumber c = new ComplexNumber(1, 1);
+    printThread("Original: " + c);
+    new Thread(c::negate).start();
+    printThread("Negated: " + c);
+}
+```
+
+<p style={{fontSize: '0.8em', color: '#e06c75'}}>
+No guarantee Thread-0 runs before main prints "Negated".
+</p>
+
+</div>
+
+<div style={{flex: '0 0 48%'}}>
+```mermaid
+sequenceDiagram
+    participant M as Main thread
+    participant T as Thread-0
+
+    M->>M: Original: 1 + 1i
+    M->>T: start()
+    M->>M: Negated: 1 + 1i ❌
+    T->>T: real = -real
+    T->>T: imag = -imag
+```
+
+</div>
+
+</div>
+
+<aside className="notes">
+main prints "Negated" before Thread-0 has done anything. The result looks like negate() had no effect — because it hasn't run yet.
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Problem 2: Cached Values
+
+<div style={{display: 'flex', gap: '1.5rem', alignItems: 'flex-start'}}>
+
+<div style={{flex: '0 0 45%'}}>
+```java
+public static void main(String[] args) {
+    ComplexNumber c = new ComplexNumber(1, 1);
+    printThread("Original: " + c);
+    new Thread(c::negate).start();
+    printThread("Negated: " + c);
+}
+```
+
+<p style={{fontSize: '0.8em', color: '#e06c75'}}>
+Even if Thread-0 completes before main resumes, main's memory cache may hold stale values.
+</p>
+
+</div>
+
+<div style={{flex: '0 0 48%'}}>
+```mermaid
+sequenceDiagram
+    participant M as Main thread
+    participant T as Thread-0
+
+    M->>M: Original: 1 + 1i
+    M->>T: start()
+    T->>T: real = -real
+    T->>T: imag = -imag
+    Note over T: Thread-0 done ✓
+    M->>M: Negated: 1 + 1i ❌
+    Note over M: Reads stale cache —<br/>never saw Thread-0's writes
+```
+
+</div>
+
+</div>
+
+<aside className="notes">
+Even in the "lucky" ordering where Thread-0 finishes before main prints, main may still see the old values. Each CPU core has its own cache. Without a happens-before relationship (volatile, synchronized, or join()), the JVM makes no guarantee that Thread-0's writes are visible to main.
+
+> **Transition:** So how do we fix this?
 </aside>
 
 </Slide>
@@ -606,6 +1166,8 @@ or using time-slicing on a single core?
 </aside>
 
 </Slide>
+
+
 
 {/* ============================================ */}
 {/* ARC 3: THE PROBLEM — SHARED MUTABLE STATE (~12 min) */}
@@ -929,7 +1491,6 @@ The fix: <code>synchronized</code>, <code>volatile</code>, or atomic classes —
 </aside>
 
 </Slide>
-
 {/* ============================================ */}
 {/* ARC 4: SOLVING IT — SYNCHRONIZATION (~12 min) */}
 {/* ============================================ */}
