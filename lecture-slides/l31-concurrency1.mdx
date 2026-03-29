@@ -391,9 +391,20 @@ public class TimedCommandSender {
         try {
             return future.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {
-            future.cancel(true);  // Sets the thread's interrupt flag
+            future.cancel(true);  // Interrupts the worker running sendViaZigbee
             return DeviceResponse.timeout(
                 "Device exceeded " + timeout.toSeconds() + "s"
+            );
+        } catch (InterruptedException e) {
+            future.cancel(true);
+            Thread.currentThread().interrupt();
+            return DeviceResponse.error(
+                "Interrupted while waiting for device response"
+            );
+        } catch (ExecutionException e) {
+            Throwable cause = e.getCause() != null ? e.getCause() : e;
+            return DeviceResponse.error(
+                "Device/command failed: " + cause.getMessage()
             );
         }
     }
@@ -423,12 +434,20 @@ Interrupts are <strong>cooperative</strong> — <code>cancel(true)</code> sets a
 <aside className="notes">
 **The scenario:** A smart bulb hangs during a firmware update. The command thread blocks on `sendViaZigbee()` forever. Without intervention, that thread is gone from the pool permanently.
 
+**What `future.get(timeout, unit)` can throw (three different situations):**
+- **`TimeoutException`** — The wait ended before the task produced a result. The hub thread calling `sendWithTimeout` is fine; the worker may still be stuck in `sendViaZigbee`. `future.cancel(true)` asks that worker to stop; you return `DeviceResponse.timeout(...)` to the caller.
+- **`InterruptedException`** — The *calling* thread was interrupted while blocked inside `get` (e.g. shutdown, higher-level cancellation). You must end the wait cooperatively: `future.cancel(true)`, then `Thread.currentThread().interrupt()` so callers up the stack still see the interrupt, and return `DeviceResponse.error(...)` (or similar) instead of swallowing it silently.
+- **`ExecutionException`** — The task finished but threw. The failure from `sendViaZigbee` is wrapped in `ExecutionException`; use `getCause()` for the real `Throwable` and fold its message into `DeviceResponse.error(...)`. Cancel is unnecessary—the task already completed unsuccessfully.
+
+**Disambiguation for students:** `InterruptedException` on `get` means *this* thread (whoever called `sendWithTimeout`) was interrupted while waiting. That is different from the worker thread blocking in `sendViaZigbee`: after a **timeout**, `cancel(true)` tries to interrupt *that* worker so it can unwind cooperatively—the paragraph below is about *that* side.
+
 **`cancel(true)`** sets the thread's interrupt flag. Well-behaved blocking operations (like `Thread.sleep()`, `BlockingQueue.take()`, I/O) throw `InterruptedException` when interrupted. The thread can then clean up and exit.
 
 **Why not `Thread.stop()`?** Imagine stopping a thread halfway through updating a device's firmware. The device is now in an unknown state — partially updated firmware. The method was deprecated in Java 1.2 (1998) because forcible termination corrupts shared state.
 
 **Full imports:**
 ```java
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
