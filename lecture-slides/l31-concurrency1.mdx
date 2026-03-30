@@ -1322,7 +1322,62 @@ Today: why shared state is dangerous and how locks protect it. Wednesday: how to
 
 **Lab 12:** Students build SceneItAll GUI components using Scene Builder and MVVM patterns from L29-30. This is pair programming — they'll practice binding, property listeners, and FXML layout.
 
-**GA1 connection:** `BackgroundTaskRunner.run(callable, onSuccess, onFailure)` is the practical tool. Under the hood: it creates a `javafx.concurrent.Task`, runs it on a daemon thread, and uses `Platform.runLater()` to call `onSuccess`/`onFailure` on the FX thread. Students need to explain this during code walks.
+**GA1 connection:** Next slide dives into the specifics.
+
+> **Transition:** Let's connect this to your group project...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## GA1: Where This Shows Up in CookYourBooks
+
+<div style={{fontSize: '0.75em'}}>
+
+Every core feature has **one async operation** that uses `BackgroundTaskRunner`:
+
+| Feature | Async Operation | What today's lecture explains |
+|---------|----------------|------------------------------|
+| **Library View** | `refresh()` loads collections | Background thread does I/O; FX thread updates `ObservableList` |
+| **Recipe Editor** | `save()` persists edits | Save button disabled while saving — what if two saves race? |
+| **Import** | OCR extraction from image | State machine (idle → processing → review) — each transition is a thread handoff |
+| **Search & Filter** | Debounced search query | What if a slow search returns *after* a newer one? (race condition!) |
+
+</div>
+
+<div style={{fontSize: '0.8em'}}>
+
+```java
+BackgroundTaskRunner.run(
+    () -> librarianService.listCollections(),   // background thread (I/O)
+    collections -> { /* FX thread (update UI) */ },
+    error -> { /* FX thread (show error) */ }
+);
+```
+
+</div>
+
+<p style={{fontSize: '0.85em', color: '#9370DB', marginTop: '0.3em'}}>
+Your TA will ask: what thread does the callable run on? What thread do the callbacks run on? What breaks if you skip <code>Platform.runLater()</code>?
+</p>
+
+<aside className="notes">
+**This is the GA1 payoff slide.** Students don't write raw thread code in GA1 — they use `BackgroundTaskRunner`. But they must understand what it does internally.
+
+**Under the hood:** `BackgroundTaskRunner.run()` creates a `javafx.concurrent.Task`, runs it on a daemon thread, and uses `Platform.runLater()` to call `onSuccess`/`onFailure` on the FX thread. The callable (first arg) runs on the background thread. The callbacks (second and third args) run on the FX thread.
+
+**Why this matters for each feature:**
+- **Library View:** `refresh()` fetches collections on a background thread. The `loading` property is true while fetching. If you update `ObservableList` from the background thread, JavaFX throws `IllegalStateException`.
+- **Recipe Editor:** `save()` runs persistence on a background thread. While saving, edit controls are disabled. If the save fails, you stay in edit mode with dirty state preserved — the user doesn't lose their work.
+- **Import:** The OCR call can take seconds. The state machine (idle → processing → review/error) maps directly to thread handoffs — start OCR on background thread, transition to review/error on FX thread when it completes.
+- **Search & Filter:** Debounced search has a subtle race condition: if the user types "cake", a search fires, then they type "cookies" and a second search fires — the first search might return *after* the second. Blindly accepting results shows "cake" results for "cookies". This is exactly the kind of concurrency bug we discussed today.
+
+**TA code walk questions:**
+- What thread does the callable run on? (Background/daemon thread)
+- What thread do the callbacks run on? (FX Application Thread, via `Platform.runLater()`)
+- What would break if the callbacks ran on the background thread? (`IllegalStateException` — can't modify JavaFX nodes from non-FX thread)
+- How does `BackgroundTaskRunner` relate to `synchronized`? (Different mechanism, same goal — ensuring shared state is accessed safely. `BackgroundTaskRunner` separates work by thread rather than locking shared state.)
 
 > That's it for today. Questions?
 </aside>
