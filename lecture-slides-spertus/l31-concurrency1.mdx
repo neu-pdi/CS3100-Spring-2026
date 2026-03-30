@@ -474,7 +474,6 @@ public class Counter extends Thread {
 <div className='fragment' style={{fontSize: '.8em'}}>
 <pre>
 <span style={{color: '#4ac'}}>thread main: At start of main()</span><br/>
-<span style={{color: '#4ac'}}>thread main: At end of main()</span><br/>
 <span style={{color: '#e06c75'}}>thread Thread-0: Counter A: 1</span><br/>
 <span style={{color: '#e06c75'}}>thread Thread-0: Counter A: 2</span><br/>
 <span style={{color: '#e06c75'}}>thread Thread-0: Counter A: 3</span><br/>
@@ -1095,7 +1094,7 @@ sequenceDiagram
 ```
 
 <div style={{fontSize: '0.7em', marginTop: '0.3em'}}>
-Both calls to `activateScene()` returned rue <code>true</code>, but neither scene was correctly applied.
+Both calls to `activateScene()` returned <code>true</code>, but neither scene was correctly applied.
 
 Our code has a race condition.
 </div>
