@@ -1499,229 +1499,237 @@ https://github.com/cs3100-spertus-s26/concurrency-examples/blob/plant-c/app/src/
 </Slide>
 
 {/* ============================================ */}
-{/* ARC 4: CONCURRENT DATA STRUCTURES */}
+{/* ARC 4: SYNCHRONIZATION BUGS AND CONCURRENT DATA STRUCTURES */}
 {/* ============================================ */}
 
 
 <Slide>
-## Concurrent Collections and AtomicInteger
+## Synchronization is hard
 
-<div style={{fontSize: '0.72em'}}>
+<div style={{ fontSize: '.8em' }}>
+* Three broken examples
 
-```java
-public class DeviceRegistry {
-    // Thread-safe map — no external synchronization needed
-    private final ConcurrentHashMap<String, Device> devices =
-        new ConcurrentHashMap<>();
-
-    // Thread-safe counter — fixes the deviceCount++ bug
-    private final AtomicInteger deviceCount = new AtomicInteger(0);
-
-    public void registerDevice(Device device) {
-        // putIfAbsent: atomic check-and-put in one operation
-        Device existing = devices.putIfAbsent(device.getId(), device);
-        if (existing == null) {
-            deviceCount.incrementAndGet();  // Atomic increment
-        }
-    }
-
-    public int getDeviceCount() {
-        return deviceCount.get();
-    }
-}
-```
-
+* Data structures that can help
 </div>
-
-<div style={{fontSize: '0.75em', marginTop: '0.5em'}}>
-
-| Collection | Use case |
-|-----------|----------|
-| `ConcurrentHashMap` | Device registry — many readers, occasional writers |
-| `AtomicInteger` | Counters — `deviceCount`, `commandsSent` |
-| `BlockingQueue` | Command queue — producers (users) and consumers (workers) |
-| `CopyOnWriteArrayList` | Listener lists — read-heavy, rarely modified |
-
-</div>
-
-<p style={{fontSize: '0.8em', color: '#9370DB', marginTop: '0.3em'}}>
-Use these — the experts already debugged them.
-</p>
-
-<aside className="notes">
-**This fixes the slide 11 bug.** `AtomicInteger.incrementAndGet()` uses hardware-level compare-and-swap (CAS) to atomically read, add, and write. No lock needed, no lost updates.
-
-**`putIfAbsent`** is the atomic version of the check-then-act pattern: `if (!map.containsKey(key)) map.put(key, value)`. One atomic operation instead of two separate ones.
-
-**Full imports:**
-```java
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CopyOnWriteArrayList;
-```
-
-**Design principle:** Don't roll your own thread-safe data structures. Use `java.util.concurrent`. Doug Lea and team spent years getting these right.
-
-> **Transition:** Synchronization solves race conditions, but it introduces a new problem...
-</aside>
-
-</Slide>
-
-{/* ============================================ */}
-{/* ARC 5: DEADLOCK (~8 min) */}
-{/* ============================================ */}
-
-<Slide>
-
-## Deadlock: When Everyone Waits Forever (1/2)
-
-<p style={{fontSize: '0.85em'}}>
-Two methods, opposite lock ordering. What happens when they run simultaneously?
-</p>
-
-<div style={{fontSize: '0.72em'}}>
-
-```java
-public class SmartHomeService {
-    public void activateScene(Scene scene, Area room) {
-        synchronized (room) {                    // Lock room FIRST
-            for (Device device : room.getDevices()) {
-                synchronized (device) {          // Then lock device
-                    device.setState(scene.getTargetState(device));
-                }
-            }
-        }
-    }
-
-    public void firmwareUpdate(Device device, Area room,
-                                FirmwarePackage firmware) {
-        synchronized (device) {                  // Lock device FIRST
-            synchronized (room) {                // Then lock room
-                device.applyFirmware(firmware);
-                room.updateDeviceManifest(device);
-            }
-        }
-    }
-}
-```
-
-</div>
-
-<aside className="notes">
-**Point out the lock ordering.** `activateScene` goes room → device. `firmwareUpdate` goes device → room. Ask students: "What happens if both run at the same time?"
-
-Let them think. Some will see it. Then advance to the next slide.
-</aside>
 
 </Slide>
 
 <Slide>
 
-## Deadlock: When Everyone Waits Forever (2/2)
+## What's Wrong With Plant Example D?
 
-```mermaid
-sequenceDiagram
-    participant A as Thread A (activateScene)
-    participant Room as Room Lock
-    participant Device as Device Lock
-    participant B as Thread B (firmwareUpdate)
+<div style={{display: 'flex', gap: '1.5rem', alignItems: 'flex-start'}}>
 
-    A->>Room: Acquire room lock
-    Room-->>A: Granted
-    B->>Device: Acquire device lock
-    Device-->>B: Granted
-    A->>Device: Acquire device lock
-    Device--xA: BLOCKED (B holds it)
-    B->>Room: Acquire room lock
-    Room--xB: BLOCKED (A holds it)
-    Note over A,B: DEADLOCK — neither can proceed
+<div style={{flex: '0 0 55%'}}>
+```java
+public class Plant implements Runnable {
+  // unchanged code omitted
+
+  private void waterPlant() {
+    printThread("Watering plant.");
+    numTimesWatered++;
+    lastTimeWatered = Instant.now();
+  }
+
+  @Override
+  public synchronized void run() {
+    if (lastTimeWatered == null
+        || daysSinceWatered() >= WATERING_INTERVAL_DAYS) {
+      printThread("About to water plant.");
+      waterPlant();
+      printThread("numTimesWatered: " + numTimesWatered);
+    } else {
+      printThread("No need to water plant.");
+    }
+  }
+
+  public static void main(String[] args) {
+    Plant plant = new Plant();
+    new Thread(plant).run(); // roommate 1
+    new Thread(plant).run(); // roommate 2
+  }
+}
 ```
 
-<p style={{fontSize: '0.85em', color: '#e06c75'}}>
-Both threads are stuck. The living room lights are frozen at 100%. <strong>Forever.</strong> Unlike a race condition (wrong results), deadlock produces <strong>no results</strong>. No error. No exception. The system just hangs.
+</div>
+
+<div className="fragment" style={{flex: '0 0 40%'}}>
+<pre>
+<span style={{color: '#e06c75'}}>thread main: About to water plant.</span><br/>
+<span style={{color: '#e06c75'}}>thread main: Watering plant.</span><br/>
+<span style={{color: '#e06c75'}}>thread main: numTimesWatered: 1</span><br/>
+<span style={{color: '#e06c75'}}>thread main: No need to water plant.</span><br/>
+</pre>
+</div>
+
+</div>
+
+<div style={{fontSize: '.6em'}}>
+https://github.com/cs3100-spertus-s26/concurrency-examples/blob/plant-d/app/src/main/java/concurrency/Plant.java
+</div>
+
+</Slide>
+
+<Slide>
+
+## What's Wrong With Plant Example E?
+
+<div style={{display: 'flex', gap: '1.5rem', alignItems: 'flex-start'}}>
+
+<div style={{flex: '0 0 55%'}}>
+```java
+public class Plant implements Runnable {
+  // unchanged code omitted
+
+  private void waterPlantIfNeeded() {
+    if (lastTimeWatered == null
+        || daysSinceWatered() >= WATERING_INTERVAL_DAYS) {
+      printThread("About to water plant.");
+      waterPlant();
+      printThread("numTimesWatered: " + numTimesWatered);
+    } else {
+      printThread("No need to water plant.");
+    }
+  }
+
+  @Override
+  public synchronized void run() {
+    waterPlantIfNeeded();
+  }
+
+  public static void main(String[] args) {
+    Plant plant = new Plant();
+    new Thread(plant).start();             // roommate 1
+    new Thread(plant::waterPlantIfNeeded)  // roommate 2
+        .start();                          
+  }
+}
+```
+
+</div>
+
+<div className="fragment" style={{flex: '0 0 40%'}}>
+<pre>
+<span style={{color: '#e06c75'}}>thread Thread-0: About to water plant.</span><br/>
+<span style={{color: '#d19a66'}}>thread Thread-1: About to water plant.</span><br/>
+<span style={{color: '#e06c75'}}>thread Thread-0: Watering plant.</span><br/>
+<span style={{color: '#d19a66'}}>thread Thread-1: Watering plant.</span><br/>
+<span style={{color: '#e06c75'}}>thread Thread-0: numTimesWatered: 2</span><br/>
+<span style={{color: '#d19a66'}}>thread Thread-1: numTimesWatered: 2</span><br/>
+</pre>
+
+
+</div>
+
+</div>
+
+<div className='fragment' style={{fontSize: '.75em', marginTop: '-1em'}}>
+The lock is useless if
+threads can enter the critical section another way.
+</div>
+<div style={{fontSize: '.6em', marginTop: '-1em'}}>
+https://github.com/cs3100-spertus-s26/concurrency-examples/blob/plant-e/app/src/main/java/concurrency/Plant.java
+</div>
+
+</Slide>
+
+<Slide>
+
+## What's Wrong With Dining Example A?
+
+<div style={{display: 'flex', gap: '.75rem', alignItems: 'flex-start'}}>
+
+<div style={{flex: '0 0 55%', transform: 'scale(0.85)', transformOrigin: 'top left', marginBottom: '-10%'}}>
+```java
+public class DiningExample {
+  private final Object fork = new Object();
+  private final Object knife = new Object();
+
+  public void roommate1() {
+    synchronized (fork) {
+      printThread("Roommate 1 picked up fork.");
+      synchronized (knife) {
+        printThread("Roommate 1 picked up knife. Eating!");
+      }
+    }
+  }
+
+  public void roommate2() {
+    synchronized (knife) {
+      printThread("Roommate 2 picked up knife.");
+      synchronized (fork) {
+        printThread("Roommate 2 picked up fork. Eating!");
+      }
+    }
+  }
+
+  public static void main(String[] args) {
+    DiningExample d = new DiningExample();
+    new Thread(d::roommate1).start();
+    new Thread(d::roommate2).start();
+  }
+}
+```
+
+</div>
+
+<div className="fragment" style={{flex: '0 0 40%', fontSize: '0.75em'}}>
+<pre>
+<span style={{color: '#e06c75'}}>thread Thread-0: Roommate 1 picked up fork.</span><br/>
+<span style={{color: '#d19a66'}}>thread Thread-1: Roommate 2 picked up knife.</span><br/>
+</pre>
+
+</div>
+
+</div>
+
+<p className='fragment' style={{fontSize: '0.8em'}}>
+This is a <strong>deadlock</strong>: two threads each waiting for a lock held by the other.
 </p>
 
+<div style={{fontSize: '.6em'}}>
+https://github.com/cs3100-spertus-s26/concurrency-examples/blob/dining-a/app/src/main/java/concurrency/Dining.java
+</div>
 <aside className="notes">
-**Walk through the diagram step by step:**
-1. Thread A gets the room lock. Fine.
-2. Thread B gets the device lock. Also fine.
-3. Thread A tries to get the device lock — blocked, B has it.
-4. Thread B tries to get the room lock — blocked, A has it.
-5. Neither can release what they hold because they're both stuck waiting.
-
-**"Forever" is literal.** The user taps "activate scene" and nothing happens. No error message. No log entry. Just silence. That's worse than a crash — at least a crash tells you something went wrong.
-
-> **Transition:** How do we prevent this?
+The fix: always acquire locks in the same order. If both roommates always pick up the fork before the knife, deadlock is impossible — one will always get the fork first and proceed.
 </aside>
 
 </Slide>
 
 <Slide>
 
-## Preventing Deadlock: Break the Cycle
+## Concurrent Data Structures
 
 <p style={{fontSize: '0.85em'}}>
-Deadlock happens because of a <strong>circular wait</strong>: Thread A holds lock X and waits for lock Y, while Thread B holds lock Y and waits for lock X. Neither can proceed.
+Java provides thread-safe data structures in <code>java.util.concurrent</code> that handle synchronization internally — no <code>synchronized</code> blocks needed.
 </p>
 
-<p style={{fontSize: '0.85em'}}>
-The simplest fix: <strong>always acquire locks in the same order.</strong>
+<div style={{fontSize: '0.8em'}}>
+
+| Class | Replaces | Guarantee |
+|-------|----------|-----------|
+| `AtomicInteger` | `int` / `Integer` | Read-modify-write is atomic (e.g. `incrementAndGet()`) |
+| `AtomicReference<T>` | object reference | Atomic compare-and-swap on any object |
+| `ConcurrentHashMap<K,V>` | `HashMap` | Safe concurrent reads and writes |
+| `CopyOnWriteArrayList<T>` | `ArrayList` | Safe for many readers, few writers |
+| `BlockingQueue<T>` | `Queue` | Thread-safe producer-consumer handoff |
+
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '0.8em'}}>
+Prefer these over manual <code>synchronized</code> blocks — they are faster, less error-prone, and express intent clearly.
 </p>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.68em'}}>
-
-<div style={{backgroundColor: 'rgba(200,74,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
-
-**Before (deadlock possible)**
-
-```java
-// activateScene: room → device
-synchronized (room) {
-    synchronized (device) { ... }
-}
-
-// firmwareUpdate: device → room
-synchronized (device) {
-    synchronized (room) { ... }
-}
-```
-
-Different order → circular wait → deadlock
-
-</div>
-
-<div style={{backgroundColor: 'rgba(50,205,50,0.15)', padding: '0.8em', borderRadius: '8px'}}>
-
-**After (deadlock impossible)**
-
-```java
-// activateScene: room → device
-synchronized (room) {
-    synchronized (device) { ... }
-}
-
-// firmwareUpdate: room → device
-synchronized (room) {
-    synchronized (device) { ... }
-}
-```
-
-Same order → no cycle → no deadlock
-
-</div>
-
-</div>
 
 <aside className="notes">
-**Consistent lock ordering is a convention, not a mechanism.** The language doesn't enforce it — you enforce it through code review and documentation. "In this codebase, we always lock rooms before devices." Simple rule, prevents an entire class of bugs.
+AtomicInteger is the most common fix for the numTimesWatered++ race condition — replace int with AtomicInteger and call incrementAndGet() instead of ++.
 
-**If students ask about other approaches:** You can also use `tryLock()` with a timeout (back off if you can't get the lock), or reduce lock scope (release one lock before acquiring another). But consistent ordering is the go-to strategy — it's the simplest and most reliable.
+ConcurrentHashMap is what the SceneItAll hub uses internally for its device registry — it allows multiple threads to read and write without blocking each other unnecessarily.
 
-> **Transition:** Let's check your understanding...
+BlockingQueue is the foundation of the producer-consumer pattern — one thread puts items in, another takes them out, and the queue handles the synchronization.
 </aside>
 
 </Slide>
+
 
 {/* ============================================ */}
 {/* ARC 6: WRAP-UP (~5 min) */}
@@ -1775,6 +1783,17 @@ The family's lights work fine with 5 devices. Add a 6th and scenes start glitchi
 
 <Slide>
 
+## Poll: Share Something You Learned Today
+
+<PollSlide username="espertus" />
+<aside className="notes">
+Open-ended poll
+</aside>
+
+</Slide>
+
+<Slide>
+
 ## Key Takeaways
 
 <ol style={{fontSize: '0.8em'}}>
@@ -1782,7 +1801,6 @@ The family's lights work fine with 5 devices. Add a 6th and scenes start glitchi
   <li><strong>Shared mutable state is dangerous.</strong> Race conditions produce silently wrong results. <code>deviceCount++</code> is not atomic.</li>
   <li><strong><code>synchronized</code> provides atomicity + visibility.</strong> Mutual exclusion prevents interleaving. Memory visibility ensures threads see each other's writes.</li>
   <li><strong>Use concurrent collections</strong> — <code>ConcurrentHashMap</code>, <code>AtomicInteger</code>, <code>BlockingQueue</code>. The experts already debugged them.</li>
-  <li><strong>Fine-grained locking increases parallelism</strong> — lock per room, not per hub. But more locks = more deadlock risk.</li>
   <li><strong>Prevent deadlock with consistent lock ordering.</strong> Always acquire locks in the same order across all code paths.</li>
 </ol>
 
@@ -1829,6 +1847,15 @@ Today: why shared state is dangerous and how locks protect it. Wednesday: how to
 
 > That's it for today. Questions?
 </aside>
+
+</Slide>
+
+<Slide>
+
+## Bonus Slide
+
+<Img src="/img/lectures/web/l31-concurrency-meme.png" width={800} alt="TODO"/>
+
 
 </Slide>
 
