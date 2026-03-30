@@ -158,7 +158,7 @@ Remember L29: "long handlers freeze the UI." Same problem — now the hub <em>is
 
 <div style={{fontSize: '0.8em', backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.8em', borderRadius: '8px', marginTop: '0.8em'}}>
 
-**What you'll use in GA1:** When CookYourBooks loads recipes from the repository, that's I/O. If you do it on the main thread, your GUI freezes. The GA1 handout provides **`BackgroundTaskRunner`** — it wraps threads and FX-thread callbacks into `run(callable, onSuccess, onFailure)`. You don't write threading boilerplate, but you **must understand what it does internally** (your TA will ask).
+**GA1 connection:** These concepts are the foundation for GA1's `BackgroundTaskRunner` — more in the Looking Ahead slide.
 
 </div>
 
@@ -282,7 +282,7 @@ public class DeviceCommandSender extends Thread {
     @Override
     public void run() {
         DeviceResponse response = sendViaZigbee(command);
-        command.setResponse(response);
+        log.info("Command sent: " + response.getStatus());
     }
 }
 new DeviceCommandSender(command).start();
@@ -293,7 +293,7 @@ thread.start();
 
 // Option 3: Lambda (most concise — use for simple tasks)
 new Thread(() -> {
-    DeviceResponse response = sendViaZigbee(dimLightsCommand);
+    DeviceResponse response = sendViaZigbee(command);
     log.info("Light dimmed: " + response.getStatus());
 }).start();
 ```
@@ -391,10 +391,13 @@ public class TimedCommandSender {
         try {
             return future.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {
-            future.cancel(true);  // Sets the thread's interrupt flag
+            future.cancel(true);  // Interrupts the worker thread
             return DeviceResponse.timeout(
                 "Device exceeded " + timeout.toSeconds() + "s"
             );
+        } catch (InterruptedException | ExecutionException e) {
+            future.cancel(true);  // Clean up if still running
+            return DeviceResponse.error("Command failed: " + e.getMessage());
         }
     }
 }
@@ -417,18 +420,26 @@ public void applyFirmwareChunks(Device device, List<byte[]> chunks) {
 </div>
 
 <p style={{fontSize: '0.8em', marginTop: '0.3em'}}>
-Interrupts are <strong>cooperative</strong> — <code>cancel(true)</code> sets a flag, but the worker must check it. <code>Thread.stop()</code> was deprecated in 1998 — forcibly killing threads corrupts shared state.
+Interrupts are <strong>cooperative</strong> — <code>cancel(true)</code> sets the interrupt flag and interrupts blocking calls (like <code>Thread.sleep()</code> or I/O), but the worker must check it or handle the exception. <code>Thread.stop()</code> was deprecated in 1997 — forcibly killing threads corrupts shared state.
 </p>
 
 <aside className="notes">
 **The scenario:** A smart bulb hangs during a firmware update. The command thread blocks on `sendViaZigbee()` forever. Without intervention, that thread is gone from the pool permanently.
 
-**`cancel(true)`** sets the thread's interrupt flag. Well-behaved blocking operations (like `Thread.sleep()`, `BlockingQueue.take()`, I/O) throw `InterruptedException` when interrupted. The thread can then clean up and exit.
+**What `future.get(timeout, unit)` can throw (three different situations):**
+- **`TimeoutException`** — The wait ended before the task produced a result. The hub thread calling `sendWithTimeout` is fine; the worker may still be stuck in `sendViaZigbee`. `future.cancel(true)` asks that worker to stop; you return `DeviceResponse.timeout(...)` to the caller.
+- **`InterruptedException`** — The *calling* thread was interrupted while blocked inside `get` (e.g. shutdown, higher-level cancellation). You must end the wait cooperatively: `future.cancel(true)`, then `Thread.currentThread().interrupt()` so callers up the stack still see the interrupt, and return `DeviceResponse.error(...)` (or similar) instead of swallowing it silently.
+- **`ExecutionException`** — The task finished but threw. The failure from `sendViaZigbee` is wrapped in `ExecutionException`; use `getCause()` for the real `Throwable` and fold its message into `DeviceResponse.error(...)`. Cancel is unnecessary—the task already completed unsuccessfully.
 
-**Why not `Thread.stop()`?** Imagine stopping a thread halfway through updating a device's firmware. The device is now in an unknown state — partially updated firmware. The method was deprecated in Java 1.2 (1998) because forcible termination corrupts shared state.
+**Disambiguation for students:** `InterruptedException` on `get` means *this* thread (whoever called `sendWithTimeout`) was interrupted while waiting. That is different from the worker thread blocking in `sendViaZigbee`: after a **timeout**, `cancel(true)` tries to interrupt *that* worker so it can unwind cooperatively—the paragraph below is about *that* side.
+
+**`cancel(true)`** calls `Thread.interrupt()` on the worker thread, which both sets the interrupt flag AND wakes threads blocked in interruptible operations (like `Thread.sleep()`, `BlockingQueue.take()`, I/O) by throwing `InterruptedException`. The thread can then clean up and exit.
+
+**Why not `Thread.stop()`?** Imagine stopping a thread halfway through updating a device's firmware. The device is now in an unknown state — partially updated firmware. The method was deprecated in Java 1.1 (1997) because forcible termination corrupts shared state.
 
 **Full imports:**
 ```java
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -462,7 +473,7 @@ public class SceneService {
         for (Device device : room.getDevices()) {
             DeviceState targetState = scene.getTargetState(device);
             if (targetState != null) {
-                device.setState(targetState);  // Read current, write new
+                device.setState(targetState);  // sets brightness, shadePosition, etc.
             }
         }
         return true;
@@ -620,6 +631,8 @@ Common patterns:
 
 **The check-then-act pattern** is extremely common. Students will write `if (!map.containsKey(key)) map.put(key, value)` and think it's safe. It's not — another thread can insert between the check and the put.
 
+**Note:** Check-then-act and compound action are named here as a taxonomy. Students haven't seen code for these yet — read-modify-write is the one we'll drill next with `deviceCount++`. Check-then-act gets its fix on the concurrent collections slide (`putIfAbsent`).
+
 > **Transition:** Let's look at the simplest possible race condition...
 </aside>
 
@@ -738,7 +751,7 @@ public class DeviceStateHolder {
 
     // Thread B (UI refresh worker) reads:
     public void checkBrightness() {
-        while (!ready) { /* spin-wait */ }
+        while (!ready) { /* spin-wait — burns CPU; real code uses wait/notify */ }
         System.out.println(brightness);  // Might print 0!
     }
 }
@@ -750,13 +763,17 @@ public class DeviceStateHolder {
 
 **Three things that can go wrong without synchronization:**
 1. Thread B **never sees** `ready = true` — spins forever (write cached, never flushed)
-2. Thread B sees `ready = true` but `brightness = 0` — **writes reordered** by the CPU
+2. Thread B sees `ready = true` but `brightness = 0` — **CPU may execute the write to `ready` before the write to `brightness` reaches memory**
 3. Thread B sees both correctly — works today, **breaks tomorrow** on different hardware
 
 </div>
 
 <p style={{fontSize: '0.8em', color: '#9370DB'}}>
 The fix: <code>synchronized</code>, <code>volatile</code>, or atomic classes — all establish a "happens-before" relationship that guarantees visibility.
+</p>
+
+<p style={{fontSize: '0.8em', color: '#e06c75'}}>
+Caution: <code>volatile</code> fixes visibility but does NOT fix compound operations — <code>volatile int count; count++</code> is still a race condition.
 </p>
 
 <aside className="notes">
@@ -898,12 +915,12 @@ Fixes the **memory visibility** problem from slide 12.
 
 ```java
 public class SceneService {
-    // One lock per room — different rooms can be controlled in parallel
+    // One lock per room (ConcurrentHashMap because multiple threads may add rooms simultaneously)
     private final Map<String, Object> roomLocks = new ConcurrentHashMap<>();
 
     public boolean activateScene(Scene scene, Area room) {
         Object roomLock = roomLocks.computeIfAbsent(
-            room.getId(), k -> new Object()
+            room.getId(), k -> new Object()  // lock objects just serve as monitors
         );
         synchronized (roomLock) {
             for (Device device : room.getDevices()) {
@@ -956,7 +973,7 @@ public class DeviceRegistry {
     private final AtomicInteger deviceCount = new AtomicInteger(0);
 
     public void registerDevice(Device device) {
-        // putIfAbsent: atomic check-and-put in one operation
+        // putIfAbsent: atomic check-and-put — fixes the check-then-act race from earlier
         Device existing = devices.putIfAbsent(device.getId(), device);
         if (existing == null) {
             deviceCount.incrementAndGet();  // Atomic increment
@@ -1037,7 +1054,7 @@ public class SmartHomeService {
         synchronized (device) {                  // Lock device FIRST
             synchronized (room) {                // Then lock room
                 device.applyFirmware(firmware);
-                room.updateDeviceManifest(device);
+                room.updateDeviceManifest(device);  // update firmware version in room's manifest
             }
         }
     }
@@ -1045,6 +1062,10 @@ public class SmartHomeService {
 ```
 
 </div>
+
+<p style={{fontSize: '0.8em', color: '#9370DB', marginTop: '0.5em'}}>
+Two threads. Opposite lock orders. What happens next?
+</p>
 
 <aside className="notes">
 **Point out the lock ordering.** `activateScene` goes room → device. `firmwareUpdate` goes device → room. Ask students: "What happens if both run at the same time?"
@@ -1156,7 +1177,7 @@ Same order → no cycle → no deadlock
 
 **If students ask about other approaches:** You can also use `tryLock()` with a timeout (back off if you can't get the lock), or reduce lock scope (release one lock before acquiring another). But consistent ordering is the go-to strategy — it's the simplest and most reliable.
 
-> **Transition:** Let's check your understanding...
+> **Transition:** Before we wrap up, let's talk about why these bugs are so hard to catch...
 </aside>
 
 </Slide>
@@ -1164,42 +1185,6 @@ Same order → no cycle → no deadlock
 {/* ============================================ */}
 {/* ARC 6: WRAP-UP (~5 min) */}
 {/* ============================================ */}
-
-<Slide>
-
-## Comprehension Check
-
-<p style={{fontSize: '0.85em'}}>
-Open Poll Everywhere and answer the three questions.
-</p>
-
-<aside className="notes">
-**Poll Q1:** Two users activate different scenes simultaneously on the same room. `activateScene()` is not synchronized. What can happen?
-- A. One scene applies cleanly, the other is rejected
-- B. Devices end up in a mixed state — some from one scene, some from the other [CORRECT]
-- C. ConcurrentModificationException
-- D. The hub crashes
-
-*Discussion: B is the scary answer. There's no exception, no crash — just silently wrong device states. That's what makes race conditions dangerous.*
-
-**Poll Q2:** Thread A is executing `synchronized(livingRoomLock) { ... }`. Thread B tries to execute `synchronized(livingRoomLock) { ... }` on the same lock. Thread C tries to execute `synchronized(bedroomLock) { ... }`. What happens?
-- A. B and C both block until A finishes
-- B. B blocks; C executes immediately (different lock) [CORRECT]
-- C. All three execute — synchronized doesn't actually block
-- D. B throws an exception
-
-*Discussion: This is the fine-grained locking payoff. Different rooms use different locks, so they can be controlled in parallel.*
-
-**Poll Q3:** `activateScene()` locks room then device. `firmwareUpdate()` locks device then room. Which prevents deadlock?
-- A. Both always lock room first, then device [CORRECT]
-- B. Remove synchronized from both methods
-- C. Use one global lock for the entire hub [Works but kills parallelism]
-- D. Both A and C prevent deadlock, but A is better [CORRECT]
-
-*Discussion: D is the most complete answer. A single global lock prevents deadlock but serializes everything — no parallelism between rooms. Consistent ordering (A) preserves fine-grained parallelism while preventing deadlock.*
-</aside>
-
-</Slide>
 
 <Slide>
 
@@ -1242,7 +1227,45 @@ The family's lights work fine with 5 devices. Add a 6th and scenes start glitchi
 
 **The best defense is design:** don't share mutable state in the first place. Use immutable records, concurrent collections, and message passing. When you must share state, use synchronization.
 
-> **Transition:** Key takeaways...
+> **Transition:** Let's check your understanding...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Comprehension Check
+
+<p style={{fontSize: '0.85em'}}>
+Open Poll Everywhere and answer the three questions.
+</p>
+
+<aside className="notes">
+**Quick verbal check before the poll (LO1):** "What's the difference between calling `thread.run()` and `thread.start()`?" (`run()` executes on the current thread; `start()` creates a new thread). This is the most common misconception from Arc 2.
+
+**Poll Q1:** Two threads call `registerDevice()` simultaneously. The method does `if (!devices.containsKey(id)) devices.put(id, device); deviceCount++`. Neither method is synchronized. What can happen?
+- A. One device is registered, the other is rejected cleanly
+- B. Both devices are registered but `deviceCount` only increments once [CORRECT — lost update]
+- C. ConcurrentModificationException
+- D. Both devices and both increments succeed correctly
+
+*Discussion: B is the scary answer — the check-then-act on `containsKey`/`put` and the read-modify-write on `deviceCount++` are both race conditions. Students must transfer what they learned from the scene activation and `deviceCount++` examples to a new scenario.*
+
+**Poll Q2:** Thread A is executing `synchronized(livingRoomLock) { ... }`. Thread B tries to execute `synchronized(livingRoomLock) { ... }` on the same lock. Thread C tries to execute `synchronized(bedroomLock) { ... }`. What happens?
+- A. B and C both block until A finishes
+- B. B blocks; C executes immediately (different lock) [CORRECT]
+- C. All three execute — synchronized doesn't actually block
+- D. B throws an exception
+
+*Discussion: This is the fine-grained locking payoff. Different rooms use different locks, so they can be controlled in parallel.*
+
+**Poll Q3:** `activateScene()` locks room then device. `firmwareUpdate()` locks device then room. Which prevents deadlock?
+- A. Both always lock room first, then device [CORRECT]
+- B. Remove synchronized from both methods
+- C. Use one global lock for the entire hub [Works but kills parallelism]
+- D. Both A and C prevent deadlock, but A is better [CORRECT]
+
+*Discussion: D is the most complete answer. A single global lock prevents deadlock but serializes everything — no parallelism between rooms. Consistent ordering (A) preserves fine-grained parallelism while preventing deadlock.*
 </aside>
 
 </Slide>
@@ -1299,7 +1322,62 @@ Today: why shared state is dangerous and how locks protect it. Wednesday: how to
 
 **Lab 12:** Students build SceneItAll GUI components using Scene Builder and MVVM patterns from L29-30. This is pair programming — they'll practice binding, property listeners, and FXML layout.
 
-**GA1 connection:** `BackgroundTaskRunner.run(callable, onSuccess, onFailure)` is the practical tool. Under the hood: it creates a `javafx.concurrent.Task`, runs it on a daemon thread, and uses `Platform.runLater()` to call `onSuccess`/`onFailure` on the FX thread. Students need to explain this during code walks.
+**GA1 connection:** Next slide dives into the specifics.
+
+> **Transition:** Let's connect this to your group project...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## GA1: Where This Shows Up in CookYourBooks
+
+<div style={{fontSize: '0.75em'}}>
+
+Every core feature has **one async operation** that uses `BackgroundTaskRunner`:
+
+| Feature | Async Operation | What today's lecture explains |
+|---------|----------------|------------------------------|
+| **Library View** | `refresh()` loads collections | Background thread does I/O; FX thread updates `ObservableList` |
+| **Recipe Editor** | `save()` persists edits | Save button disabled while saving — what if two saves race? |
+| **Import** | OCR extraction from image | State machine (idle → processing → review) — each transition is a thread handoff |
+| **Search & Filter** | Debounced search query | What if a slow search returns *after* a newer one? (race condition!) |
+
+</div>
+
+<div style={{fontSize: '0.8em'}}>
+
+```java
+BackgroundTaskRunner.run(
+    () -> librarianService.listCollections(),   // background thread (I/O)
+    collections -> { /* FX thread (update UI) */ },
+    error -> { /* FX thread (show error) */ }
+);
+```
+
+</div>
+
+<p style={{fontSize: '0.85em', color: '#9370DB', marginTop: '0.3em'}}>
+Your TA will ask: what thread does the callable run on? What thread do the callbacks run on? What breaks if you skip <code>Platform.runLater()</code>?
+</p>
+
+<aside className="notes">
+**This is the GA1 payoff slide.** Students don't write raw thread code in GA1 — they use `BackgroundTaskRunner`. But they must understand what it does internally.
+
+**Under the hood:** `BackgroundTaskRunner.run()` creates a `javafx.concurrent.Task`, runs it on a daemon thread, and uses `Platform.runLater()` to call `onSuccess`/`onFailure` on the FX thread. The callable (first arg) runs on the background thread. The callbacks (second and third args) run on the FX thread.
+
+**Why this matters for each feature:**
+- **Library View:** `refresh()` fetches collections on a background thread. The `loading` property is true while fetching. If you update `ObservableList` from the background thread, JavaFX throws `IllegalStateException`.
+- **Recipe Editor:** `save()` runs persistence on a background thread. While saving, edit controls are disabled. If the save fails, you stay in edit mode with dirty state preserved — the user doesn't lose their work.
+- **Import:** The OCR call can take seconds. The state machine (idle → processing → review/error) maps directly to thread handoffs — start OCR on background thread, transition to review/error on FX thread when it completes.
+- **Search & Filter:** Debounced search has a subtle race condition: if the user types "cake", a search fires, then they type "cookies" and a second search fires — the first search might return *after* the second. Blindly accepting results shows "cake" results for "cookies". This is exactly the kind of concurrency bug we discussed today.
+
+**TA code walk questions:**
+- What thread does the callable run on? (Background/daemon thread)
+- What thread do the callbacks run on? (FX Application Thread, via `Platform.runLater()`)
+- What would break if the callbacks ran on the background thread? (`IllegalStateException` — can't modify JavaFX nodes from non-FX thread)
+- How does `BackgroundTaskRunner` relate to `synchronized`? (Different mechanism, same goal — ensuring shared state is accessed safely. `BackgroundTaskRunner` separates work by thread rather than locking shared state.)
 
 > That's it for today. Questions?
 </aside>
