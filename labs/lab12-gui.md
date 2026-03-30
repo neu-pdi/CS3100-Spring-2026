@@ -110,7 +110,7 @@ by dragging and dropping components.
 
 1. **Download Scene Builder** from [Gluon](https://gluonhq.com/products/scene-builder/) (free,
    choose your OS)
-2. **Install it** — on macOS, drag to Applications; on Windows, run the installer
+2. **Install it** — on macOS, open `.dmg` file and drag Scene Builder to Applications; on Windows, run the installer
 3. **Open Scene Builder**, then go to **File → Open** and select your task's `.fxml` file (e.g.,
    `src/main/resources/scene-builder-task.fxml`)
 
