@@ -50,12 +50,12 @@ what you'll do for your GA1 Core Features implementation. This lab is your dress
 ## Part 1: Setup & Pair Formation (15 min)
 
 :::note For TAs Walk through Scene Builder at the front of the room before students start. Show:
-opening an FXML file (File → Open), dragging a VBox, dropping a Button inside it, setting `fx:id`
+opening an FXML file (`File → Open` or `Open Project`), dragging a VBox, dropping a Button inside it, setting `fx:id`
 in the Code panel, setting `accessibleText` in the Properties panel, and saving. This should take
 ~5 minutes, then have students pair up and set up. Make sure students have Scene Builder installed
 before starting — the install instructions are in the Setup section below. Remind students they can
 also use Claude Code or Copilot to tweak FXML files directly.
-::: 
+:::
 
 **Pairing rules:** Pairs should NOT be GA1 teammates — fresh collaborators help build broader team
 skills. If odd numbers, make one group of three with a rotating navigator. :::
@@ -116,7 +116,7 @@ by dragging and dropping components.
 1. **Download Scene Builder** from [Gluon](https://gluonhq.com/products/scene-builder/) (free,
    choose your OS)
 2. **Install it** — on macOS, open `.dmg` file and drag Scene Builder to Applications; on Windows, run the installer
-3. **Open Scene Builder**, then go to **File → Open** and select your task's `.fxml` file (e.g.,
+3. **Open Scene Builder**, then go to **File → Open** or **Open Project** and select your task's `.fxml` file (e.g.,
    `src/main/resources/scene-builder-task.fxml`)
 
 After editing in Scene Builder, save (`Cmd+S` / `Ctrl+S`) — the FXML file updates in place. Switch
@@ -172,7 +172,7 @@ To run a specific test class:
 ### Verify your setup
 
 1. Open the project in VS Code
-2. Open Scene Builder and use **File → Open** to open `src/main/resources/area-dashboard.fxml` —
+2. Open Scene Builder and use **File → Open** or **Open Project** to open `src/main/resources/area-dashboard.fxml` —
    you should see the Area Dashboard layout
 3. Run `./gradlew run` — you should see a window titled "SceneItAll" with the Area Dashboard
 4. Run `./gradlew test` — the reference tests should pass; scaffold tests should pass
