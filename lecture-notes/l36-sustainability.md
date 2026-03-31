@@ -6,13 +6,13 @@ title: "Sustainability"
 
 In [L35](/lecture-notes/l35-safety-reliability), we asked "who profits from a design decision, and who bears the risk?" Boeing sold sensor redundancy as an optional upgrade. Budget airlines saved money; passengers bore the risk without knowing it. That question — who benefits, who pays, and over what time horizon — is the core question of **sustainability.**
 
-In [L1](/lecture-notes/l1-intro), we defined software engineering as "the integral of programming over time." Every lecture since has been about what that integral measures: readability over time ([L5](/lecture-notes/l5-functional-style)), changeability over time ([L6](/lecture-notes/l6-design-for-change), [L7](/lecture-notes/l7-design-for-change)), correctness over time ([L15](/lecture-notes/l15-testing)), performance over time ([L34](/lecture-notes/l34-performance)), safety over time ([L35](/lecture-notes/l35-safety-reliability)). Today we name the thing the integral computes: **sustainability** — the preservation of long-term beneficial use of software, and its appropriate evolution, in a context that continuously changes.
+In [L1](/lecture-notes/l1-intro), we defined software engineering as "the integral of programming over time." Every lecture since has been about what that integral measures: readability over time ([L5](/lecture-notes/l5-fp-readability-reusability)), changeability over time ([L6](/lecture-notes/l6-immutability-abstraction), [L7](/lecture-notes/l7-design-for-change)), correctness over time ([L15](/lecture-notes/l15-testing)), performance over time ([L34](/lecture-notes/l34-performance)), safety over time ([L35](/lecture-notes/l35-safety-reliability)). Today we name the thing the integral computes: **sustainability** — the preservation of long-term beneficial use of software, and its appropriate evolution, in a context that continuously changes.
 
 ## Define software sustainability as a meta-quality attribute and connect it to the semester's recurring themes (10 minutes)
 
 ### Sustainability Is Not a Quality Attribute — It Is the Quality Attribute About Quality Attributes
 
-Throughout the semester, you've learned quality attributes: performance ([L34](/lecture-notes/l34-performance)), safety ([L35](/lecture-notes/l35-safety-reliability)), scalability ([L19](/lecture-notes/l19-monoliths)), changeability ([L6](/lecture-notes/l6-design-for-change)), usability ([L24](/lecture-notes/l24-usability)), accessibility ([L28](/lecture-notes/l28-accessibility)). Sustainability asks a different question: **will those quality attributes hold up over time, and for whom?**
+Throughout the semester, you've learned quality attributes: performance ([L34](/lecture-notes/l34-performance)), safety ([L35](/lecture-notes/l35-safety-reliability)), scalability ([L19](/lecture-notes/l19-monoliths)), changeability ([L6](/lecture-notes/l6-immutability-abstraction)), usability ([L24](/lecture-notes/l24-usability)), accessibility ([L28](/lecture-notes/l28-accessibility)). Sustainability asks a different question: **will those quality attributes hold up over time, and for whom?**
 
 A system can be performant today and unsustainable tomorrow — if the optimization technique creates technical debt that makes future changes impossible. A system can be accessible today and exclusionary next year — if the team that understood WCAG compliance leaves and no one maintains it. A system can be safe today and dangerous at scale — if the blast radius grows while the Swiss cheese layers stay the same ([L35](/lecture-notes/l35-safety-reliability)).
 
@@ -24,11 +24,11 @@ You didn't learn "sustainability tools" separately. You learned tools that *prod
 
 | What you learned | Where | What it sustains |
 |-----------------|-------|-----------------|
-| Information hiding | [L6](/lecture-notes/l6-design-for-change) | **Changeability** — hidden internals can evolve without breaking clients |
+| Information hiding | [L6](/lecture-notes/l6-immutability-abstraction) | **Changeability** — hidden internals can evolve without breaking clients |
 | Low coupling | [L7](/lecture-notes/l7-design-for-change) | **Independence** — modules can be maintained, replaced, or scaled independently |
-| SOLID principles | [L8](/lecture-notes/l8-solid) | **Evolvability** — code resists "software rot" as requirements change |
+| SOLID principles | [L8](/lecture-notes/l8-design-for-change-2) | **Evolvability** — code resists "software rot" as requirements change |
 | Hexagonal architecture | [L16](/lecture-notes/l16-testing2) | **Vendor independence** — swap infrastructure without rewriting domain logic |
-| Open source evaluation | [L23](/lecture-notes/l23-open-source) | **Supply chain health** — dependencies that won't be abandoned or relicensed |
+| Open source evaluation | [L23](/lecture-notes/l23-oss) | **Supply chain health** — dependencies that won't be abandoned or relicensed |
 | Accessibility | [L28](/lecture-notes/l28-accessibility) | **Inclusivity** — system serves diverse and growing user populations |
 | Staged rollout | [L35](/lecture-notes/l35-safety-reliability) | **Blast radius control** — failures don't cascade to every user simultaneously |
 
@@ -49,7 +49,7 @@ Sustainability is not one thing. It has four dimensions that interact and someti
 **Economic sustainability:** Is the total cost of ownership viable? This goes beyond hosting costs. It includes developer time to maintain, cost of dependencies (both monetary and lock-in risk), support burden, and the opportunity cost of not building something else. SceneItAll's choice to use GitHub Actions for CI is economically sustainable while the free tier covers their volume — but if usage grows past the free tier, they're locked into GitHub's pricing.
 
 :::note Recall
-In [L23 (Open Source)](/lecture-notes/l23-open-source), we discussed how OpenSSL — securing most of the internet's connections — was maintained by a handful of volunteers until the Heartbleed vulnerability exposed how underfunded critical infrastructure can be. Economically unsustainable open source projects are a supply chain risk for everyone who depends on them.
+In [L23 (Open Source)](/lecture-notes/l23-oss), we discussed how OpenSSL — securing most of the internet's connections — was maintained by a handful of volunteers until the Heartbleed vulnerability exposed how underfunded critical infrastructure can be. Economically unsustainable open source projects are a supply chain risk for everyone who depends on them.
 :::
 
 **Environmental sustainability:** What resources does the system consume, and what externalities does it create? This includes direct compute costs (energy, hardware, cooling) and indirect effects (does the system enable behaviors that consume resources?). We'll explore this dimension in depth with Jevons' paradox below.
@@ -221,6 +221,8 @@ The goal of sustainability analysis is not to resolve these tensions — many of
 :::note
 The Karlskrona Manifesto on Sustainability Design (2015) puts it this way: "System design is never value-neutral." Every architecture, every API, every default setting reflects an assumption about who matters and what matters. Sustainability is the practice of making those assumptions explicit and revisiting them as the system and its context evolve.
 :::
+
+Parnas makes a related point about regulation: "What we should be doing is trying to regulate critical software rather than trying to make regulations that apply to AI... it doesn't matter whether you call it AI. If it's a software computer system, there should be some regulations that apply to it." The sustainability framework agrees: the question is not "is this AI?" but "what is the blast radius of this system, who are the stakeholders, and are the trade-offs visible?" Those questions apply equally to a `for` loop that processes loan applications and a neural network that does the same thing.
 
 ### Course Arc: From Programming to Engineering
 
