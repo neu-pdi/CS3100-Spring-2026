@@ -4,124 +4,247 @@ lecture_number: 36
 title: "Sustainability"
 ---
 
-[Background Material](https://dl.acm.org/doi/10.1145/3639060) and [this article](https://arxiv.org/abs/2305.00436)
+In [L35](/lecture-notes/l35-safety-reliability), we asked "who profits from a design decision, and who bears the risk?" Boeing sold sensor redundancy as an optional upgrade. Budget airlines saved money; passengers bore the risk without knowing it. That question — who benefits, who pays, and over what time horizon — is the core question of **sustainability.**
 
-## Define software sustainability and its importance in software development (10 minutes)
+In [L1](/lecture-notes/l1-intro), we defined software engineering as "the integral of programming over time." Every lecture since has been about what that integral measures: readability over time ([L5](/lecture-notes/l5-functional-style)), changeability over time ([L6](/lecture-notes/l6-design-for-change), [L7](/lecture-notes/l7-design-for-change)), correctness over time ([L15](/lecture-notes/l15-testing)), performance over time ([L34](/lecture-notes/l34-performance)), safety over time ([L35](/lecture-notes/l35-safety-reliability)). Today we name the thing the integral computes: **sustainability** — the preservation of long-term beneficial use of software, and its appropriate evolution, in a context that continuously changes.
 
-At the start of this course, we introduced the idea that software engineering is "the integral of programming over time." Throughout the semester, we've seen this principle manifest in many ways:
+## Define software sustainability as a meta-quality attribute and connect it to the semester's recurring themes (10 minutes)
 
-**Technical concerns that compound over time:**
-- Code readable only to authors becomes unmaintainable (L5)
-- Exposed internal state becomes API constraints that limit changeability (L6)
-- Missing stakeholders and requirements may become expensive retrofits (L9)
-- Domain assumptions become large-scale rewrite triggers affecting the entire system (L12)
-- AI training biases become system biases (L13)
-- License choices become strategic constraints (L23)
-- Performance shortcuts become environmental costs (L34)
-- Safety gaps become human harm (L35)
+### Sustainability Is Not a Quality Attribute — It Is the Quality Attribute About Quality Attributes
 
-Each of these is both an ethical concern *and* a cost concern. That's not a coincidence: ethics and engineering economics align over sufficiently long time horizons. Cutting corners affects people; eventually, affecting people affects the bottom line.
+Throughout the semester, you've learned quality attributes: performance ([L34](/lecture-notes/l34-performance)), safety ([L35](/lecture-notes/l35-safety-reliability)), scalability ([L19](/lecture-notes/l19-monoliths)), changeability ([L6](/lecture-notes/l6-design-for-change)), usability ([L24](/lecture-notes/l24-usability)), accessibility ([L28](/lecture-notes/l28-accessibility)). Sustainability asks a different question: **will those quality attributes hold up over time, and for whom?**
 
-Today we bring these threads together under the framework of **sustainability** - the meta-quality attribute that asks: "Will this system continue to provide beneficial value over time, and to whom?"
+A system can be performant today and unsustainable tomorrow — if the optimization technique creates technical debt that makes future changes impossible. A system can be accessible today and exclusionary next year — if the team that understood WCAG compliance leaves and no one maintains it. A system can be safe today and dangerous at scale — if the blast radius grows while the Swiss cheese layers stay the same ([L35](/lecture-notes/l35-safety-reliability)).
 
-- Build on existing knowledge: "You've learned about performance, scalability, security..."
-- The problem: These traditional QAs assume a stable context
-- Sustainability: The meta-quality attribute about system endurance
+Sustainability is not a feature you add in Sprint 4. Like safety, it is a property that emerges from how every other decision is made. The difference: safety asks "what happens when this fails?" Sustainability asks "what happens when this succeeds — at scale, over years, across stakeholders you haven't met yet?"
 
-"Software sustainability is the preservation of the long-term and beneficial use of software, and its appropriate evolution, in a context that continuously changes" (Lago 2023 Digital society is already here)
-- Discuss: Why "beneficial"? (long-term...)
+### You've Been Building Sustainability Mechanisms All Semester
 
-## Identify the four dimensions of software sustainability and explain how they interconnect (15 minutes)
-- Technical: Maintainability, evolvability (connects to modular design lecture)
-    - Discuss how technical decisions affect different stakeholder roles (developers, end users, indirect stakeholders)
-- Economic: Total cost of ownership (connects to networks/distributed systems and software architecture lectures)
-    - Hidden costs, hidden benefits
-    - Vendor lock-in vs operational costs
-- Environmental: Resource consumption (new consideration)
-    - Externalities: making delivery of burritos easier has externalities on the environment. Pre-ordering meals on a flight also has externalities on the environment.
-- Social: Accessibility, inclusivity, usability (connects to user experience lectures, plus new considerations for society at large)
-    - Critical addition on indirect stakeholders
-    - Culture? How does TikTok influence society, and society influence TikTok?
-        - How does GenAI influence society, and society influence GenAI?
+You didn't learn "sustainability tools" separately. You learned tools that *produce* sustainability when applied consistently:
 
-- First, second, third-order effects
-    - How to recognize these cascading effects?
-        - Some: domain knowledge, common patterns
-        - Hints and clues of how to look for novel ones, and how to integrate these concerns into operations and monitoring?
+| What you learned | Where | What it sustains |
+|-----------------|-------|-----------------|
+| Information hiding | [L6](/lecture-notes/l6-design-for-change) | **Changeability** — hidden internals can evolve without breaking clients |
+| Low coupling | [L7](/lecture-notes/l7-design-for-change) | **Independence** — modules can be maintained, replaced, or scaled independently |
+| SOLID principles | [L8](/lecture-notes/l8-solid) | **Evolvability** — code resists "software rot" as requirements change |
+| Hexagonal architecture | [L16](/lecture-notes/l16-testing2) | **Vendor independence** — swap infrastructure without rewriting domain logic |
+| Open source evaluation | [L23](/lecture-notes/l23-open-source) | **Supply chain health** — dependencies that won't be abandoned or relicensed |
+| Accessibility | [L28](/lecture-notes/l28-accessibility) | **Inclusivity** — system serves diverse and growing user populations |
+| Staged rollout | [L35](/lecture-notes/l35-safety-reliability) | **Blast radius control** — failures don't cascade to every user simultaneously |
 
-- What are our responsibilities to future us (or future people)?
-    - Any decision (or non-decision) reflects a certain value judgement, it is in fact possible to discuss those values and make an informed judgement about the trade-offs involved.
-    - Are you choosing as if you are the future, and you should pick what you think you will want? Or do we take an atittude that people in the future are equally important as today, but we may not know what they will want?
-    - How does the Overton window of social values and what is possible change over time?
-    - Jevons' paradox
-    - Veil of ignorance
-    - Precautionary risks
+The recurring theme: **decisions that seem like "good engineering practice" in the short term are sustainability investments in the long term.** The converse is also true: shortcuts that seem harmless today become sustainability debts that compound.
 
+:::note Recall
+In [L4 (Specifications)](/lecture-notes/l4-specs-contracts), we saw that ambiguous specifications create a "hidden decision factory" — implementers make choices the spec didn't address, and those choices compound into maintenance burden. In [L9 (Requirements)](/lecture-notes/l9-requirements), we saw that the cost of fixing a requirements error grows from 1x during requirements gathering to 100x after deployment. Both are sustainability stories: the cost of a decision grows with time.
+:::
 
-- Examples
+## Apply the four dimensions of sustainability to evaluate design trade-offs in familiar systems (12 minutes)
 
-## Evaluate trade-offs between competing sustainability concerns in software design decisions (10 minutes)
+### The Four Dimensions
 
-[Translating values into requirements is HARD and an open research challenge](https://research.vu.nl/ws/portalfiles/portal/426353263/Exploring_ethical_values_in_software_systems.pdf#page25).
+Sustainability is not one thing. It has four dimensions that interact and sometimes conflict:
 
-### Example: Pawtograder
+**Technical sustainability:** Can the system be maintained and evolved? This is the dimension you've spent the most time on this semester. Low coupling, high cohesion, testability, readable code, clear contracts — all serve technical sustainability. SceneItAll's hexagonal architecture ([L16](/lecture-notes/l16-testing2)) lets the team swap the Zigbee adapter for a Matter adapter without rewriting the scene activation logic. That's technical sustainability.
 
-Identifying Direct vs. Indirect Stakeholders
-- Direct: Students submitting code, TAs grading, instructors managing course
-- Indirect: Future employers, educational equity, broader academic community
+**Economic sustainability:** Is the total cost of ownership viable? This goes beyond hosting costs. It includes developer time to maintain, cost of dependencies (both monetary and lock-in risk), support burden, and the opportunity cost of not building something else. SceneItAll's choice to use GitHub Actions for CI is economically sustainable while the free tier covers their volume — but if usage grows past the free tier, they're locked into GitHub's pricing.
 
-Mapping Stakeholder Concerns to Values (using VSD):
-- Security: Privacy (student code), safety (reliable grading)
-- Benevolence: Trust (fair assessment), transparency (clear feedback)
-- Universalism: Fairness (equal access), welfare (student learning outcomes)
-- Self-direction: Autonomy (students control submissions)
+:::note Recall
+In [L23 (Open Source)](/lecture-notes/l23-open-source), we discussed how OpenSSL — securing most of the internet's connections — was maintained by a handful of volunteers until the Heartbleed vulnerability exposed how underfunded critical infrastructure can be. Economically unsustainable open source projects are a supply chain risk for everyone who depends on them.
+:::
 
-Value Conflicts in Pawtograder:
-- Privacy vs. Transparency: Should we log all submissions for debugging?
-- Autonomy vs. Safety: Should we limit submission attempts to prevent system abuse?
-- Efficiency vs. Fairness: Should we prioritize faster grading for some assignments?
+**Environmental sustainability:** What resources does the system consume, and what externalities does it create? This includes direct compute costs (energy, hardware, cooling) and indirect effects (does the system enable behaviors that consume resources?). We'll explore this dimension in depth with Jevons' paradox below.
 
-Technical Dimension:
-- Maintainability: Open-source, modular design
-- Evolution: Serverless allows scaling without infrastructure changes
-- GitHub Actions: Standard tooling reduces custom code
+**Social sustainability:** Does the system serve people well — including people who aren't direct users? This includes accessibility ([L28](/lecture-notes/l28-accessibility)), inclusivity, fairness, privacy, and effects on indirect stakeholders. SceneItAll's usage analytics reveal when a home is occupied — not a concern at 50 beta homes, but a potential burglary-risk or insurance-discrimination vector at 100,000 homes.
 
-Economic Dimension:
-- Serverless: Pay only for actual grading runs (vs. always-on servers)
-- Universities maintaining self-hosted graders = hidden costs
-- Open-source: No licensing costs for universities
-- Trade-off: Potential vendor lock-in to GitHub
+### The Dimensions Interact
 
-Environmental Dimension:
-- 3-12k daily submissions × average 2-minute runtime = significant compute
-- Self-hosted runners: Universities can use renewable energy?
-- On-demand resources: No idle servers
+The dimensions are not independent. Improving one can worsen another:
 
-Social Dimension:
-- WCAG compliance planned but not validated
-- GPL ensures any institution can use it
-- But: Requires GitHub access
-- Knowledge barrier: Need expertise to self-host
-- Community: Open-source enables contributions
+| Decision | Technical | Economic | Environmental | Social |
+|----------|-----------|----------|---------------|--------|
+| Migrate SceneItAll from monolith to microservices | Better: independent deployment, team autonomy | Worse: operational complexity, more infrastructure | Worse: network overhead, container sprawl ([L20](/lecture-notes/l20-networks)) | Neutral |
+| Add WCAG accessibility to SceneItAll app | Moderate effort | Higher dev cost | Neutral | Better: inclusive design ([L28](/lecture-notes/l28-accessibility)) |
+| Switch to serverless for SceneItAll cloud | Moderate: vendor-specific APIs | Better: pay-per-use, scale-to-zero ([L21](/lecture-notes/l21-serverless)) | Mixed: no idle waste, but cold start overhead | Worse: vendor lock-in limits who can self-host |
+| Keep all device telemetry forever | Simpler: no retention policy | Worse: storage costs grow linearly | Worse: storing data consumes energy | Worse: privacy risk grows with data volume |
 
-#### Real Decision: Response to the Azure Outage from October 2025
+No decision optimizes all four dimensions simultaneously. Sustainability analysis is about making the trade-offs *visible* — not about finding the "right" answer.
 
-Option A: Add Fallback to Self-Hosted Infrastructure
+## Recognize how efficiency gains can increase total resource consumption, and identify cascading effects of design decisions (10 minutes)
 
-- Technical: Complex failover logic, maintenance burden
-- Economic: Duplicate infrastructure costs
-- Environmental: Idle resources most of the time
-- Social: Requires expertise not all schools have
+### Jevons' Paradox: Efficiency Is Not Sustainability
 
-Option B: Stay GitHub-Dependent
+In 1865, economist William Stanley Jevons observed that as coal-burning engines became more efficient, total coal consumption *increased* rather than decreased. Efficiency made coal-powered activities cheaper, which expanded their use faster than the per-unit savings.
 
-- Technical: Simpler architecture
-- Economic: Leverage free tier
-- Environmental: Efficient resource sharing
-- Social: Equal access for all institutions
+The same pattern appears throughout software:
 
+| Technology | Per-unit efficiency gain | What happened to total consumption |
+|-----------|------------------------|-----------------------------------|
+| Cloud computing | Dramatically cheaper per compute-hour | Total cloud energy consumption has skyrocketed |
+| Web compression + CDNs | Faster delivery per byte | Average webpage grew from ~100KB (2003) to ~4MB (2025) |
+| CI/CD automation | Cheaper per build | Organizations run vastly more builds than when builds were manual |
+| LLM inference | Cheaper per token each quarter | Total AI compute growing far faster than efficiency gains |
 
-## Evaluate the long-term architectural impacts of design decisions beyond immediate technical requirements (15 minutes)
-[Relate ethical values to quality attributes](https://research.vu.nl/ws/portalfiles/portal/426353263/Exploring_ethical_values_in_software_systems.pdf#page25)
+**SceneItAll example:** More efficient firmware updates (faster Zigbee transfer, smaller deltas) don't mean less total update traffic — they mean the team pushes updates more frequently. The per-update cost dropped 5x; the update frequency increased 10x; total update traffic doubled.
 
-### Speculate on the long-term impacts of Pawtograder's design decisions
+**Pawtograder example:** Efficient automated grading enables unlimited submissions. Students submit 3-12k times per day across the course. Each submission triggers a container spin-up, test execution, and result reporting. The per-submission cost is small; the total compute is significant. Before Pawtograder, students submitted once or twice and a human graded it. The *system* is more efficient; the *total resource consumption* is higher.
+
+The implication: **optimizing per-unit efficiency is necessary but not sufficient for environmental sustainability.** You also need to ask: "Will this efficiency enable usage patterns that increase total consumption?" If yes, that's not a reason to avoid the optimization — but it is a reason to design with consumption budgets, rate limits, and awareness of the rebound effect.
+
+### LLMs: Jevons' Paradox in Real Time
+
+You are experiencing Jevons' paradox right now. LLM inference costs have dropped dramatically — Anthropic's Claude API pricing has fallen by over 10x in two years. What happened to total consumption? It exploded.
+
+Consider the economics of the tools you use in this course:
+
+**Claude Code's Max plan costs $200/month.** At API rates, the same usage would cost roughly $5,000/month. Anthropic is subsidizing your usage by ~25x because they're betting that making AI coding cheap enough for individual developers will expand the market enough to justify the subsidy. This is Jevons' paradox as a business strategy: make the per-unit cost low enough that total usage (and eventual revenue at scale) grows to dwarf the subsidy.
+
+Every prompt you send to an LLM runs on GPU clusters consuming significant energy. A single ChatGPT query uses roughly 10x the energy of a Google search. When you ask an AI coding agent to "try a few approaches and see what works," you're consuming compute that, at scale across millions of developers, has measurable environmental impact.
+
+This doesn't mean you should stop using LLMs — the productivity gains are real. It means you should understand the full cost stack:
+
+| Cost layer | Who pays | Who benefits |
+|-----------|---------|-------------|
+| GPU hardware + energy | Cloud providers (passed to AI companies) | Developers using the tools |
+| Training data creation | Original authors (often unconsented) | AI companies + users |
+| Subsidy gap ($200 vs $5,000) | AI company investors (for now) | Individual developers |
+| Environmental externality | Everyone (carbon emissions) | Direct users of the service |
+| Labor displacement risk | Workers in affected roles | Companies reducing headcount |
+
+This is L35's "who profits, who bears the risk?" applied to the tools you use every day. The people benefiting from cheap LLM access are not the same people bearing the environmental and labor costs. That distributional mismatch is a sustainability concern.
+
+:::note
+In [L13](/lecture-notes/l13-intro-ai-agents), we discussed AI as a "noisy amplifier" — it amplifies expertise but also amplifies errors. The sustainability lens adds another dimension: it amplifies *resource consumption*. An AI coding agent that generates and discards 10 approaches to find one that works has consumed 10x the compute of a developer who writes the correct approach directly. The efficiency gain (faster for the developer) can mask the consumption increase (more total compute).
+:::
+
+### First, Second, and Third-Order Effects
+
+Software design decisions cascade in ways that are hard to predict:
+
+**First-order effects** are direct: SceneItAll's hub consumes X watts of power. Pawtograder's autograder uses Y compute-hours per semester.
+
+**Second-order (enabling) effects** emerge from what the system makes possible: SceneItAll makes it trivially easy to leave lights on (one-tap "All On" scene) — convenience that may increase household energy use. Pawtograder's unlimited submissions change how students learn — they can use the autograder as a debugger rather than thinking through their code first.
+
+**Third-order (systemic) effects** reshape the broader context: Smart home data — aggregated across millions of homes — becomes valuable for insurance companies, advertisers, and law enforcement in ways individual homeowners never consented to. Automated grading at scale reshapes pedagogy: if every assignment can be auto-graded, courses gravitate toward auto-gradeable assignments, potentially narrowing what students learn.
+
+| Order | SceneItAll | Pawtograder | LLM coding agents |
+|-------|-----------|-------------|-------------------|
+| **First** (direct) | Hub uses power; cloud service uses compute | Autograder uses compute per submission | GPU inference per prompt |
+| **Second** (enabling) | Convenience may increase energy use; data reveals occupancy | Unlimited submissions change study habits | Developers write more code, explore more approaches |
+| **Third** (systemic) | Smart home data reshapes insurance, surveillance | Auto-gradeable assignments narrow curriculum | Software labor market restructures; codebases grow faster than teams can maintain |
+
+You cannot predict all second- and third-order effects. But you can ask: "If this system is wildly successful, what behaviors does it enable, and who is affected?" That question — asked early and revisited as the system scales — is how you catch cascading effects before they become entrenched.
+
+## Evaluate who benefits and who bears risk in software design trade-offs (18 minutes)
+
+### The Veil of Ignorance: A Design Heuristic
+
+Philosopher John Rawls proposed a thought experiment: design the rules of a society as if you don't know which position you'll occupy in it. If you don't know whether you'll be rich or poor, abled or disabled, majority or minority, you'll design fairer rules — because any rule that disadvantages a group might disadvantage *you.*
+
+Applied to software design, the veil of ignorance becomes a concrete heuristic: **design as if you don't know which stakeholder you'll be.**
+
+For SceneItAll: "If you might be any of these people, would you accept this design?"
+- The developer maintaining the codebase 3 years from now
+- The user with a visual impairment using the app with a screen reader
+- The homeowner in a developing country with intermittent internet
+- The person whose occupancy data is sold to an insurance company
+- The homeowner locked out during a firmware update gone wrong
+
+For Pawtograder: "If you were randomly assigned to be any stakeholder, would you accept the current design?"
+- A student at Northeastern with fast internet and a modern laptop
+- A student at a community college with limited IT support trying to self-host Pawtograder
+- A student with a disability who needs accessible feedback formats
+- A TA grading 200 submissions during finals week
+- A student who receives a zero because the autograder crashed ([L35](/lecture-notes/l35-safety-reliability))
+
+The veil of ignorance doesn't tell you what to build. It tells you which trade-offs deserve extra scrutiny — the ones where the people benefiting and the people bearing risk are different groups. This is the same distributional question from L35, generalized into a design practice.
+
+### Worked Example: Pawtograder Through the Four Dimensions
+
+Let's apply all four sustainability dimensions to a system you know well.
+
+**Technical sustainability:**
+- Open-source, modular design ([L16](/lecture-notes/l16-testing2) hexagonal architecture) — any institution can inspect, modify, and contribute back
+- GitHub Actions as CI — standard tooling reduces custom infrastructure, but creates platform dependency
+- Question: If GitHub changes their Actions pricing or API, how much of Pawtograder breaks?
+
+**Economic sustainability:**
+- Serverless grading ([L21](/lecture-notes/l21-serverless)): pay only for actual grading runs, not idle servers — strong for bursty academic workloads
+- Open-source: no licensing costs for adopting universities
+- Hidden cost: self-hosting requires expertise that under-resourced institutions may not have
+- Trade-off: GitHub lock-in vs. the operational savings of not maintaining CI infrastructure
+
+**Environmental sustainability:**
+- 3,000-12,000 daily submissions across the course, each triggering container spin-up, test execution, and result reporting
+- Scale-to-zero means no idle compute — but Jevons' paradox applies: unlimited submissions generate more total compute than a "submit twice and wait for a human" model
+- Question: Should Pawtograder implement a cooling-off period between submissions? That would reduce compute but change the student experience.
+
+**Social sustainability:**
+- GPL license ensures any institution can use it — socially sustainable
+- But: requires GitHub access, which may be restricted in some countries or institutions
+- WCAG compliance planned but not yet validated — socially unsustainable for students with disabilities until it is
+- Automated grading can be perceived as less fair than human grading ("the computer gave me a zero") — transparency in feedback is a social sustainability requirement
+
+#### Real Decision: The October 2025 Azure Outage
+
+When Azure went down and GitHub Actions stopped running, Pawtograder couldn't grade submissions. Two options:
+
+| | Option A: Add self-hosted fallback | Option B: Stay GitHub-dependent |
+|--|-----------------------------------|-------------------------------|
+| **Technical** | Complex failover logic; two systems to maintain | Simpler architecture; single system |
+| **Economic** | Duplicate infrastructure costs; expertise to maintain both | Leverage free tier; lower total cost |
+| **Environmental** | Idle fallback resources most of the time | Shared infrastructure, higher utilization |
+| **Social** | Resilient — students don't lose access during outages | Equal access for all institutions (no self-hosting expertise needed) |
+
+There is no "right" answer. The point is that the four-dimensional analysis makes the trade-offs visible. Without it, you might choose based on technical elegance alone and miss the social or environmental implications.
+
+### The Values-Requirements Gap
+
+Here is the honest ending: **translating sustainability values into testable software requirements is genuinely hard.** It is, in fact, an open research problem.
+
+You can state values clearly:
+- "Pawtograder should be fair to all students"
+- "SceneItAll should respect user privacy"
+- "Our system should minimize environmental impact"
+
+But operationalizing those values into requirements that engineers can implement and verify is a different challenge entirely:
+
+| Value | Attempted requirement | Problem |
+|-------|----------------------|---------|
+| Fairness | "Grade all submissions identically" | Identical grading can produce inequitable outcomes (students with disabilities, students on slow connections who hit timeouts) |
+| Privacy | "Don't collect unnecessary data" | What counts as "necessary" depends on who's asking — debugging needs telemetry, but telemetry is surveillance |
+| Environmental | "Minimize compute" | Minimizing compute conflicts with unlimited submissions, thorough test suites, and fast feedback |
+
+Every design decision encodes a value judgment — whether you think about it or not. The choice to offer unlimited submissions values learning-by-iteration over compute efficiency. The choice to require GitHub access values platform standardization over universal access. The choice to auto-grade rather than human-grade values speed and scale over the nuance a human reader provides.
+
+The goal of sustainability analysis is not to resolve these tensions — many of them are genuinely unresolvable. The goal is to make them *visible*, so that the people making the decisions understand what they're trading off and who bears the cost.
+
+:::note
+The Karlskrona Manifesto on Sustainability Design (2015) puts it this way: "System design is never value-neutral." Every architecture, every API, every default setting reflects an assumption about who matters and what matters. Sustainability is the practice of making those assumptions explicit and revisiting them as the system and its context evolve.
+:::
+
+### Course Arc: From Programming to Engineering
+
+This course began with a promise: software engineering is not programming. Programming is writing code that works today. Engineering is writing code that works tomorrow, next year, and for people you haven't met.
+
+Every lecture has been a different lens on that promise:
+
+| Lecture arc | What it sustains | Time horizon |
+|------------|-----------------|-------------|
+| L5-L8: Readability, coupling, SOLID | Code that future developers can understand and change | Years of maintenance |
+| L9, L12: Requirements, domain modeling | Systems that solve the right problem, not just the stated one | Project lifetime |
+| L15-L16: Testing, testability | Confidence that changes don't break existing behavior | Every commit |
+| L18-L21: Architecture, networks, serverless | Systems that scale, evolve, and survive infrastructure changes | Organizational lifetime |
+| L23: Open source | Supply chains that don't depend on abandoned projects | Industry-wide |
+| L28: Accessibility | Systems that serve all users, not just the ones who look like the developers | Societal |
+| L34-L35: Performance, safety | Systems that don't harm users through slowness or failure | Immediate to catastrophic |
+
+Sustainability is not a new topic. It is the name for what all of these topics have in common: **designing software that continues to provide value over time, to the people who need it, without imposing unacceptable costs on the people who don't.**
+
+### Want to go deeper?
+
+- **Patricia Lago et al., ["Software Sustainability in the Digital Society"](https://dl.acm.org/doi/10.1145/3639060)** — The four-dimension framework used in this lecture
+- **[The Karlskrona Manifesto on Sustainability Design](https://arxiv.org/abs/2305.00436)** — The foundational consensus document for sustainability in software engineering
+- **[Exploring Ethical Values in Software Systems](https://research.vu.nl/ws/portalfiles/portal/426353263/Exploring_ethical_values_in_software_systems.pdf)** — Mapping values to requirements using Value-Sensitive Design
+- **[Green Software Foundation](https://greensoftware.foundation/)** — Industry standards for measuring and reducing software carbon footprint
+- **[David Parnas' ICSE 2025 Keynote](https://www.youtube.com/watch?v=YyFouLdwxY0)** — Professional responsibility in the age of AI-generated code
+- **John Rawls, *A Theory of Justice*** — The original veil of ignorance thought experiment

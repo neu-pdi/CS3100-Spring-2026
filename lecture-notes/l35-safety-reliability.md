@@ -4,106 +4,300 @@ lecture_number: 35
 title: "Safety and Reliability"
 ---
 
-[Background Material](https://learning.oreilly.com/library/view/software-architecture-in/9780136885979/ch10.xhtml#ch10)
+You've spent this semester building software that works — software that is correct, testable, maintainable, and performant. Today we ask a different question: **what happens when it doesn't work?** And more specifically: **who gets hurt?**
 
-## Define common factors that contribute to the "Reliability" and "Availability" of a software system (10 minutes)
+The tools you've learned this semester — race condition prevention ([L31](/lecture-notes/l31-concurrency1)), error handling ([L32](/lecture-notes/l32-concurrency2)), consistency models ([L33](/lecture-notes/l33-event-architecture)), profiling ([L34](/lecture-notes/l34-performance)) — are not just performance or reliability tools. They are **safety mechanisms.** The difference is not the mechanism; it is the consequence of getting it wrong.
 
-Safety isn't a feature you add - it's a property that must be maintained over the system's lifetime.
+## Distinguish safety from reliability and explain why both are architectural drivers (12 minutes)
 
-**Safety concerns evolve:**
-- Year 1: System handles happy paths safely. Relatively few users, small enough sample that most errors are caught by manual inspection and have limited impact.
-- Year 2: Growing adoption. More users are using the system in ways that we did not build for, particularly when considering social and environmental externalities.
-- Year 3: Edge cases discovered in production; safety debt accumulates
-- Year 5: Regulatory requirements change; what was "safe enough" no longer complies
+### Three Related but Distinct Concepts
 
-**The cost of safety retrofitting:**
-- Safety designed in: moderate upfront investment
-- Safety added later: expensive refactoring + audit + migration
-- Safety after incident: astronomical (legal, reputational, human costs)
+These terms are often used interchangeably, but they mean different things — and the differences matter:
 
-### Human Safety in Software Systems
+**Reliability** is whether the system does what it is supposed to do, consistently. A reliable system works. You measure it in error rates, mean time between failures (MTBF), and successful operation counts. A SceneItAll hub that correctly activates scenes 99.99% of the time is highly reliable.
+
+**Availability** is whether the system is accessible when users need it. A highly available system is there when you call. You measure it in "nines" — 99.9% (8.7 hours of downtime per year), 99.99% (52 minutes), 99.999% (5 minutes). GitHub's recent struggle [to maintain even 90% availability is an availability failure](https://github.blog/news-insights/company-news/github-availability-report-february-2026/).
+
+**Safety** is whether the system avoids causing unacceptable harm, even when it fails. A safe system fails without hurting people. You measure it not in uptime but in incident severity — did anyone get hurt? Did anyone lose data? Did anyone lose money?
+
+The critical insight: **a system can be reliable and unsafe.** The [Therac-25](https://en.wikipedia.org/wiki/Therac-25) radiation therapy machine delivered correct doses the vast majority of the time — it was reliable. But its failure mode was lethal. Conversely, **a system can be safe but unreliable.** If SceneItAll's hub crashes frequently but always preserves device state and fails to a safe default (lights on, doors locked), it is much less likely that someone will be harmed, but it is still possible (locked out of the house?) — even though the system is unreliable.
 
 :::note Recall
-In [Lecture 24 (Usability)](/lecture-notes/l24-usability), we introduced three types of human error—slips, lapses, and mistakes—and how poor usability increases their likelihood. Those concepts apply here at a larger scale: the same human error patterns that cause a user to click the wrong button can cause an operator to misconfigure a safety-critical system, or a developer to deploy untested code to production.
+In [L18 (Thinking Architecturally)](/lecture-notes/l18-architecture-design), we introduced quality attributes as the drivers that shape architecture. Safety and reliability are quality attributes, just like performance, scalability, and changeability. They don't get added as features — they emerge from (or fail to emerge from) architectural decisions made early and maintained throughout.
 :::
 
-Software affects human safety in ways that may not be obvious at development time:
+### Safety Isn't a Feature — It's a Property That Emerges (or Doesn't)
 
-**Direct safety (obvious):**
-- Medical devices, autonomous vehicles, industrial control
+You can't add safety the way you add a search bar. Safety is not a feature you build in Sprint 4 — it is a property that emerges from how every other feature is built. When SceneItAll's firmware update uses an atomic write with rollback, that's not a "safety feature" — it's a firmware update that was *designed safely.* When it doesn't use an atomic write, the firmware update still works in the happy path. The safety gap only becomes visible when the Zigbee connection drops mid-write and the device is bricked.
 
-**Indirect safety (emerging over time):**
-- Recommendation algorithms affecting mental health (not designed to, but do)
-- Automated hiring affecting livelihoods (seemed efficient, created bias)
-- Social features enabling harassment (worked as designed, but design was incomplete)
+This is why safety concerns change as a system grows:
 
-**Key principle:** Safety analysis must include "how might this system affect humans in ways we didn't intend?" These unintended effects often only become visible over time, at scale.
+| Stage | What happens | SceneItAll example |
+|-------|-------------|-------------------|
+| **Launch** | Happy paths work; few users, limited blast radius | 50 beta homes, firmware updates pushed manually |
+| **Growth** | Users interact in ways you didn't design for | 10,000 homes; users trigger scene activations during firmware updates — a race condition you never tested |
+| **Scale** | Edge cases surface in production; safety debt compounds | A firmware bug bricks 200 devices in one push; staged rollout would have caught it at 10 |
+| **Maturity** | Regulatory requirements change; what was "safe enough" no longer complies | UL/CE certification requires hardware watchdog timer; your software-only safety was grandfathered in |
 
-### Case Study: Pawtograder and Academic Safety
+The cost of addressing safety at each stage grows exponentially. Designing in an atomic firmware write on day one is moderate engineering effort. Adding it after 10,000 devices are deployed requires a migration. Adding it after a bricking incident requires that migration *plus* legal costs, customer replacements, and reputational damage.
 
-An autograder might not seem "safety-critical"—it's not a medical device or autonomous vehicle. But consider the real consequences when Pawtograder fails:
+### Software Affects Human Safety in Ways You Don't Expect
 
-**Academic consequences:**
-- A race condition causes a student's resubmission to overwrite their graded work, losing TA feedback and requiring re-grading (you saw this exact scenario in [Lecture 12](/lecture-notes/l12-domain-modeling))
-- A grade calculation bug systematically under-reports scores by 2%, dropping borderline students below passing thresholds
-- A timezone bug marks submissions as "late" for students in certain regions, applying penalties incorrectly
+**Direct safety** is straightforward: SceneItAll controls a smart door lock. A bug in the lock firmware lets an unauthorized person enter. Software controls a physical actuator, and the failure causes immediate physical harm. Medical devices, autonomous vehicles, and industrial control systems fall in this category.
 
-**Cascading effects:**
-- A student fails a required course due to a grading bug → delayed graduation → lost job offer → financial hardship
-- A pattern of "late" penalties (actually a bug) triggers academic probation → loss of financial aid → student drops out
-- Anxiety about unreliable autograder feedback affects student mental health and learning outcomes
+**Indirect safety** is harder to see. A recommendation algorithm affects mental health — not because it was designed to, but because optimizing for engagement selects for outrage. An automated hiring tool screens out qualified candidates — not because it's biased by design, but because its training data reflects historical bias. SceneItAll's usage analytics reveal when a home is occupied and when it isn't — not a safety concern at launch, but a burglary risk at scale. Moreover, at scale, SceneItAll might have potential users with real safety concerns about this data.
 
-**The indirect safety lesson:** Pawtograder doesn't control radiation doses, but it *does* control information that affects academic standing, which affects financial aid, which affects whether students can continue their education. The causal chain from "software bug" to "human harm" is longer than Therac-25, but it's real.
+These are fundamentally missing-stakeholder problems. In [L9 (Requirements)](/lecture-notes/l9-requirements), we discussed three dimensions of requirements risk. Indirect safety hazards are what happens when the *understanding* dimension fails — when we don't understand who our stakeholders are or how our system affects them.
 
-**Design implications for Pawtograder:**
-- **Audit trails**: Every grade change must be logged with timestamps and actor identity (the TA who changed it, or the system process)
-- **Human-in-the-loop**: Final grades require instructor review before posting to the registrar
-- **Fail-safe defaults**: If the autograder crashes mid-run, default to "internal error, needs manual review" rather than silently asisgning a grade of "zero"
-- **Redundancy**: Store submission history, not just latest submission, so no student work is ever truly "lost"
+The same patterns appear in AI systems. In [L13](/lecture-notes/l13-intro-ai-agents), we discussed AI coding agents generating code with security vulnerabilities. An AI system that makes safety-relevant decisions (medical diagnosis, content moderation, autonomous driving) replaces human judgment with software — like Therac-25. It may lack redundancy — like Boeing's single sensor. And its blast radius scales with deployment — like CrowdStrike. If a developer uses AI to generate safety-critical code and cannot evaluate the output, they have removed a Swiss cheese layer (human code review) without adding a replacement. Don't just take our word for it, see [David Parnas' ICSE 2025 Keynote](https://www.youtube.com/watch?v=YyFouLdwxY0).
 
-### Case Study: Therac-25 and Boeing 737 MAX
+:::note Recall
+In [L24 (Usability)](/lecture-notes/l24-usability), we introduced three types of human error — slips, lapses, and mistakes — and how poor usability increases their likelihood. The same error patterns apply at a larger scale: the slip that makes a user click the wrong button in a recipe app can make an operator misconfigure a safety-critical system, or a [developer deploy untested code to production](https://www.henricodolfing.ch/en/case-study-4-the-440-million-software-error-at-knight-capital/).
+:::
 
-These two disasters, separated by 30 years, share a chilling pattern.
+## Apply the Swiss cheese model to analyze layered defenses (13 minutes)
 
-**Therac-25 (1985-1987):** A radiation therapy machine that killed at least six patients due to software bugs.
-- Earlier Therac models had **hardware interlocks** that physically prevented lethal radiation doses
-- The Therac-25 replaced hardware safety with **software safety** (cheaper, lighter, more flexible!)
-- The software had race conditions that hardware interlocks would have caught
-- Operators reported errors, but the manufacturer dismissed them—the software was "thoroughly tested"
+### The Swiss Cheese Model of Failure
 
-**Boeing 737 MAX (2018-2019):** Two crashes killed 346 people due to a software system called MCAS.
-- The 737 MAX's larger engines changed the plane's aerodynamics, causing a tendency to pitch up
-- Rather than redesign the airframe (expensive!), Boeing added **MCAS software** to automatically push the nose down
-- In its default configuration, MCAS relied on a **single sensor**—no redundancy. When that sensor failed, MCAS repeatedly forced the nose down
-- Pilots weren't adequately trained on MCAS (Boeing marketed minimal retraining to airlines as a selling point)
-- Pilots fought the software until the planes crashed
+:::note Recall
+You've been building Swiss cheese layers all semester without naming them. Preconditions ([L4](/lecture-notes/l4-specs-contracts)) reject bad inputs. Tests ([L15](/lecture-notes/l15-testing)) catch bugs before deployment. Hexagonal architecture ([L16](/lecture-notes/l16-testing2)) isolates domain logic from infrastructure failures. Resilience patterns ([L20](/lecture-notes/l20-networks)) handle network failures. Idempotent consumers ([L33](/lecture-notes/l33-event-architecture)) handle duplicate messages. Today we name this pattern and analyze what happens when layers are removed.
+:::
 
-**The crucial detail:** Boeing offered a dual-sensor configuration with an "Angle of Attack Disagree" indicator as an **optional upgrade**. Airlines that paid extra got redundancy; airlines that didn't got single-point-of-failure. Both crashed aircraft (Lion Air and Ethiopian Airlines) had the basic single-sensor configuration. Meanwhile, most US and European carriers had purchased the dual-sensor option.
+The Swiss cheese model (James Reason) is the most useful framework for thinking about safety in systems. The idea: every safety mechanism is a layer of defense — a slice of Swiss cheese. Each layer has holes (failure modes). **Harm occurs only when holes in multiple layers align** — when every defense fails simultaneously.
 
-**This reveals a disturbing pattern:** Safety became a premium feature. Budget-conscious airlines—often serving price-sensitive passengers in developing countries—flew with less redundancy. The cost savings accrued to airlines and Boeing; the risk was borne disproportionately by passengers who had no idea their ticket price reflected a safety tradeoff.
+A single layer with holes is not dangerous on its own. Multiple layers with non-aligned holes provide robust protection. The problem is when someone removes a layer entirely, or when holes grow larger over time without anyone noticing.
 
-**The pattern:**
+### Case Study: Therac-25
 
-| Aspect | Therac-25 | Boeing 737 MAX |
-|--------|-----------|----------------|
-| **What was replaced?** | Hardware interlocks | Airframe redesign + pilot training |
-| **Replaced with?** | Software safety checks | MCAS software automation |
-| **Why?** | Cheaper, lighter | Cheaper, faster certification |
-| **Critical flaw?** | Race conditions | Single point of failure (one sensor) |
-| **Human-in-the-loop?** | Operator warnings ignored | Pilots not trained to override |
+The Therac-25 was a radiation therapy machine that killed at least six patients between 1985 and 1987. The bug was a race condition — the same kind you studied in [L31](/lecture-notes/l31-concurrency1).
 
-**The recurring lesson:** When we replace hardware safety or human judgment with software (because it's cheaper!), we must ask:
+Earlier models (the Therac-20) had **hardware interlocks** — physical mechanisms that prevented the machine from delivering lethal radiation doses regardless of what the software did. The hardware was a Swiss cheese layer with very small holes. The Therac-25 replaced those interlocks with **software safety checks.** Cheaper, lighter, more flexible — but it **removed an entire layer of Swiss cheese.** The software had race conditions that the hardware interlocks would have caught. When operators reported errors, the manufacturer dismissed them: the software was "thoroughly tested."
+
+**Swiss cheese analysis:**
+
+| Layer | Defense | Hole? |
+|-------|---------|-------|
+| **Hardware interlocks** | Physical mechanism prevents lethal dose | **Removed entirely** in Therac-25 |
+| **Software safety checks** | Software validates beam energy before firing | Race condition allowed high-energy beam in electron mode |
+| **Operator training** | Operators trained to recognize error codes | Operators learned to dismiss frequent, cryptic error messages |
+| **Incident reporting** | Operators report anomalies to manufacturer | Manufacturer dismissed reports — "software is thoroughly tested" |
+
+All remaining holes aligned. Lethal radiation reached patients.
+
+### Case Study: Boeing 737 MAX
+
+Two crashes in 2018–2019 killed 346 people. The cause was a software system called MCAS (Maneuvering Characteristics Augmentation System) that overrode pilot control based on a single sensor input.
+
+The 737 MAX's larger engines changed the plane's aerodynamics, creating a tendency to pitch up. Rather than redesign the airframe (expensive, would require recertification), Boeing added MCAS to automatically push the nose down. MCAS relied on a **single angle-of-attack sensor** — no redundancy. When that sensor failed, MCAS repeatedly forced the nose down. Pilots fought the automation until the planes crashed.
+
+The crucial detail: Boeing offered a dual-sensor configuration with an "Angle of Attack Disagree" indicator as an **optional upgrade.** Airlines that paid extra got redundancy; airlines that didn't got a single point of failure. Both crashed aircraft (Lion Air and Ethiopian Airlines) had the basic single-sensor configuration.
+
+**Swiss cheese analysis:**
+
+| Layer | Defense | Hole? |
+|-------|---------|-------|
+| **Airframe design** | Aerodynamic stability without software intervention | **Replaced** — new engines changed aerodynamics; MCAS compensates in software |
+| **Sensor redundancy** | Dual angle-of-attack sensors with disagree indicator | **Optional upgrade** — not present on crashed aircraft |
+| **Pilot training** | Pilots trained to recognize and override MCAS | **Minimized** — Boeing marketed "no retraining needed" as a selling point |
+| **Pilot override** | Pilots can disable automation and fly manually | Inadequate — pilots didn't know MCAS existed, couldn't diagnose the failure |
+
+All holes aligned. Software pushed the nose down, pilots couldn't override, planes crashed.
+
+### Case Study: CrowdStrike Falcon Update (July 2024)
+
+On July 19, 2024, CrowdStrike pushed a content update to its Falcon security agent — a kernel-level driver running on approximately 8.5 million Windows machines worldwide. The update contained a bug that caused a null pointer read in the kernel, triggering a Blue Screen of Death on boot. Because the driver loads early in the boot process, affected machines entered an unrecoverable boot loop. Manual intervention — physically accessing each machine, booting into Safe Mode, and deleting the offending file — was required for every single one.
+
+Airlines grounded flights. Hospitals delayed surgeries. 911 dispatch systems went offline. Banks could not process transactions. The global economic impact was estimated at over $5 billion.
+
+**Swiss cheese analysis:**
+
+| Layer | Defense | Hole? |
+|-------|---------|-------|
+| **Content validation** | Automated testing before distribution | Test did not catch the null pointer read |
+| **Staged rollout** | Push to 1% first, monitor, then expand | Not used for "content updates" — only for "sensor updates." The update went to all 8.5M machines simultaneously |
+| **Automatic rollback** | Revert if failures spike | Machines could not boot to receive the rollback |
+| **Fail-safe boot** | If driver crashes, boot without it | CrowdStrike loads too early in boot — crash prevents any recovery |
+| **Monitoring** | Detect crash spike and halt rollout | With simultaneous push, crashes happened faster than monitoring could react |
+
+This is the SceneItAll firmware update scenario from earlier in this lecture — but at planetary scale. The blast radius of skipping staged rollout was not "1000 devices" but "every Windows machine in every hospital, airline, and emergency dispatch center running CrowdStrike Falcon."
+
+### The Comparison
+
+| Aspect | Therac-25 | Boeing 737 MAX | CrowdStrike Falcon |
+|--------|-----------|----------------|-------------------|
+| **What was replaced?** | Hardware interlocks | Airframe redesign + pilot training | Manual security review |
+| **Replaced with?** | Software safety checks | MCAS software automation | Automated content update pipeline |
+| **Why?** | Cheaper, lighter | Cheaper, faster certification | Speed — security threats require rapid response |
+| **Swiss cheese layer removed?** | Hardware interlock layer | Sensor redundancy + training | Staged rollout for content updates |
+| **Critical flaw?** | Race conditions | Single point of failure | No rollback path when kernel driver crashes |
+| **Could system recover?** | Yes — operators could restart | No — planes crashed | No — boot loop required manual access to each machine |
+
+**The recurring lesson:** When we replace hardware safety or human judgment with software (because it's cheaper), we must ask:
 1. What failure modes does software introduce that the original system didn't have?
 2. Is there redundancy? What happens when the single sensor/input/assumption fails?
 3. Can humans override the automation when it's wrong? Do they know how?
-4. **Who profits from removing the safety mechanism, and who bears the risk?** If the answer is "different people," you have an ethical problem—those making the cost/benefit calculation aren't the ones who suffer the consequences.
 
-## Describe architectural tactics for achieving reliability and availability (10 minutes)
+### Safety as a Premium Feature
 
-## Define common factors that contribute to "Safety" of a software system (10 minutes)
+Boeing sold sensor redundancy as an optional upgrade. Airlines serving price-sensitive passengers in developing countries flew with less redundancy. The cost savings accrued to airlines and Boeing; the risk was borne disproportionately by passengers who had no idea their ticket price reflected a safety tradeoff.
 
-## Describe architectural tactics for achieving safety (10 minutes)
+This reveals a pattern we'll explore further in [L36 (Sustainability)](/lecture-notes/l36-sustainability): **who profits from removing a safety mechanism, and who bears the risk?** If the answer is "different people," you have an ethical problem — those making the cost/benefit calculation aren't the ones who suffer the consequences.
 
-## Describe patterns for achieving safety (10 minutes)
+## Analyze blast radius and fail-safe design in your own systems (15 minutes)
 
+### Blast Radius: How Much Breaks When Something Fails?
 
+**Blast radius** is how much of the system — and the world — is affected when a component fails. It is the single most important factor in determining how many Swiss cheese layers you need.
+
+:::note Recall
+In [L19 (Architectural Qualities)](/lecture-notes/l19-monoliths), we noted that a monolith's deployment risk is "all-or-nothing: a bug in one feature can take down everything." That's blast radius language — L19 implicitly introduced the concept. A monolith has the maximum blast radius: every feature shares a single deployment unit.
+:::
+
+Low coupling ([L7](/lecture-notes/l7-design-for-change)) limits blast radius: when modules are loosely coupled, a failure in one does not propagate to others. High coupling means a bug in the authentication module can crash the gradebook.
+
+The Citicorp Tower in Manhattan (1978) illustrates this. Structural engineer William LeMessurier discovered after construction that a design change — welding joints that were specified as bolted — combined with an unconsidered wind load pattern meant the building could collapse in a storm that occurs roughly every 16 years. Hurricane season was approaching.
+
+LeMessurier could have stayed quiet. The odds were in his favor — maybe the storm wouldn't come. Instead, he disclosed the flaw, coordinated emergency welding repairs, and the building was fixed before any storm arrived. Nobody was hurt.
+
+Why did he act? Not because he was uniquely virtuous — but because the **blast radius left no other responsible option.** A collapsed skyscraper in midtown Manhattan would affect a 10-block radius. Thousands of people. When your system's blast radius is that large, you have a professional obligation to understand and mitigate every failure mode you discover — even when disclosure is personally costly. The [ACM Code of Ethics](https://www.acm.org/code-of-ethics) formalizes this: Principle 1.2 states 'Avoid harm,' and Principle 2.5 requires 'comprehensive and thorough evaluations of computer systems and their impacts, including analysis of possible risks.' Blast radius analysis IS that evaluation.
+
+**Blast radius determines how many Swiss cheese layers you need:**
+
+| System | Blast radius of failure | Layers needed |
+|--------|------------------------|---------------|
+| SceneItAll brightness control | One room's lights are wrong | Error handling + UI feedback |
+| SceneItAll door lock | Unauthorized person enters | Strong consistency ([L33](/lecture-notes/l33-event-architecture)) + redundant sensors + human override |
+| SceneItAll firmware update | Device bricked, needs replacement | Rollback mechanism + staged rollout + integrity verification |
+| Pawtograder gradebook | Every student's GPA in the course | Audit trails + human-in-the-loop + fail-safe defaults |
+| Citicorp Tower | 10 blocks of Manhattan | Physical redundancy + independent verification + immediate remediation |
+| Boeing 737 MAX MCAS | Everyone on the aircraft | Sensor redundancy + pilot training + override capability |
+
+### Fail-Safe vs. Fail-Operational
+
+SceneItAll's hub loses its connection to a smart light mid-scene-activation. What should the light do?
+
+**Fail-safe:** The light stays at its current brightness. Nothing changes. The user notices the scene didn't fully apply, but no harm is done. **When in doubt, do nothing harmful.**
+
+**Fail-operational:** The hub falls back to local control via Zigbee, bypassing the cloud. The system continues in a degraded mode — no remote access, no analytics — but the user can still control their lights.
+
+| Failure mode | Fail-safe behavior | Fail-dangerous behavior |
+|-------------|-------------------|------------------------|
+| Firmware update fails mid-write | Roll back to previous firmware | Continue with partially written firmware (bricked device) |
+| Autograder crashes mid-run | Report "internal error, needs manual review" | Silently assign zero |
+| Door lock loses connection | Lock stays in current state (locked or unlocked) | Lock resets to unlocked default |
+| Scene activation: 1 of 15 devices fails | Report "14/15 updated — shade didn't respond" | Report "Scene activated!" (silent failure) |
+
+Most software should be **fail-safe.** Fail-operational is harder to get right and is reserved for systems that cannot afford to stop — airplanes, pacemakers, nuclear reactor cooling.
+
+Boeing's MCAS was **neither.** It didn't stop when the sensor failed (not fail-safe). It didn't degrade gracefully by alerting pilots and giving them manual control (not fail-operational). It kept pushing the nose down — fail-dangerous.
+
+### SceneItAll Safety Scenarios
+
+Let's apply the Swiss cheese model and blast radius to SceneItAll — the system you've been building all semester:
+
+**Scenario 1: Firmware update bricks a device**
+
+A SceneItAll hub pushes a firmware update to a smart light. The update involves writing firmware in chunks ([L31](/lecture-notes/l31-concurrency1), cooperative interrupts). Halfway through, the Zigbee connection drops.
+
+| Layer | Defense | Hole? |
+|-------|---------|-------|
+| **Integrity check** | Verify firmware checksum before applying | Catches corrupt downloads |
+| **Atomic write** | Write new firmware to a staging partition, swap only after verification | Prevents partial writes from bricking |
+| **Rollback** | If new firmware fails to boot, revert to previous version | Catches bad firmware that passes checksum |
+| **Staged rollout** | Update 10% of devices first, monitor for failures, then roll out to rest | Limits blast radius to 10% |
+| **Dead letter queue** | Failed updates queue for human review ([L33](/lecture-notes/l33-event-architecture)) | Nothing is silently lost |
+
+Remove any one layer and the failure mode gets worse. Remove the atomic write AND the rollback? The device is bricked. Blast radius: one device (manageable). But if you skip the staged rollout and push to all 1000 devices at once? Blast radius: every device in the deployment.
+
+**Scenario 2: Race condition on a door lock**
+
+Two users send conflicting commands to the same smart lock simultaneously — one locks, one unlocks. This is the same race condition from [L31](/lecture-notes/l31-concurrency1) (Alice and Bob activating different scenes), but with safety-critical consequences.
+
+| Layer | Defense | Hole? |
+|-------|---------|-------|
+| **Sequential consistency** | Lock commands use strong consistency ([L33](/lecture-notes/l33-event-architecture)) — no eventual | Prevents stale lock state |
+| **Atomic operations** | `synchronized` on the lock device — no interleaving | Prevents mixed state |
+| **Audit trail** | Every lock/unlock is logged with timestamp and user | Accountability after the fact |
+| **Physical override** | Physical key always works regardless of software state | Human can always recover |
+
+For brightness controls, eventual consistency is fine — a roommate seeing 100% for 5 seconds is harmless. For a door lock, it's not. The blast radius difference (annoyance vs unauthorized entry) drives the consistency model choice.
+
+**Scenario 3: Silent failure in scene activation**
+
+A user activates "Evening" scene. The hub sends 15 async device commands ([L32](/lecture-notes/l32-concurrency2)). One command fails silently — no `.exceptionally()` handler. The user sees "Scene activated!" but one shade is still open.
+
+| Layer | Defense | Hole? |
+|-------|---------|-------|
+| **Error handling** | `.exceptionally()` on every async chain ([L32](/lecture-notes/l32-concurrency2)) | Catches device failures |
+| **Timeout** | `.orTimeout(5, SECONDS)` — don't wait forever | Catches hung devices |
+| **Status verification** | After activation, read back device states and compare | Catches silent failures |
+| **User notification** | Show "14/15 devices updated — shade in bedroom did not respond" | User can investigate |
+
+Without error handling, the hole in Layer 1 means the failure is invisible. The user thinks the shade is closed. If the shade is a window on the ground floor, this is a security issue. Blast radius: one room's security.
+
+### Pawtograder: When the Autograder Crashes
+
+Pawtograder's autograder runs student code in a containerized environment. If the autograder process crashes mid-run — out of memory, network timeout to the GitHub API, or a bug in the grading script itself — what grade does the student see?
+
+| Layer | Defense | Hole? |
+|-------|---------|-------|
+| **Error classification** | Distinguish "student tests failed" from "grader infrastructure failed" | If both produce exit code 1, they are conflated |
+| **Fail-safe default** | Infrastructure failure → "internal error, needs manual review" (not zero) | Only works if the system classifies the failure correctly |
+| **Retry** | Automatically retry infrastructure failures once | Helps with transient failures; doesn't help with deterministic crashes |
+| **Audit trail** | Log every grading run with exit code, stderr, timing | Enables after-the-fact investigation |
+| **Student notification** | Tell the student what happened — "your submission is being re-graded" vs "0/100" | "0/100" with no explanation is fail-dangerous |
+
+The fail-safe default matters: "internal error, needs manual review" is fail-safe. "0" is fail-dangerous. The blast radius of getting this wrong: one student's grade in the best case, every student's grade if the bug is systematic.
+
+## Recognize prior course concepts as safety mechanisms (12 minutes)
+
+You've learned these tools as performance, reliability, and concurrency mechanisms. Every one of them is also a safety mechanism. The difference is the consequence of getting it wrong:
+
+| What you learned | Where | Its reliability function | Its **safety** function |
+|------------------|-------|------------------------|------------------------|
+| Preconditions/contracts | [L4](/lecture-notes/l4-specs-contracts) | Rejects invalid inputs at boundaries | Prevents unsafe states from being reachable — a restrictive precondition is a Swiss cheese layer |
+| Testing (unit, integration, E2E) | [L15](/lecture-notes/l15-testing) | Catches bugs before deployment | Prevents safety-critical defects from reaching production — tests are a Swiss cheese layer with their own holes (incomplete coverage, flaky tests) |
+| `synchronized` | [L31](/lecture-notes/l31-concurrency1) | Prevents race conditions | Prevents safety-critical state corruption (door lock mixed state) |
+| `.exceptionally()` / `.orTimeout()` | [L32](/lecture-notes/l32-concurrency2) | Handles async errors | Ensures failures are visible, not silent (shade left open) |
+| Sequential consistency | [L33](/lecture-notes/l33-event-architecture) | All nodes agree | Prevents operations on stale data (lock shows "locked" when unlocked) |
+| Circuit breaker | [L20](/lecture-notes/l20-networks) | Prevents cascade failures | Stops a failing component from triggering harm in others |
+| Idempotent operations | [L33](/lecture-notes/l33-event-architecture) | Makes retries safe | Prevents duplicate actions from causing harm (door locks twice = fine; alarm disarms twice = fine) |
+| Audit trails | [L12](/lecture-notes/l12-domain-modeling) | Enables debugging | Enables accountability, reversibility, incident investigation |
+| Fail-safe defaults | Today | Graceful degradation | System fails toward safety (lights on, doors locked) not toward harm |
+| Redundancy | [L33](/lecture-notes/l33-event-architecture), Today | Survives component failure | Eliminates single points of failure (Boeing's single sensor) |
+| Blast radius analysis | Today | Scopes failure impact | Determines how many defense layers you need |
+
+**The key insight:** You didn't learn "safety tools" and "reliability tools" separately. They are the same tools. The engineering is the same. The difference is the stakes — and the stakes are determined by the blast radius.
+
+## Connect safety to sustainability (8 minutes)
+
+Safety is one dimension of the sustainability framework we'll explore in [L36](/lecture-notes/l36-sustainability). The connections:
+
+### Safety debt compounds like technical debt
+
+Every Swiss cheese hole you leave unfixed is a bet that no other holes will align with it. That bet gets worse over time.
+
+SceneItAll ships without staged rollout for firmware updates. At 50 homes, this is fine — if an update bricks a device, support replaces it. At 10,000 homes, a bad update bricks 200 devices in one push. At 100,000 homes, it's a CrowdStrike-scale event. The code didn't change — the blast radius did. Safety debt is not the code getting worse; it is the consequences getting larger while the same holes remain open.
+
+### Who profits, and who bears the risk?
+
+Boeing sold sensor redundancy as an optional upgrade. Budget airlines — often serving price-sensitive passengers in developing countries — flew with less redundancy. The cost savings accrued to Boeing and airlines; the risk fell on passengers who didn't know their ticket price reflected a safety tradeoff.
+
+This pattern recurs. [L36](/lecture-notes/l36-sustainability) will formalize it: **who profits from a design decision, and who bears the risk?** If the answer is "different people," the decision deserves extra scrutiny. The same logic applies to [L28 (Accessibility)](/lecture-notes/l28-accessibility): the people who decide not to invest in accessibility are rarely the people excluded by that decision.
+
+### Performance, safety, and the tradeoff
+
+In [L34 (Performance)](/lecture-notes/l34-performance), we discussed garbage collection as a safety-performance tradeoff: automatic memory management trades performance (GC pauses) for safety (no use-after-free bugs). The same tradeoff appears throughout:
+
+- Strong consistency is slower than eventual — but safer for door locks
+- Error handling adds code complexity — but prevents silent failures
+- Staged rollouts are slower than pushing to all devices — but limit blast radius
+- Redundant sensors cost more — but eliminate single points of failure
+
+In every case, safety costs something: performance, complexity, money, or time. The question is not "can we afford safety?" but "can we afford the consequences of not having it?" The answer depends on the blast radius.
+
+### Want to go deeper?
+
+- **[CS 4973: Accessibility and Disability](https://catalog.northeastern.edu/course-descriptions/cs/)** — Safety and accessibility as interconnected quality attributes
+- **[CS 4730: Distributed Systems](https://catalog.northeastern.edu/course-descriptions/cs/)** — Formal treatment of fault tolerance, consensus, and safety in distributed systems
+- **Nancy Leveson, *Engineering a Safer World*:** The definitive academic treatment of systems safety engineering
