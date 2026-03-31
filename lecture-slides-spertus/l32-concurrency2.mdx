@@ -1,0 +1,62 @@
+---
+sidebar_position: 31
+title: "Concurrency II: Asynchronous Programming"
+---
+
+import RevealJS, { Slide } from '@site/src/components/RevealJS';
+import Img from '@site/src/components/Img';
+import PollSlide from '@site/src/components/PollSlide';
+
+<RevealJS transition="slide">
+
+<Slide>
+## Placeholder for cover slide
+</Slide>
+
+<Slide>
+
+## Learning Objectives
+
+<p style={{fontSize: '0.85em', textAlign: 'left'}}>
+After this lecture, you will be able to:
+</p>
+
+<ol style={{fontSize: '0.75em', textAlign: 'left'}}>
+  <li>Distinguish blocking from non-blocking operations and explain why blocking the FX thread freezes the UI</li>
+  <li>Explain how <code>BackgroundTaskRunner</code> separates I/O from UI updates across threads</li>
+  <li><span>Identify and avoid common async safety pitfalls:</span><span style={{display:'block'}}>&nbsp;&nbsp;— Debounce race conditions</span><span style={{display:'block'}}>&nbsp;&nbsp;— Timer thread mistakes</span><span style={{display:'block'}}>&nbsp;&nbsp;— Task cancellation behavior</span></li>
+</ol>
+
+<aside className="notes">
+**Time allocation:**
+- Objective 1: The threading rule + blocking/non-blocking (~15 min)
+- Objective 2: BackgroundTaskRunner internals (~10 min)
+- Objective 3: Async safety pitfalls — debounce race condition, PauseTransition, task cancellation (~18 min)
+- Wrap-up: comprehension check, key takeaways (~7 min)
+
+> **Transition:** Let's start with why blocking calls are dangerous in a GUI...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Problem:
+
+<div style={{ fontSize: '.8em' }}>
+We want to create GUI applications that:
+* are responsive
+* can perform slow tasks, such as file access
+
+
+
+
+</div>
+
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+</RevealJS>
