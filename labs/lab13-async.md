@@ -1,8 +1,9 @@
 ---
-sidebar_position: 12
+sidebar_position: 13
+title: "Lab 13: Asynchronous Programming"
 ---
 
-# Lab 13: Asynchronous Programming
+# Asynchronous Programming
 
 ## Learning Objectives
 

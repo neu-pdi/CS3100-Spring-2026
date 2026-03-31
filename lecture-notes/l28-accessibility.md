@@ -1,8 +1,10 @@
 ---
 sidebar_position: 28
 lecture_number: 28
-title: Accessibility and Inclusivity
+title: "L28: Accessibility and Inclusivity"
 ---
+
+# Accessibility and Inclusivity
 
 ## Describe common accessibility and inclusivity requirements and their importance (25 minutes)
 

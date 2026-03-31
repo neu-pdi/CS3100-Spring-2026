@@ -4,6 +4,8 @@ sidebar_position: 4
 image: /img/assignments/web/a3.png
 ---
 
+# Domain Extensions and JSON Persistence
+
 ## Update log
 - 2/11/2026: 24 hour extension on due date due to large number of students who did not activate GitHub Student Pack before Monday
 - 2/10/2026: Removed the line "You only receive implementation points if you also have tests that detect bugs in that component" - we relaxed this after HW1/HW2

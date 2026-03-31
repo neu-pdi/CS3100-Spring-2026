@@ -1,8 +1,10 @@
 ---
 sidebar_position: 36
 lecture_number: 36
-title: "Sustainability"
+title: "L36: Sustainability"
 ---
+
+# Sustainability
 
 [Background Material](https://dl.acm.org/doi/10.1145/3639060) and [this article](https://arxiv.org/abs/2305.00436)
 

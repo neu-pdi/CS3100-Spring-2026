@@ -1,8 +1,10 @@
 ---
 sidebar_position: 24
 lecture_number: 24
-title: Usability
+title: "L24: Usability"
 ---
+
+# Usability
 
 ## Define usability and describe the five key aspects of usability (15 minutes)
 

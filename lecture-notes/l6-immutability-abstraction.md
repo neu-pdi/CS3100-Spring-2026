@@ -1,9 +1,11 @@
 ---
 sidebar_position: 6
 lecture_number: 6
-title: "Changeability I: Modularity and Information Hiding"
+title: "L6: Changeability I: Modularity and Information Hiding"
 image: /img/lectures/web/l6.png
 ---
+
+# Changeability I: Modularity and Information Hiding
 
 ![Lecture 6: Changeability I: Modularity and Information Hiding](/img/lectures/web/l6.png)
 

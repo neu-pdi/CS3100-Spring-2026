@@ -4,6 +4,13 @@ sidebar_position: 10
 image: /img/assignments/web/ga1.png
 ---
 
+# Core Features
+
+:::warning Preliminary Content
+
+This assignment is preliminary content and is subject to change until the release date of the assignment.
+
+:::
 
 ## Overview
 

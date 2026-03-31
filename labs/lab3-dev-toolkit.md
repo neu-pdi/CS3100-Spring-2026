@@ -1,9 +1,10 @@
 ---
 sidebar_position: 3
+title: "Lab 3: Developer Toolkit"
 image: /img/labs/web/lab3.png
 ---
 
-# Lab 3: Developer Toolkit
+#  Developer Toolkit
 
 ![Lab 3: Developer Toolkit - A bright, organized lo-fi pixel art scene of a daytime coding workspace. Afternoon sunlight streams through a window with a plant on the sill. A clean monitor displays a terminal with './gradlew build SUCCESS' in green. On the tidy desk: a neatly annotated assignment printout, colorful sticky notes reading 'git pull first!' and 'spotlessApply', a hand-drawn git branch diagram pinned to a small corkboard, and an index card showing 'Recipe.Java ✗' crossed out next to 'Recipe.java ✓' (intentional! we cross out the WRONG capitalization of the file extension, must be Java with a capital J on the oen crossed out). An orange cat lounges contentedly in a sunny spot nearby. A terminal cheat sheet is pinned to the wall. A second monitor shows Pawtograder with green checkmarks. A fresh cup of tea. Cheerful blues and warm yellows. The vibe is 'I've got this.' Title: 'Lab 3: Developer Toolkit'](/img/labs/web/lab3.png)
 

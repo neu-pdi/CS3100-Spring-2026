@@ -1,11 +1,9 @@
 ---
 sidebar_position: 11
-image: /img/labs/web/lab11.png
+title: "Lab 11: User-Centered Design"
 ---
 
-# Lab 11: Paper Prototyping & Think-Aloud Evaluation
-
-![Lo-fi pixel art showing two students sitting across from each other at a table covered in hand-drawn paper screens (no color, very lo-fi, very sketchy), sticky notes, and index cards. One student acts as the facilitator, holding a pencil and a notepad titled 'OBSERVATIONS' with bullet points like 'hesitated at nav', 'expected back button', 'tried to tap label'. The other student points at a paper prototype screen showing a sketched smartphone interface for a smarthome app with icons for lights, fans, and shades, and a banner reading 'SceneItAll'. Between them on the table: several paper screens laid out in sequence showing a scene-creation flow — one labeled 'Movie Night' with a dimmed light icon and closed shade icon. A speech bubble from the user says 'I thought I could swipe here…' while the facilitator bites their lip, resisting the urge to explain. On the whiteboard behind them: a circular diagram labeled 'Prototype → Evaluate → Revise' with arrows connecting each step, and below it a sticky note reading 'Don't defend — observe!'. Scissors, tape, and colored markers scattered on the table. Warm evening lighting, cozy collaborative workspace atmosphere. Title: 'Lab 11: Paper Prototyping & Think-Aloud Evaluation'.](/img/labs/web/lab11.png)
+# User-Centered Design
 
 ## Learning Objectives
 

@@ -1,10 +1,12 @@
 ---
 sidebar_position: 33
 lecture_number: 33
-title: Event-Driven Architecture
+title: "L33: Event-Driven Architecture"
 ---
 
-In [Lecture 31](/lecture-notes/l31-concurrency1) and [Lecture 32](/lecture-notes/l32-concurrency2), we explored concurrency within a single program — threads sharing memory, locks protecting shared state, async operations avoiding wasted threads. This lecture zooms out: what happens when the components that need to coordinate aren't in the same program, or even on the same machine?
+# Event-Driven Architecture
+
+## Define and describe the event-driven architecture (10 minutes)
 
 We'll formalize ideas you've encountered throughout the course — event handlers, property binding, message queues, caching — into a coherent architectural pattern called **event-driven architecture (EDA)**. We'll use SceneItAll as our running example, expanding from the single-hub model of L31-32 to the full system: a hub, mobile apps, a cloud service, and device firmware that all need to stay in sync.
 

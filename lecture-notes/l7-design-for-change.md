@@ -1,9 +1,11 @@
 ---
 sidebar_position: 7
 lecture_number: 7
-title: "Changeability II: Coupling and Cohesion"
+title: "L7: Changeability II: Coupling and Cohesion"
 image: /img/lectures/web/l7.png
 ---
+
+# Changeability II: Coupling and Cohesion
 
 ![Lecture 7: Changeability II: Coupling and Cohesion](/img/lectures/web/l7.png)
 

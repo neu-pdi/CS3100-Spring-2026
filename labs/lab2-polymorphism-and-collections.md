@@ -1,9 +1,10 @@
 ---
 sidebar_position: 2
+title: "Lab 2: Polymorphism and Collections"
 image: /img/labs/web/lab2.png
 ---
 
-# Lab 2: Polymorphism and Collections
+# Polymorphism and Collections
 
 ![Concept A: 'The Universal Remote' (Polymorphism in Action)
 The visual is a lo-fi pixel art living room scene with a figure holding a single universal remote control. The color palette is cozy domestic tones: warm lamp light, evening blues through windows, with glowing LEDs from smart devices providing accents. The key visual: one remote, many devices. The remote has a single 'IDENTIFY' button being pressed, and radiating from it are command waves reaching every device in the room—a ceiling fan that starts spinning slowly, a dimmable desk lamp that pulses, a tunable white light that cycles through color temperatures, a smart thermostat that beeps. Each device responds differently to the same command. The remote doesn't have separate buttons for 'identify fan' vs 'identify light'—it just says 'identify' and each device figures out what that means. Small code snippets float near the remote: for (IoTDevice d : devices)  d.identify();  and near the devices: No instanceof checks!

@@ -1,8 +1,10 @@
 ---
 sidebar_position: 30
 lecture_number: 30
-title: GUI Patterns and Testing
+title: "L30: GUI Patterns and Testing"
 ---
+
+# GUI Patterns and Testing
 
 ## Define the Model-View-ViewModel (MVVM) pattern (15 minutes)
 

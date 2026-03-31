@@ -1,8 +1,10 @@
 ---
 sidebar_position: 16
 lecture_number: 16
-title: Designing for Testability
+title: "L16: Designing for Testability"
 ---
+
+# Designing for Testability
 
 In the previous lecture, we learned about test doubles — stubs, fakes, spies, and mocks — that let us test code in isolation. But we glossed over an important question: *why was `ThermostatController` so easy to test?* The answer lies in how it was designed.
 

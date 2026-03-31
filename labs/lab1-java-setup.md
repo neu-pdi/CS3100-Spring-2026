@@ -1,9 +1,10 @@
 ---
 sidebar_position: 1
+title: "Lab 1: Java Tooling and Setup"
 image: /img/labs/web/lab1.png
 ---
 
-# Lab 1: Java Tooling and Setup
+# Java Tooling and Setup
 
 Welcome to CS 3100! In this lab, you'll set up your Java development environment and get familiar with the tools we'll use throughout the course.
 

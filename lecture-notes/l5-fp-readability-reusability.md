@@ -1,9 +1,11 @@
 ---
 sidebar_position: 5
 lecture_number: 5
-title: Functional Programming and Readability
+title: "L5: Functional Programming and Readability"
 image: /img/lectures/web/l5.png
 ---
+
+# Functional Programming and Readability
 
 ![Lecture 5: Functional Programming and Readability](/img/lectures/web/l5.png)
 

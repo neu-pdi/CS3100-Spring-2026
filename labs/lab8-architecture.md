@@ -1,9 +1,10 @@
 ---
 sidebar_position: 8
+title: "Lab 8: Hexagonal Architecture"
 image: /img/labs/web/lab8.png
 ---
 
-# Lab 8: Hexagonal Architecture
+# Hexagonal Architecture
 
 ![Lo-fi pixel art showing two students (one male, one female) at a large table. In the center of the table sits a glowing orb labeled 'DatabaseConnection.getInstance()' with tangled red threads spreading outward to sticky notes labeled 'DeviceManager' and 'AutomationRuleEngine'. One student sketches interface designs on paper (labeled 'DeviceRepository' and 'RuleRepository'), while the other has a laptop open showing a Copilot chat window with the prompt 'Generate a mermaid sequence diagram starting from this method'. Between them: a before/after comparison — on the left, a spaghetti diagram with arrows all pointing to the central singleton; on the right, a clean hexagonal diagram with interfaces as boundaries and adapters on the outside (no code legible). A whiteboard behind them shows a simple composition root with constructor calls. On the table, a coffee mug reads 'Inject, Don't Reach' — the DI motto. Title: 'Lab 8: Hexagonal Architecture'. Warm evening lighting, cozy collaborative workspace atmosphere.](/img/labs/web/lab8.png)
 

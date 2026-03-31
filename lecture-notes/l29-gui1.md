@@ -1,8 +1,10 @@
 ---
 sidebar_position: 29
 lecture_number: 29
-title: GUIs in Java
+title: "L29: GUIs in Java"
 ---
+
+# GUIs in Java
 
 ## Describe the historical context of GUI development in Java (10 minutes)
 

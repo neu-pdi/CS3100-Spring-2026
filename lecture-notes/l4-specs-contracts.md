@@ -1,9 +1,11 @@
 ---
 sidebar_position: 4
 lecture_number: 4
-title: Specifications and Common Contracts
+title: "L4: Specifications and Common Contracts"
 image: /img/lectures/web/l4.png
 ---
+
+# Specifications and Common Contracts
 
 ![Lecture 4: Specifications and Common Contracts](/img/lectures/web/l4.png)
 

@@ -1,9 +1,10 @@
 ---
 sidebar_position: 23
 lecture_number: 23
-title: Open Source Frameworks
+title: "L23: Open Source Frameworks"
 ---
 
+# Open Source Frameworks
 
 ## Explain how component reuse simplifies software development and the role of OSS ecosystems in distributing reusable components (15 minutes)
 

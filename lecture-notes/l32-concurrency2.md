@@ -1,12 +1,10 @@
 ---
 sidebar_position: 32
 lecture_number: 32
-title: "Concurrency II: Asynchronous Programming"
+title: "L32: Concurrency II: Asynchronous Programming"
 ---
 
-In [Lecture 31](/lecture-notes/l31-concurrency1), we learned how threads enable concurrent execution. Threads work well for CPU-bound work—tasks that keep the processor busy computing. But many real-world systems spend most of their time *waiting*: waiting for network responses, waiting for device acknowledgments, waiting for sensor data to arrive.
-
-This lecture introduces **asynchronous programming**, an approach to concurrency that's particularly well-suited for I/O-bound work. We'll see how SceneItAll, a smart-home control application, can use asynchronous techniques to efficiently send commands to IoT devices and keep its UI responsive.
+# Concurrency II: Asynchronous Programming
 
 ## Compare and contrast the use of threads and asynchronous programming (10 minutes)
 

@@ -1,10 +1,11 @@
 ---
 sidebar_position: 5
+title: "Lab 5: Requirements Engineering"
 image: /img/labs/web/lab5.png
 ---
 
 
-# Lab 5: Requirements Engineering
+# Requirements Engineering
 
 In this lab, you'll experience firsthand why requirements analysis matters. You and a partner will interpret an intentionally ambiguous project brief, then discover how dramatically your interpretation differs from another pair's—even though you read the exact same words. This "parallel universe" exercise demonstrates the critical importance of building shared understanding before writing code.
 

@@ -1,8 +1,10 @@
 ---
 sidebar_position: 34
 lecture_number: 34
-title: Performance
+title: "L34: Performance"
 ---
+
+# Performance
 
 ## Compare relative latencies across the memory hierarchy (5 minutes)
 

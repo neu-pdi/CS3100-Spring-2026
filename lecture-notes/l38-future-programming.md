@@ -1,8 +1,10 @@
 ---
 sidebar_position: 38
 lecture_number: 38
-title: "The Future of Programming"
+title: "L38: The Future of Programming"
 ---
+
+# The Future of Programming
 
 ## Review major socio-technical trends in software development and speculate on their future impact (20 minutes)
 

@@ -1,9 +1,10 @@
 ---
 sidebar_position: 4
+title: "Lab 4: Changeability and Functional Programming"
 image: /img/labs/web/lab4.png
 ---
 
-# Lab 4: Changeability and Functional Programming
+#  Changeability and Functional Programming
 
 ![Lo-fi pixel art showing three side-by-side panels, each depicting the same smart home notification scenario implemented differently. Left panel: A tangled mess of wires and if/else branches on a whiteboard labeled 'MUD' with a stressed developer. Middle panel: Clean organized boxes connected by arrows labeled 'STRATEGY' with interface/class diagrams on a corkboard. Right panel: A sleek minimalist desk with lambda symbols (λ) floating above a laptop, labeled 'FUNCTIONAL'. At the bottom, two developers sit together at a table between the panels, pointing at the options and discussing (speech bubbles with '?' and thought bubbles), representing the collaborative decision-making aspect. Title: 'Lab 4: Changeability and Functional Programming'. Warm evening lighting, cozy atmosphere.](/img/labs/web/lab4.png)
 

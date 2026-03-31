@@ -4,7 +4,7 @@ title: "Lab 6: AI Coding Agents"
 image: /img/labs/web/lab6.png
 ---
 
-# Lab 6: AI Coding Agents
+# AI Coding Agents
 
 
 ## Learning Objectives

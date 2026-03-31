@@ -1,8 +1,10 @@
 ---
 sidebar_position: 13
 lecture_number: 13
-title: Introduction to AI Programming Agents
+title: "L13: Introduction to AI Programming Agents"
 ---
+
+# Introduction to AI Programming Agents
 
 ## Define AI programming agents and enumerate their capabilities (10 minutes)
 

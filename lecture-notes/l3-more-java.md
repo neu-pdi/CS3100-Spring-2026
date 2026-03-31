@@ -1,9 +1,11 @@
 ---
 sidebar_position: 3
 lecture_number: 3
-title: Inheritance and Polymorphism in Java II
+title: "L3: Inheritance and Polymorphism in Java II"
 image: /img/lectures/web/l3.png
 ---
+
+# Inheritance and Polymorphism in Java II
 
 ![Lecture 3: Inheritance and Polymorphism in Java II](/img/lectures/web/l3.png)
 

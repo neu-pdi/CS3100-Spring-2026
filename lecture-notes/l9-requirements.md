@@ -1,9 +1,11 @@
 ---
 sidebar_position: 9
 lecture_number: 9
-title: Interpreting Requirements
+title: "L9: Interpreting Requirements"
 image: /img/lectures/web/l9.png
 ---
+
+# Interpreting Requirements
 
 ![Lecture 9: Interpreting Requirements](/img/lectures/web/l9.png)
 

@@ -1,8 +1,10 @@
 ---
 sidebar_position: 17
 lecture_number: 17
-title: "From Code Patterns to Architecture Patterns"
+title: "L17: From Code Patterns to Architecture Patterns"
 ---
+
+# From Code Patterns to Architecture Patterns
 
 ## Review the creation patterns you have already implemented (5 minutes)
 

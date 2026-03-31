@@ -1,8 +1,10 @@
 ---
 sidebar_position: 12
 lecture_number: 12
-title: Domain Modeling
+title: "L12: Domain Modeling"
 ---
+
+# Domain Modeling
 
 ## Introduction: Object-oriented design and the challenge of understandability (5 minutes)
 

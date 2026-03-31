@@ -1,8 +1,10 @@
 ---
 sidebar_position: 15
 lecture_number: 15
-title: Test Doubles and Isolation
+title: "L15: Test Doubles and Isolation"
 ---
+
+# Test Doubles and Isolation
 
 ## Distinguish between unit, integration, and end-to-end tests (10 minutes)
 

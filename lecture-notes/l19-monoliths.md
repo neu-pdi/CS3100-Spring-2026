@@ -1,8 +1,10 @@
 ---
 sidebar_position: 19
 lecture_number: 19
-title: "Architectural Styles: From Hexagons to Monoliths"
+title: "L19: Architectural Styles: From Hexagons to Monoliths"
 ---
+
+# Architectural Styles: From Hexagons to Monoliths
 
 Suggested background reading for a deeper dive:
 - [Fundamentals of Software Architecture, 2nd Edition by Mark Richards and Neal Ford](https://learning.oreilly.com/library/view/fundamentals-of-software/9781098175504/ch09.html#id72) - especially Chapter 9

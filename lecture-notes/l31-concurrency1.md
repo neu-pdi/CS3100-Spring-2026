@@ -1,14 +1,10 @@
 ---
 sidebar_position: 31
 lecture_number: 31
-title: "Concurrency I: Threads and Synchronization"
+title: "L31: Concurrency I"
 ---
 
-Software systems rarely do just one thing at a time. A web server handles multiple requests simultaneously. A desktop application keeps its UI responsive while loading data in the background. A smart home hub processes device commands from multiple users at the same time as everyone arrives home in the evening.
-
-This lecture introduces **concurrency**—the ability to manage multiple tasks that overlap in time—and its primary mechanism in Java: **threads**. We'll use SceneItAll as our running example, exploring both the power of concurrent execution and the subtle bugs it can introduce.
-
-SceneItAll is a smart home control application that manages IoT devices—lights (switched, dimmable, RGBW), fans (on/off, speeds 1–4), shades (0–100%), organized into areas (rooms, which can be nested). Users define **scenes**—preset conditions across multiple devices (e.g., "Evening" dims lights to 30% and closes shades). The hub communicates with devices over Zigbee and must handle commands from multiple users simultaneously.
+# Concurrency I
 
 ## Describe the role of threads as a concurrency mechanism and understand the concept of "interrupts" (15 minutes)
 

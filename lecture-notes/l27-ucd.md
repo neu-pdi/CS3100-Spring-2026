@@ -1,8 +1,10 @@
 ---
 sidebar_position: 27
 lecture_number: 27
-title: User-Centered Design
+title: "L27: User-Centered Design"
 ---
+
+# User-Centered Design
 
 ## Describe the value of user-centered design in software development (10 minutes)
 

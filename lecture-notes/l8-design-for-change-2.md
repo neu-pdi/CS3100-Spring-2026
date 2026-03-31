@@ -1,9 +1,11 @@
 ---
 sidebar_position: 8
 lecture_number: 8
-title: "Changeability III: Principles for inheritance"
+title: "L8: Changeability III: Principles for inheritance"
 image: /img/lectures/web/l8.png
 ---
+
+# Changeability III: Principles for inheritance
 
 ![Lecture 8: Changeability III: Principles for inheritance](/img/lectures/web/l8.png)
 

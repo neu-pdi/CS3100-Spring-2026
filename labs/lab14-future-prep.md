@@ -1,8 +1,9 @@
 ---
 sidebar_position: 14
+title: "Lab 14: Prep for Future of Programming"
 ---
 
-# Lab 14: Prep for Future of Programming
+# Prep for Future of Programming
 
 ## Learning Objectives
 

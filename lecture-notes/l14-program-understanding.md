@@ -1,10 +1,10 @@
 ---
 sidebar_position: 14
 lecture_number: 14
-title: Program Understanding & Debugging
+title: "L14: Program Understanding & Debugging"
 ---
 
-# Lecture 14: Program Understanding & Debugging
+# Program Understanding & Debugging
 
 ## Situate debugging within the software development lifecycle (5 minutes)
 

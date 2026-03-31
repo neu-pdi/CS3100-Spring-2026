@@ -4,6 +4,8 @@ sidebar_position: 2
 image: /img/assignments/web/a1.png
 ---
 
+# Recipe Domain Model
+
 ## Update Log
 
 **January 14, 2026:** A previous version of this handout mistakenly required implementing `equals()` and `hashCode()` for `MeasuredIngredient`. This was unintentional and is **not required** for Assignment 1. If you already implemented `equals()`/`hashCode()`, that's fine—you do not need to remove them.

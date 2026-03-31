@@ -1,8 +1,10 @@
 ---
 sidebar_position: 22
 lecture_number: 22
-title: Teams and Collaboration
+title: "L22: Teams and Collaboration"
 ---
+
+# Teams and Collaboration
 
 ## Explain key advantages of working in a team and sharing information with your team (10 minutes)
 

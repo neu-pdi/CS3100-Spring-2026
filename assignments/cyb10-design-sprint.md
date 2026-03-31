@@ -4,6 +4,13 @@ sidebar_position: 9
 image: /img/assignments/web/ga0.png
 ---
 
+# Design Sprint
+
+:::warning Preliminary Content
+
+This assignment is preliminary content and is subject to change until the release date of the assignment.
+
+:::
 
 ## Overview
 
