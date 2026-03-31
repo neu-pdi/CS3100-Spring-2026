@@ -538,4 +538,26 @@ JavaFX enforces a strict threading model:
 
 </Slide>
 
+
+<Slide>
+
+## I/O Takes an Eternity (from the CPU's Perspective)
+
+<Img
+  src="/img/lectures/web/l32-io-time.webp"
+  prompt="Clean educational infographic (not pixel art), 16:9 aspect ratio. A vertical bar chart where each bar represents the time for a different operation, scaled so that 1 CPU cycle = 1 second of human time. Bars from left to right, increasing dramatically in height: CPU cycle (1 second, tiny bar), L1 cache (3 seconds), L2 cache (13 seconds), RAM access (5 minutes, medium bar), SSD read (4 days, tall bar), Network same datacenter (19 days, taller bar), Zigbee device round trip (4 months, very tall bar), Cross-country API call (5 years, extremely tall bar, going off the top of the chart). Each bar is labeled with both the real time and the scaled time. The Zigbee bar and API call bar are highlighted in amber to emphasize how long I/O takes. A caption at the bottom reads: 'A thread waiting for a Zigbee response is idle for months of CPU time.' Modern flat style, clean typography, white background."
+  alt="Bar chart showing operation times scaled so 1 CPU cycle = 1 second. RAM access = 5 minutes. Zigbee device round trip = 4 months. Cross-country API call = 5 years."
+/>
+
+<aside className="notes">
+**This should be a visceral "wow" moment.** Let students absorb the scale. A blocking thread sending a brightness command sits idle for *months* in CPU time. And we're dedicating an entire thread — with its stack memory, OS resources, context-switch overhead — to do nothing.
+
+**The employee analogy:** "Imagine hiring an employee, giving them a desk and a computer, and their entire job is to sit there and wait for a phone call. When the call comes, they write down one number and go back to waiting. Would you hire 15 of those employees?"
+
+> **Transition:** There must be a better way to wait. And you already understand the mental model...
+</aside>
+
+</Slide>
+
+
 </RevealJS>
