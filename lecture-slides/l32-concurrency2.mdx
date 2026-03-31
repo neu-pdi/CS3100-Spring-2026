@@ -758,11 +758,13 @@ CompletableFuture.allOf(
 </div>
 
 <p style={{fontSize: '0.8em', marginTop: '0.3em', color: '#9370DB'}}>
-The punchline: async lets you fire all 15 requests <strong>without paying for a thread to sit and wait for each response.</strong>
+The punchline: async lets you fire all 15 requests <strong>without paying for a thread to sit and wait for each response.</strong> This is also a <strong>coupling reduction</strong> (L7): your code no longer depends on thread lifecycles, shared locks, or execution timing — it just dispatches work and reacts to results.
 </p>
 
 <aside className="notes">
 **Walk left to right:** "Monday's raw threads: one thread per device, all sitting idle waiting for I/O. Thread pool: better (reuses threads), but `Future.get()` still blocks the caller. Today's async: one thread dispatches everything, `allOf` collects results without blocking anyone."
+
+**The L7 coupling connection:** With raw threads, your `activateScene` code is coupled to thread creation, starting, joining, exception handling — it manages the *mechanism* of concurrency, not just the *intent*. With thread pools, you're still coupled to `Future.get()` — you have to know when and where to block. With async CompletableFuture, your code says *what* should happen (send command, then update hub, then push to apps) and is completely decoupled from *how* and *when* it executes. The calling code doesn't create threads, doesn't manage lifecycles, doesn't block. That's information hiding applied to execution — same principle as L7.
 
 **Scaling comparison:**
 - Raw threads: 1000 devices = 1000 threads = 1GB of stacks. Not viable.
