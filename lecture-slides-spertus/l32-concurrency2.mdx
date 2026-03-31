@@ -1,6 +1,7 @@
 ---
 sidebar_position: 31
 title: "Concurrency II: Asynchronous Programming"
+image: /img/lectures/web/l32.png
 ---
 
 import RevealJS, { Slide } from '@site/src/components/RevealJS';
@@ -9,8 +10,36 @@ import PollSlide from '@site/src/components/PollSlide';
 
 <RevealJS transition="slide">
 
+{/* ============================================ */}
+{/* COVER IMAGE */}
+{/* ============================================ */}
+
 <Slide>
-## Placeholder for cover slide
+  <Img
+    src="/img/lectures/web/l32.png"
+    prompt="Concept: 'Concurrency II: Asynchronous Programming' (Program Design and Implementation 2). Pixel art educational illustration, 16:9 aspect ratio. Scene: a pixel art character sitting at a cozy cafe table, calmly reading a book and sipping coffee. On the table next to them, their phone buzzes with a notification — the screen shows a small light bulb icon and a green checkmark with the text 'Done'. Two more notification badges are stacked on the phone (a fan icon and a shade icon, still pending). The character is relaxed and unbothered — they placed the calls earlier and went on with their life. Through the cafe window behind them, you can faintly see a few smart home devices (a light, a shade, a fan) doing their thing in a house across the street. The mood is calm productivity — the opposite of anxiously waiting by the phone. Banner text: 'L32: Asynchronous Programming'. Bottom tagline: 'Dont Wait. Get Called Back.' Bottom text: 'CS 3100: Program Design and Implementation 2'. Color palette: warm cafe tones — amber lighting, wooden table, warm coffee cup. Teal glow on the phone notifications. 8-bit lo-fi pixel art style, clean outlines, retro game aesthetic."
+    alt="Pixel art: a character reads a book at a cafe. Their phone buzzes on the table with a notification showing a light bulb and green checkmark. Through the window, smart home devices work on their own. Tagline: Dont Wait. Get Called Back."
+  />
+
+<aside className="notes">
+**Lecture overview:**
+- **Total time:** ~55 minutes
+- **Prerequisites:** L31 (Threads, Synchronization, Deadlock), L29/L30 (JavaFX, MVVM, event loop)
+- **Connects to:** L33 (Event-Driven Architecture), GA1 (BackgroundTaskRunner, Platform.runLater)
+
+**Structure (~27 slides):**
+- Arc 0: L31 Bridge (~3 min)
+- Arc 1: The Problem with Threads for I/O (~8 min)
+- Arc 2: The Async Model + Restaurant Analogy (~10 min)
+- Arc 3: Futures and CompletableFuture (~18 min) — progressive reveal pipeline
+- Arc 4: Async Safety (~12 min) — ordering bugs, thread confinement, Platform.runLater
+- Arc 5: Wrap-up (~5 min)
+
+**Running example:** SceneItAll — activating "Evening" scene sends commands to 15 devices.
+
+> **Transition:** Let's start with the learning objectives...
+</aside>
+
 </Slide>
 
 <Slide>
