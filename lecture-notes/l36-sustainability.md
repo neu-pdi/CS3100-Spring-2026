@@ -92,13 +92,13 @@ The implication: **optimizing per-unit efficiency is necessary but not sufficien
 
 ### LLMs: Jevons' Paradox in Real Time
 
-You are experiencing Jevons' paradox right now. LLM inference costs have dropped dramatically — Anthropic's Claude API pricing has fallen by over 10x in two years. What happened to total consumption? It exploded.
+You are experiencing Jevons' paradox right now. Vendor-published API list prices have fallen across model generations even as total inference volume has surged. For a time-stamped, citable snapshot: Anthropic's official API pricing table lists Claude Opus 4.1 at $15 / $75 per million input/output tokens and Claude Opus 4.6 at $5 / $25 for the same ([Anthropic API pricing](https://docs.anthropic.com/en/docs/about-claude/pricing), retrieved 2026-03-31) — about 3× lower per million tokens on those flagship tiers. Lower published per-token prices can coexist with exploding aggregate use and spend.
 
 Consider the economics of the tools you use in this course:
 
-**Claude Code's Max plan costs $200/month.** At API rates, the same usage would cost roughly $5,000/month. Anthropic is subsidizing your usage by ~25x because they're betting that making AI coding cheap enough for individual developers will expand the market enough to justify the subsidy. This is Jevons' paradox as a business strategy: make the per-unit cost low enough that total usage (and eventual revenue at scale) grows to dwarf the subsidy.
+Anthropic's consumer documentation lists Max 5x at $100/month and Max 20x at $200/month (web subscriptions; mobile may differ) and states that those plans include access to Claude Code ([What is the Max plan?](https://support.anthropic.com/en/articles/11049741-what-is-the-max-plan), checked 2026-03-31). The same vendor's metered API rates appear on the [API pricing table](https://docs.anthropic.com/en/docs/about-claude/pricing) above. Illustrative classroom estimate (approx., as of 2026-03-31): if you priced a very heavy individual coding workflow at published list API rates for premium models, a ~$5,000/month order of magnitude is plausible for back-of-envelope discussion — but it is not an official bill or guarantee; real API spend depends on models, tokens, caching, batching, and contract discounts. The strategic pattern still matches Jevons: subscription pricing can expand usage (and future revenue at scale) relative to pay-as-you-go list rates.
 
-Every prompt you send to an LLM runs on GPU clusters consuming significant energy. A single ChatGPT query uses roughly 10x the energy of a Google search. When you ask an AI coding agent to "try a few approaches and see what works," you're consuming compute that, at scale across millions of developers, has measurable environmental impact.
+Every prompt hits GPU clusters, but per-query energy is not a single settled number. Early popular summaries often cited on the order of ~10× more energy than a conventional web search; those figures trace to early lifecycle-style estimates that newer analyses argue often overstated real serving energy (see the discussion and sources in [Vanderbauwhede's updated comparison](https://wimvanderbauwhede.github.io/articles/google-search-vs-chatgpt-emissions/)). Oviedo et al. ([arXiv:2509.20241](https://arxiv.org/abs/2509.20241), Sep 2025) estimate a median ~0.34 Wh per query (with wide spread) for large frontier models under realistic production-style assumptions and report that naive non-production extrapolations can overstate energy by ~4–20×. Treat any fixed multiplier (e.g. "10× a Google search") as time-bound and scenario-dependent, not a physical constant. When you ask an AI coding agent to "try a few approaches and see what works," you are still consuming meaningful compute at scale across millions of users — even if the exact factor vs a search engine is uncertain.
 
 This doesn't mean you should stop using LLMs — the productivity gains are real. It means you should understand the full cost stack:
 
@@ -106,7 +106,7 @@ This doesn't mean you should stop using LLMs — the productivity gains are real
 |-----------|---------|-------------|
 | GPU hardware + energy | Cloud providers (passed to AI companies) | Developers using the tools |
 | Training data creation | Original authors (often unconsented) | AI companies + users |
-| Subsidy gap ($200 vs $5,000) | AI company investors (for now) | Individual developers |
+| Subsidy gap ($200 vs $5,000 estimate) | AI company investors (for now) | Individual developers |
 | Environmental externality | Everyone (carbon emissions) | Direct users of the service |
 | Labor displacement risk | Workers in affected roles | Companies reducing headcount |
 

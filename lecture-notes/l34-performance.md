@@ -26,15 +26,16 @@ Big-O notation describes how the runtime (or memory usage) of an algorithm scale
 
 ### Why Constants Don't Matter (Until They Do)
 
-Big-O says `ArrayList.get(i)` and `LinkedList.get(i)` are both "O(1) to access an element if you have the index" — but that's misleading. What Big-O hides is the **constant factor**: how long each individual step takes.
+In Java, `ArrayList.get(i)` is **O(1)** because the backing array supports direct index access. `LinkedList.get(i)` is **O(n)** because each call must traverse nodes from the nearer end of the list — having an index does not give you a pointer to a node. Even when asymptotics match (for example, walking the whole list with an iterator is **O(n)** for both), Big-O hides the **constant factor**: how long each step costs once you are in the right place — and indexed loops on a `LinkedList` compound the traversal cost (roughly **O(n²)** total for the pattern below, versus **O(n)** for `ArrayList`).
 
 ```java
-// Both O(n) to iterate all elements — but VERY different speed
+// O(n) total: each ArrayList.get(i) is O(1)
 for (int i = 0; i < arrayList.size(); i++) {
     process(arrayList.get(i));   // ~1 ns per element (cache-friendly)
 }
+// O(n²) total: each LinkedList.get(i) walks up to O(n) nodes
 for (int i = 0; i < linkedList.size(); i++) {
-    process(linkedList.get(i));  // ~100 ns per element (cache miss every time)
+    process(linkedList.get(i));  // pointer chasing; cache-unfriendly
 }
 ```
 
