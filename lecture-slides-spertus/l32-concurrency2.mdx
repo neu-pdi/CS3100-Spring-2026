@@ -826,35 +826,6 @@ Because `PauseTransition` is part of the JavaFX animation system, its `onFinishe
 
 <Slide>
 
-## Poll: What should a Revert button handler do?
-
-<PollSlide
-  code={`
-// User activates a scene:
-PauseTransition revertTimer = new PauseTransition(Duration.seconds(5));
-revertTimer.setOnFinished(e -> hideRevertButton());
-activateScene(scene);
-showRevertButton();
-revertTimer.play();
-
-// User clicks Revert before timer expires.
-// What should the Revert button handler do?
-  `}
-  choices={[
-    "revertTimer.stop(); deactivateScene(scene);",
-    "revertTimer.pause(); deactivateScene(scene);",
-    "deactivateScene(scene);",
-    "revertTimer.stop();"
-  ]}
-  username="espertus"/>
-
-<aside className="notes">
-**Answer:** revertTimer.stop() then deactivateScene(). stop() cancels the timer so hideRevertButton() never fires — we'll hide it ourselves as part of reverting. pause() is wrong — the timer could be resumed. deactivateScene() alone is wrong — the timer is still running and will call hideRevertButton() even though we've already handled the revert.
-</aside>
-
-</Slide>
-<Slide>
-
 ## Pitfall 2: Task Cancellation
 
 <div style={{fontSize: '0.8em'}}>
