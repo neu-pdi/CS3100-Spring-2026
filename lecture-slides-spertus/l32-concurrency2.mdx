@@ -736,56 +736,7 @@ You are required to handle all of these correctly in GA1.<br/> Let's find out ho
 
 <Slide>
 
-## Pitfall 1: Timer Thread Mistakes
-
-<div style={{fontSize: '0.8em'}}>
-
-<div style={{backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.8em', borderRadius: '8px', marginBottom: '0.8em'}}>
-
-**GA1 Gotcha:** For the 5-second undo window (Library View) and 300ms debounce (Search & Filter), use JavaFX's `PauseTransition`. Alternatives like `ScheduledExecutorService` or `java.util.Timer` run callbacks on non-FX threads, requiring manual `Platform.runLater` wrapping.
-
-</div>
-
-<div style={{display: 'flex', gap: '1.5rem'}}>
-<div style={{flex: '0 0 47%', backgroundColor: 'rgba(200,74,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
-
-**❌ Wrong: fires on wrong thread**
-```java
-ScheduledExecutorService scheduler =
-    Executors.newSingleThreadScheduledExecutor();
-scheduler.schedule(
-    () -> commitDelete(),  // NOT on FX thread!
-    5, TimeUnit.SECONDS);
-```
-
-</div>
-<div style={{flex: '0 0 47%', backgroundColor: 'rgba(50,205,50,0.15)', padding: '0.8em', borderRadius: '8px'}}>
-
-**✅ Correct: fires on FX thread**
-```java
-PauseTransition timer =
-    new PauseTransition(Duration.Seconds(5));
-timer.setOnFinished(e -> commitDelete());
-timer.play();
-```
-
-</div>
-</div>
-</div>
-
-<aside className="notes">
-**Key point:** PauseTransition is a JavaFX animation primitive — it fires its handler on the FX Application Thread automatically, just like any other JavaFX event handler.
-
-**Which features need this:**
-- Library View: 5-second undo window
-- Search & Filter: 300ms debounce delay
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Pitfall 1 (Image)
+## Introducing Pitfall 1: Timer Thread Mistakes
 
 <Img src='/img/lectures/web/l32-pitfall1.png'
   prompt="Concept: 'Async Pitfall 1: Timers on the Wrong Thread' (Program Design and Implementation 2). Pixel art educational illustration, 16:9 aspect ratio, divided into two equal panels with a thin vertical divider.
@@ -1104,7 +1055,7 @@ https://github.com/cs3100-spertus-s26/concurrency-examples/blob/cookmybooks-g/ap
 
 <Slide>
 
-## Cook My Books Example G
+## Cook My Books Example H
 
 <div style={{display: 'flex', gap: '1.5rem', alignItems: 'flex-start'}}>
 <div style={{flex: '0 0 48%'}}>
@@ -1176,7 +1127,7 @@ public class CookMyBooks {
 </div>
 
 <div style={{ fontSize: '.6em' }}>
-https://github.com/cs3100-spertus-s26/concurrency-examples/blob/cookmybooks-g/app/src/main/java/concurrency/CookMyBooks.java
+https://github.com/cs3100-spertus-s26/concurrency-examples/blob/cookmybooks-h/app/src/main/java/concurrency/CookMyBooks.java
 </div>
 
 <aside className="notes">
@@ -1195,7 +1146,7 @@ https://github.com/cs3100-spertus-s26/concurrency-examples/blob/cookmybooks-g/ap
 
 <div style={{fontSize: '0.8em'}}>
 
-Recall from L31: threads can cache variable values locally, leading to visibility problems — one thread's writes may not be seen by another thread.
+Recall from L31: threads can cache variable values locally, leading to visibility problems.
 ```java
 // Without volatile: background thread may never see the update
 private static Task<String> calculatePiTask = null;
@@ -1216,9 +1167,9 @@ private static volatile Task<String> calculatePiTask = null;
 
 <div style={{flex: '0 0 47%', backgroundColor: 'rgba(200,74,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
 
-**`volatile` is not enough when:**
-you need compound operations to be atomic (e.g., `count++` → use `AtomicInteger`)
-
+**`volatile` is not enough when you need atomicity:**
+- Use `AtomicInteger` for `count++`
+- CookMyBooks Example H
 </div>
 
 </div>
@@ -1226,16 +1177,159 @@ you need compound operations to be atomic (e.g., `count++` → use `AtomicIntege
 </div>
 
 <aside className="notes">
-**Connection to L31:** Students saw the Java Memory Model and happens-before in L31. volatile is a lightweight synchronization mechanism — it guarantees visibility but not atomicity.
+The bug on the previous slide was caught by CodeRabbit shortly before my AM lecture!
 
 **In our example:** calculatePiTask is written on the FX thread and read on the background thread. volatile ensures the background thread always sees the most recent value.
 </aside>
 
 </Slide>
 
+
 <Slide>
 
-## Pitfall 3
+## Cook My Books Example H Revisited
+
+<div style={{display: 'flex', gap: '1.5rem', alignItems: 'flex-start'}}>
+<div style={{flex: '0 0 48%'}}>
+```java
+public class CookMyBooks {
+  // ... log(), updateUI(), showError() unchanged
+  private static volatile Task<String> calculatePiTask = null;
+
+  private static String calculatePi() {
+    double pi = 0;
+    for (int i = 0; i < 100_000_000; i++) {
+        pi += Math.pow(-1, i) / (2 * i + 1);
+        if (calculatePiTask != null && 
+            // What if calculatePiTask becomes null?
+            calculatePiTask.isCancelled()) {
+          log("calculatePi was cancelled after " + i + " iterations");
+          return "Cancelled";
+        }
+    }
+    pi *= 4;
+    log("Calculated Pi: " + pi);
+    return Double.toString(pi);
+  }
+}
+```
+
+
+</div>
+<div style={{flex: '0 0 48%'}}>
+```java
+  // This runs in the UI thread
+  private static void handleCalculatePiRequest() {
+    log("UI thread received calculate Pi request");
+    calculatePiTask = BackgroundTaskRunner.run(
+        () -> calculatePi(),
+        pi -> updateUI(pi),
+        error -> showError(error));
+    log("UI is now responsive again");
+  }
+
+  // This runs in the UI thread
+  private static void handleCancelCalculatePiRequest() {
+    log("UI thread received cancel request");
+    if (calculatePiTask != null) {
+      calculatePiTask.cancel();
+      updateUI("calculate Pi request cancelled");
+      calculatePiTask = null;
+    }
+  }
+```
+</div>
+</div>
+
+❌ Race condition could cause NullPointerException
+
+<div style={{ fontSize: '.6em' }}>
+https://github.com/cs3100-spertus-s26/concurrency-examples/blob/cookmybooks-h/app/src/main/java/concurrency/CookMyBooks.java
+</div>
+
+<aside className="notes">
+**Key point:** For CPU-bound work, cancel() alone isn't enough — the callable must check isCancelled() periodically to stop early. volatile ensures the background thread always sees the most recent value of calculatePiTask.
+
+**Contrast with Example E/F:** cancel() interrupted Thread.sleep() immediately. Here, the loop ran ~37 million iterations before noticing the cancellation.
+
+> **Transition:** Now let's look at the final pitfall...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Cook My Books Example I
+
+<div style={{display: 'flex', gap: '1.5rem', alignItems: 'flex-start'}}>
+<div style={{flex: '0 0 30%'}}>
+```java
+public class CookMyBooks {
+  // ... log(), updateUI(), showError() unchanged
+  private static volatile Task<String> calculatePiTask = null;
+
+private static String calculatePi() {
+    double pi = 0;
+    for (int i = 0; i < 100_000_000; i++) {
+        pi += Math.pow(-1, i) / (2 * i + 1);
+        // Prevent race condition by caching calculatePiTask. 
+        Task task = calculatePiTask;
+        if (task != null && task.isCancelled()) {
+          log("calculatePi was cancelled after "
+              + i + " iterations");
+          return "Cancelled";
+        }
+    }
+    pi *= 4;
+    log("Calculated Pi: " + pi);
+    return Double.toString(pi);
+  }
+}
+```
+
+<div style={{fontSize: '0.75em', marginTop: '0.5em'}}>
+<pre>
+<span style={{color: '#d19a66'}}> 682ms JavaFX Application Thread UI thread received calculate Pi request</span><br/>
+<span style={{color: '#d19a66'}}> 713ms JavaFX Application Thread UI is now responsive again</span><br/>
+<span style={{color: '#d19a66'}}>1593ms JavaFX Application Thread UI thread received cancel request</span><br/>
+<span style={{color: '#d19a66'}}>1594ms JavaFX Application Thread Updating UI: calculate Pi request cancelled</span><br/>
+<span style={{color: '#e06c75'}}>1595ms Thread-2 calculatePi was cancelled after 23144009 iterations</span>
+</pre>
+</div>
+
+</div>
+<div style={{flex: '0 0 60%'}}>
+
+
+<div style={{fontSize: '0.75em', marginTop: '0.5em'}}>
+
+✅ CPU-bound loop stops early by checking `isCancelled()`
+
+✅ UI updated directly in cancel handler
+
+✅ Neither callback fires
+
+✅ No race condition
+
+</div>
+</div>
+</div>
+
+<div style={{ fontSize: '.6em' }}>
+https://github.com/cs3100-spertus-s26/concurrency-examples/blob/cookmybooks-i/app/src/main/java/concurrency/CookMyBooks.java
+</div>
+
+<aside className="notes">
+
+
+> **Transition:** Now let's look at the final pitfall...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Introducing Pitfall 3: Debounce Race Conditions
 
 <Img src='/img/lectures/web/l32-pitfall3.png'
   prompt="Concept: 'Debounce Race Condition' (Program Design and Implementation 2). Pixel art educational illustration, 16:9 aspect ratio, divided into four equal panels left to right, each showing a moment in time. A thin vertical line separates each panel. Each panel shows the same recipe search app screen.
@@ -1254,6 +1348,20 @@ Color palette: warm kitchen tones, orange for the stale cake search arrow, green
 <aside className="notes">
 
 </aside>
+
+</Slide>
+
+
+<Slide>
+
+## Why "Debounce"?
+
+<Img src="/img/lectures/web/l32-debounce-teaser.webp"
+  width={1000}
+  alt="TODO"
+/>
+
+<div style={{ fontSize: '.7em' }}><a href="https://creativecommons.org/licenses/by/4.0/deed.en">CC-BY</a> <a href="https://runtimemicro.com/planning/smart-button-debounce-fast">RuntimeMicro.com</a></div>
 
 </Slide>
 
@@ -1379,6 +1487,7 @@ Each search captures the counter value when it starts. When results arrive, it c
 </aside>
 
 </Slide>
+
 
 <Slide>
 
