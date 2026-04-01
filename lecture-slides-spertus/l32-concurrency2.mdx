@@ -69,7 +69,7 @@ After this lecture, you will be able to:
 <ol style={{fontSize: '0.75em', textAlign: 'left'}}>
   <li>Distinguish whether an operation should run on the GUI thread or a background thread</li>
   <li>Explain what problems asynchronous programming solves</li>
-  <li>Use <code>BackgroundTaskRunner</code> to divide work between GUI and bakckground threads</li>
+  <li>Use <code>BackgroundTaskRunner</code> to divide work between GUI and background threads</li>
   <li>Identify and avoid common asynchronous programming pitfalls</li>
 </ol>
 
@@ -294,8 +294,9 @@ public class CookMyBooks {
 <span style={{color: '#4ac'}}>   16ms main UI is non-responsive</span><br/>
 <span style={{color: '#4ac'}}>   19ms main UI is now responsive again</span><br/>
 <span style={{color: '#e06c75'}}>   19ms Thread-0 Fetching recipe...</span><br/>
-<span style={{color: '#e06c75'}}>Exception in thread "Thread-0" java.lang.IllegalStateException: <br/>updateUI must be called on the main thread</span><br/>
 <span style={{color: '#e06c75'}}>2029ms Thread-0 Got recipe!</span><br/>
+<span style={{color: '#e06c75'}}>Exception in thread "Thread-0" java.lang.IllegalStateException: <br/>updateUI must be called on the main thread</span><br/>
+
 </pre>
 
 
@@ -765,7 +766,7 @@ scheduler.schedule(
 **✅ Correct: fires on FX thread**
 ```java
 PauseTransition timer =
-    new PauseTransition(Duration.ofSeconds(5));
+    new PauseTransition(Duration.Seconds(5));
 timer.setOnFinished(e -> commitDelete());
 timer.play();
 ```
@@ -843,7 +844,7 @@ The first is really a delayed delete, not an undo.
 
 Waits for a specified duration, then fires a callback on the FX thread:
 ```java
-PauseTransition timer = new PauseTransition(Duration.ofSeconds(5));
+PauseTransition timer = new PauseTransition(Duration.seconds(5));
 timer.setOnFinished(e -> doSomething());  // runs on FX thread
 timer.play();   // start the timer
 timer.stop();   // cancel the timer (e.g., on each keystroke)
@@ -881,7 +882,7 @@ Because `PauseTransition` is part of the JavaFX animation system, its `onFinishe
 <PollSlide
   code={`
 // User activates a scene:
-PauseTransition revertTimer = new PauseTransition(Duration.ofSeconds(5));
+PauseTransition revertTimer = new PauseTransition(Duration.seconds(5));
 revertTimer.setOnFinished(e -> hideRevertButton());
 activateScene(scene);
 showRevertButton();
