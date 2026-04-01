@@ -27,20 +27,39 @@ import PollSlide from '@site/src/components/PollSlide';
 - **Prerequisites:** L31 (Threads, Synchronization, Deadlock), L29/L30 (JavaFX, MVVM, event loop)
 - **Connects to:** L33 (Event-Driven Architecture), GA1 (BackgroundTaskRunner, Platform.runLater)
 
-**Structure (~27 slides):**
-- Arc 0: L31 Bridge (~3 min)
-- Arc 1: The Problem with Threads for I/O (~8 min)
-- Arc 2: The Async Model + Restaurant Analogy (~10 min)
-- Arc 3: Futures and CompletableFuture (~18 min) — progressive reveal pipeline
-- Arc 4: Async Safety (~12 min) — ordering bugs, thread confinement, Platform.runLater
-- Arc 5: Wrap-up (~5 min)
-
-**Running example:** SceneItAll — activating "Evening" scene sends commands to 15 devices.
+**Structure:**
+- Arc 1: From Threads to BackgroundTaskRunner
+- Arc 2: Asynchronous Programming Pitfalls
 
 > **Transition:** Let's start with the learning objectives...
 </aside>
 
 </Slide>
+
+
+</Slide>
+
+{/* ============================================ */}
+{/* TITLE + LOs */}
+{/* ============================================ */}
+
+<Slide>
+
+# CS 3100: Program Design and Implementation II
+
+## Lecture 32: Concurrency II — Asynchronous Programming
+
+<p style={{marginTop: '2em', fontSize: '0.8em', color: '#666'}}>
+  &copy;2026 Ellen Spertus & Jonathan Bell, CC-BY-SA
+</p>
+
+<aside className="notes">
+**Context from L31:** Students learned threads, shared mutable state, race conditions, synchronized, concurrent collections, and deadlock.
+
+</aside>
+
+</Slide>
+
 
 <Slide>
 
@@ -54,16 +73,10 @@ After this lecture, you will be able to:
   <li>Distinguish whether an operation should run on the GUI thread or a background thread</li>
   <li>Explain what problems asynchronous programming solves</li>
   <li>Use <code>BackgroundTaskRunner</code> to divide work between GUI and bakckground threads</li>
-  <li>Identify and avoid common asynchroonous programming pitfalls</li>
+  <li>Identify and avoid common asynchronous programming pitfalls</li>
 </ol>
 
 <aside className="notes">
-**Time allocation:**
-- Objective 1: The threading rule + blocking/non-blocking (~15 min)
-- Objective 2: BackgroundTaskRunner internals (~10 min)
-- Objective 3: Async safety pitfalls — debounce race condition, PauseTransition, task cancellation (~18 min)
-- Wrap-up: comprehension check, key takeaways (~7 min)
-
 → Let's look at the big picture
 </aside>
 
@@ -1222,6 +1235,189 @@ you need compound operations to be atomic (e.g., `count++` → use `AtomicIntege
 **In our example:** calculatePiTask is written on the FX thread and read on the background thread. volatile ensures the background thread always sees the most recent value.
 </aside>
 
+</Slide>
+
+<Slide>
+
+## Pitfall 3
+
+<Img src='/img/lectures/web/l32-pitfall3.png'
+  prompt="Concept: 'Debounce Race Condition' (Program Design and Implementation 2). Pixel art educational illustration, 16:9 aspect ratio, divided into four equal panels left to right, each showing a moment in time. A thin vertical line separates each panel. Each panel shows the same recipe search app screen.
+
+PANEL 1 labeled 'User types cake' at the top: A search bar shows the text 'cake'. The results list below is empty or loading with a spinner. A labeled orange arrow originates from this panel and travels rightward across panels 2, 3, and 4, labeled 'cake search running...'.
+
+PANEL 2 labeled 'User types cookies' at the top: The search bar now shows 'cookies'. A spinner is visible. A labeled green arrow originates from this panel and travels rightward across panels 3 and 4, labeled 'cookies search running...'. The orange arrow from panel 1 is still visible traveling rightward above it.
+
+PANEL 3 labeled 'cookies results arrive' at the top: The search bar shows 'cookies'. The green arrow from panel 2 terminates here with a downward arrow into the results list, which shows 'Chocolate Chip Cookies', 'Snickerdoodles', 'Sugar Cookies' highlighted in green. The orange arrow from panel 1 is still traveling rightward above, indicating the cake search is still running.
+
+PANEL 4 labeled 'cake results overwrite!' at the top: The search bar still shows 'cookies'. The orange arrow from panel 1 terminates here with a downward arrow into the results list, which now shows 'Chocolate Cake', 'Carrot Cake', 'Cheesecake' highlighted in red. A large red warning icon overlays the panel. A confused user is visible at the bottom.
+
+Color palette: warm kitchen tones, orange for the stale cake search arrow, green for the correct cookies search arrow, red warning accents in panel 4. 8-bit lo-fi pixel art style, clean outlines, retro game aesthetic, 16:9 aspect ratio."
+  alt="Four-panel pixel art illustration showing a debounce race condition. Panel 1: user types 'cake' in a recipe search bar, results loading, orange arrow labeled 'cake search running' travels rightward. Panel 2: user types 'cookies', results still loading, green arrow labeled 'cookies search running' travels rightward below the orange arrow. Panel 3: green arrow terminates with a downward arrow into the results list showing Chocolate Chip Cookies, Snickerdoodles, and Sugar Cookies highlighted in green — the correct results. Panel 4: orange arrow terminates with a downward arrow overwriting the results with Chocolate Cake, Carrot Cake, and Cheesecake highlighted in red — the wrong results. A red warning triangle and a confused user appear in panel 4."
+/>
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Pitfall 3: Debounce Race Conditions
+
+<div style={{fontSize: '0.8em'}}>
+
+<div style={{backgroundColor: 'rgba(50,180,100,0.15)', padding: '0.8em', borderRadius: '8px', marginTop: '0.8em'}}>
+
+**Search & Filter:** Results update automatically as the user types. Each keystroke waits 300ms then runs a search on a background thread via `BackgroundTaskRunner`.
+
+</div>
+
+<div className='fragment' style={{marginTop: '0.8em'}}>
+
+Consider what happens when the user types quickly:
+
+1. User types "cake" → 300ms passes → search fires on background thread
+2. User types "cookies" → 300ms passes → second search fires on background thread
+3. The "cookies" search finishes first and results are shown
+4. The "cake" search finishes second and **overwrites the correct results**
+
+The user typed "cookies" but sees results for "cake".
+
+</div>
+
+<div className='fragment' style={{backgroundColor: 'rgba(200,74,74,0.15)', padding: '0.8em', borderRadius: '8px', marginTop: '0.8em'}}>
+
+This is a **race condition** — the result depends on which search happens to finish first, which is nondeterministic.
+
+</div>
+
+</div>
+
+<aside className="notes">
+**Which features need this:** Search & Filter only.
+
+**Connection to L31:** Students saw race conditions in L31 — this is the async equivalent. Instead of threads interleaving on shared state, we have callbacks arriving in unexpected orders.
+
+> **Transition:** How do we fix this?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Poll: How can you ensure the most recent search's results are shown?
+
+<PollSlide username="espertus" />
+
+<aside className="notes">
+Open-ended poll
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Fixing the Debounce Race Condition: Generation Counter
+
+<div style={{fontSize: '0.8em'}}>
+
+Each time a new search starts, increment a **generation counter**. When results arrive, discard them if the generation no longer matches.
+
+<div style={{backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.8em', borderRadius: '8px', marginTop: '0.8em', textAlign: 'center'}}>
+
+**Shared counter:** ~~1~~ → 2
+
+</div>
+
+<div className='fragment' style={{display: 'flex', gap: '1rem', marginTop: '0.8em'}}>
+
+<div style={{flex: '0 0 22%', backgroundColor: 'rgba(209,154,102,0.15)', padding: '0.8em', borderRadius: '8px', fontSize: '0.85em'}}>
+
+**Search 1 starts**
+query: "cake"
+generation: **1**
+
+</div>
+
+<div style={{flex: '0 0 22%', backgroundColor: 'rgba(50,180,100,0.15)', padding: '0.8em', borderRadius: '8px', fontSize: '0.85em'}}>
+
+**Search 2 starts**
+query: "cookies"
+generation: **2**
+
+</div>
+
+<div className='fragment' style={{flex: '0 0 22%', backgroundColor: 'rgba(50,180,100,0.15)', padding: '0.8em', borderRadius: '8px', fontSize: '0.85em'}}>
+
+**"cookies" arrives**
+generation: **2**
+counter: **2**<br/>
+2 == 2 ✅ show
+
+</div>
+
+<div className='fragment' style={{flex: '0 0 22%', backgroundColor: 'rgba(200,74,74,0.15)', padding: '0.8em', borderRadius: '8px', fontSize: '0.85em'}}>
+
+**"cake" arrives**
+generation: **1**
+counter: **2**<br/>
+1 != 2 ❌ discard
+
+</div>
+
+</div>
+
+<div className='fragment' style={{backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.8em', borderRadius: '8px', marginTop: '0.8em'}}>
+
+Each search captures the counter value when it starts. When results arrive, it checks whether the counter has moved on — if so, these results are stale.
+
+</div>
+
+</div>
+
+<aside className="notes">
+**Key point:** The counter is shared and always increasing. Each search's generation is a private snapshot of the counter at the moment it started. Stale results are always detectable because their generation will be less than the current counter.
+
+**Which features need this:** Search & Filter only.
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Key Takeaways
+
+<div style={{fontSize: '0.8em'}}>
+
+<ol style={{lineHeight: '1.5'}}>
+  <li><strong>Blocking the FX thread freezes the UI</strong> — any slow operation must run on a background thread</li>
+  <li><strong><code>BackgroundTaskRunner</code> handles the thread handoff</strong> — callable on background thread, callbacks on FX thread</li>
+  <li><span>Three pitfalls to watch for in GA1:</span><span style={{display:'block'}}>&nbsp;&nbsp;— Use <code>PauseTransition</code> for timers, not <code>ScheduledExecutorService</code></span><span style={{display:'block'}}>&nbsp;&nbsp;— Handle state transitions directly on cancel — <code>cancel()</code> does not trigger <code>onFailure</code></span><span style={{display:'block'}}>&nbsp;&nbsp;— Use a generation counter to discard stale search results</span></li>
+</ol>
+
+</div>
+
+<aside className="notes">
+**Wrap up:** These three concepts map directly to GA1. Students who understand them going into the assignment will avoid the most common bugs. The TA will ask about BackgroundTaskRunner specifically — make sure you can explain what thread each part runs on and what would break if the callbacks ran on the background thread.
+</aside>
+
+</Slide>
+
+<Slide>
+## Bonus Slide
+<div style={{display: 'flex', gap: '1rem', justifyContent: 'center'}}>
+<Img src='/img/lectures/web/l32-ten-things-async.jpg'
+  width={500}
+  alt="Tweet from 'I Am Devloper': '10 Things You'll Find Shocking About Asynchronous Operations',
+  followed by an empty list of the numbers 1-10 in random order. "
+/>
+
+<Img src='/img/lectures/web/l32-async-spongebob-meme.jpg'
+  width={500}
+  alt="A six-panel Spongebob Squarepants meme about asynchronous programming. Panel 1: Patrick (labeled C++) tells Squidward (labeled JS) 'I personally prefer asynchronous programming'. Panel 2: Squidward asks 'What does Asynchronous programming mean?' Panel 3: Spongebob (labeled Rust) tells Squidward 'It means he's afraid of multithreading'. Panel 4: Squidward replies 'No, it doesn't.' Panel 5: Patrick lists 'Shared pointer, Mutex, Move' while Squidward looks uncomfortable. Panel 6: Spongebob shouts 'Stop it Patrick, you're scaring him!'"
+/>
+</div>
 </Slide>
 
 </RevealJS>
