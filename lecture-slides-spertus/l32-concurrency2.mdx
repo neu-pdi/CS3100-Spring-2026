@@ -17,8 +17,8 @@ import PollSlide from '@site/src/components/PollSlide';
 <Slide>
   <Img
     src="/img/lectures/web/l32.png"
-    prompt="Concept: 'Concurrency II: Asynchronous Programming' (Program Design and Implementation 2). Pixel art educational illustration, 16:9 aspect ratio. Scene: a pixel art character sitting at a cozy cafe table, calmly reading a book and sipping coffee. On the table next to them, their phone buzzes with a notification — the screen shows a small light bulb icon and a green checkmark with the text 'Done'. Two more notification badges are stacked on the phone (a fan icon and a shade icon, still pending). The character is relaxed and unbothered — they placed the calls earlier and went on with their life. Through the cafe window behind them, you can faintly see a few smart home devices (a light, a shade, a fan) doing their thing in a house across the street. The mood is calm productivity — the opposite of anxiously waiting by the phone. Banner text: 'L32: Asynchronous Programming'. Bottom tagline: 'Dont Wait. Get Called Back.' Bottom text: 'CS 3100: Program Design and Implementation 2'. Color palette: warm cafe tones — amber lighting, wooden table, warm coffee cup. Teal glow on the phone notifications. 8-bit lo-fi pixel art style, clean outlines, retro game aesthetic."
-    alt="Pixel art: a character reads a book at a cafe. Their phone buzzes on the table with a notification showing a light bulb and green checkmark. Through the window, smart home devices work on their own. Tagline: Dont Wait. Get Called Back."
+    prompt="Concept: 'Concurrency II: Asynchronous Programming' (Program Design and Implementation 2). Pixel art educational illustration, 16:9 aspect ratio. Scene: a pixel art character sitting at a cozy cafe table, calmly reading a book and sipping coffee. On the table next to them, their phone buzzes with a notification — the screen shows a small light bulb icon and a green checkmark with the text 'Done'. Two more notification badges are stacked on the phone (a fan icon and a shade icon, still pending). The character is relaxed and unbothered — they placed the calls earlier and went on with their life. Through the cafe window behind them, you can faintly see a few smart home devices (a light, a shade, a fan) doing their thing in a house across the street. The mood is calm productivity — the opposite of anxiously waiting by the phone. Banner text: 'L32: Asynchronous Programming'. Bottom tagline: 'Don't Wait. Get Called Back.' Bottom text: 'CS 3100: Program Design and Implementation 2'. Color palette: warm cafe tones — amber lighting, wooden table, warm coffee cup. Teal glow on the phone notifications. 8-bit lo-fi pixel art style, clean outlines, retro game aesthetic."
+    alt="Pixel art: a character reads a book at a cafe. Their phone buzzes on the table with a notification showing a light bulb and green checkmark. Through the window, smart home devices work on their own. Tagline: Don't Wait. Get Called Back."
   />
 
 <aside className="notes">
@@ -309,8 +309,6 @@ https://github.com/cs3100-spertus-s26/concurrency-examples/blob/cookmybooks-c/ap
 
 <aside className="notes">
 **Key point:** The worker thread calls updateUI() directly, which throws because UI updates must happen on the main/FX thread. In a real JavaFX app, modifying an ObservableList or Property from a background thread throws a similar exception.
-
-**Note:** The exception prints before "Got recipe!" because the exception is thrown inside updateUI(), which is called before the final log() in fetchRecipe().
 
 > **Transition:** So how do we get the result back to the UI thread? That's what BackgroundTaskRunner solves...
 </aside>
