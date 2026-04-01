@@ -15,12 +15,24 @@ interface ImgProps extends React.ImgHTMLAttributes<HTMLImageElement> {
  * Accepts an optional `prompt` attribute for AI-generated images,
  * which stores the generation prompt as a data attribute.
  */
-export default function Img({ src, prompt, ...props }: ImgProps) {
+export default function Img({ src, prompt, style, ...props }: ImgProps) {
   // If src starts with /, it's an absolute path from static folder
   // useBaseUrl will prepend the baseUrl automatically
   const imageSrc = src.startsWith('/') ? useBaseUrl(src) : src;
-  
-  return <img src={imageSrc} data-prompt={prompt} {...props} />;
+
+  return (
+    <img
+      src={imageSrc}
+      data-prompt={prompt}
+      style={{
+        objectFit: 'contain',
+        display: 'block',
+        margin: '0 auto',
+        ...style,
+      }}
+      {...props}
+    />
+  );
 }
 
 

@@ -71,14 +71,19 @@ Collections.sort(devices, Comparator.comparing(Device::getBrightness));
 
 ### When Big-O Matters and When It Doesn't
 
-Big-O matters when **n is large** — thousands of devices, millions of events, hundreds of thousands of users. For small n (a list of 20 items), an O(n²) algorithm is perfectly fine.
+Big-O matters in two situations:
+
+1. **When n is large** — thousands of devices, millions of events, hundreds of thousands of users. O(n²) on 10,000 items means 100 million operations.
+
+2. **When each operation is expensive** — even for small n. SceneItAll activates a scene with 15 devices. If each device command is a 200ms Zigbee network call, O(n) individual calls = 15 × 200ms = 3 seconds. O(1) batched call = 200ms. The n is small, but Big-O determines *how many times you pay the expensive per-operation cost.* This is exactly the batching pattern we'll see later in this lecture.
+
+For truly cheap, in-memory operations on small n (iterating a list of 20 items), an O(n²) algorithm completes in microseconds — optimizing it is wasted effort.
 
 Big-O *doesn't* tell you about:
 - **Constant factors** — cache behavior, memory allocation overhead, JIT compilation
-- **I/O costs** — a single network call (50ms) dwarfs any algorithmic difference for small n
 - **Memory allocation overhead** — new objects cost a few dozen bytes, but will impose a cost on the garbage collector
 
-This is why we still need profiling. Big-O tells you which algorithms *could* be a problem as n grows. Profiling tells you which ones *actually are* a problem right now.
+This is why we still need profiling. Big-O tells you which algorithms *could* be a problem as n grows or when per-operation costs are high. Profiling tells you which ones *actually are* a problem right now.
 
 ## Identify performance bottlenecks: measure, don't guess (5 minutes)
 
@@ -151,16 +156,16 @@ Here's a latency budget you've lived every time you submit an assignment:
 
 ```
 Student pushes code → GitHub webhook fires (50ms)
-                    → Runner starts (cold: 30s, warm: 5s)
+                    → Workflow queued, runner provisioned (~2-3 min typical)
                     → Grader tarball download (cache hit: 0ms, miss: 3s)
                     → Compile student code (2s)
                     → Run 100 tests (10s)
                     → POST results to Pawtograder API (200ms)
                     → Student sees grade (render: 100ms)
-Total: ~17s (warm) to ~45s (cold)
+Total: ~2.5 min (typical) to ~4 min (cold cache)
 ```
 
-You've experienced this latency every time you submit an assignment. The runner cold start dominates — optimizing test execution from 10s to 8s saves 2s, but eliminating cold starts saves 25s. Profile before optimizing. The cold start problem connects directly to [L21 (Serverless)](/lecture-notes/l21-serverless), and the grader tarball caching by SHA connects to [L20's caching discussion](/lecture-notes/l20-networks).
+You've experienced this latency every time you submit an assignment. The infrastructure overhead dominates — it typically takes 2-3 minutes just to go from pushing code to running tests, as GitHub queues the workflow run, finds an available runner, and provisions the environment. Optimizing test execution from 10s to 8s saves 2s — irrelevant compared to the minutes spent on infrastructure. Profile before optimizing. The infrastructure overhead connects directly to [L21 (Serverless)](/lecture-notes/l21-serverless), and the grader tarball caching by SHA connects to [L20's caching discussion](/lecture-notes/l20-networks).
 
 Amazon found that every 100ms of added latency cost them 1% of sales. Latency budgets are not academic — they directly affect business outcomes.
 

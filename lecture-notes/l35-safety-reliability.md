@@ -251,6 +251,26 @@ Pawtograder's autograder runs student code in a containerized environment. If th
 
 The fail-safe default matters: "internal error, needs manual review" is fail-safe. "0" is fail-dangerous. The blast radius of getting this wrong: one student's grade in the best case, every student's grade if the bug is systematic.
 
+### Pawtograder: When a Human Accidentally Overwrites the Gradebook
+
+Not every safety incident is a software bug. Pawtograder's gradebook stores every student's grades for the course. A staff member accidentally updates the wrong column — overwriting 200 students' homework scores with zeros. The staff member doesn't realize the mistake. A student notices their grade dropped and flags a concern.
+
+This actually happened. The initial report looked like a software bug — "grades changed without any submission." But the audit trail told a different story.
+
+| Layer | Defense | What it caught |
+|-------|---------|---------------|
+| **Audit table** | Every grade update is logged with timestamp, user, old value, new value | Showed exactly which staff member made the change, when, and what the previous values were |
+| **Student visibility** | Students can see their own grades in real time | Student noticed the discrepancy within hours, not weeks |
+| **Flag/concern mechanism** | Students can flag grade concerns to instructors | The student's flag triggered the investigation |
+| **Professor audit view** | Professors can view full audit history for any student or assignment | Confirmed the change was a single bulk update by one staff member, not a software bug |
+| **Reversibility** | Old values stored in audit table enable rollback | All 200 grades were restored from audit history |
+
+:::note Recall
+In [L24 (Usability)](/lecture-notes/l24-usability), we introduced three types of human error: slips (intended the right action, did the wrong one), lapses (forgot a step), and mistakes (wrong mental model). This was a **slip** — the staff member intended to update one column but selected the wrong one. The audit trail doesn't prevent the slip, but it makes the slip **detectable, attributable, and reversible.**
+:::
+
+Without the audit trail, this incident would have been invisible until final grades were submitted — and then it would have looked like a software bug, triggering a costly investigation into code that was working correctly. The audit trail is a Swiss cheese layer that catches **both** machine errors (autograder crash) **and** human errors (accidental overwrite). Blast radius without audit trail: 200 students' grades, potentially discovered only at end of semester. Blast radius with audit trail: 200 students' grades, detected in hours, reversed in minutes.
+
 ## Recognize prior course concepts as safety mechanisms (12 minutes)
 
 You've learned these tools as performance, reliability, and concurrency mechanisms. Every one of them is also a safety mechanism. The difference is the consequence of getting it wrong:
