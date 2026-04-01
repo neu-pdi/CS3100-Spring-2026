@@ -51,9 +51,10 @@ After this lecture, you will be able to:
 </p>
 
 <ol style={{fontSize: '0.75em', textAlign: 'left'}}>
-  <li>Distinguish blocking from non-blocking operations and explain how blocking affects threads</li>
-  <li>Explain how <code>BackgroundTaskRunner</code> separates I/O from UI updates across threads</li>
-  <li><span>Identify and avoid common async safety pitfalls:</span><span style={{display:'block'}}>&nbsp;&nbsp;— Debounce race conditions</span><span style={{display:'block'}}>&nbsp;&nbsp;— Timer thread mistakes</span><span style={{display:'block'}}>&nbsp;&nbsp;— Task cancellation behavior</span></li>
+  <li>Distinguish whether an operation should run on the GUI thread or a background thread</li>
+  <li>Explain what problems asynchronous programming solves</li>
+  <li>Use <code>BackgroundTaskRunner</code> to divide work between GUI and bakckground threads</li>
+  <li>Identify and avoid common asynchroonous programming pitfalls</li>
 </ol>
 
 <aside className="notes">
@@ -429,7 +430,6 @@ In our example, the type argument `T` is `String`.
 </aside>
 
 </Slide>
-
 <Slide>
 
 ## Cook My Books Example D
@@ -438,16 +438,7 @@ In our example, the type argument `T` is `String`.
 <div style={{flex: '0 0 45%'}}>
 ```java
 public class CookMyBooks {
-  // ... log(), fetchRecipe(), showError() unchanged
-
-  private static void updateUI(String recipe) {
-    if (!Thread.currentThread().getName().equals(
-        "JavaFX Application Thread")) {
-      throw new IllegalStateException(
-          "updateUI must be called on the UI thread");
-    }
-    log("Updating UI: " + recipe);
-  }
+  // ... log(), fetchRecipe(), updateUI(), showError() unchanged
 
   // This runs in the UI thread.
   private static void handleFetchRecipeRequest() {
@@ -461,12 +452,7 @@ public class CookMyBooks {
 
   public static void main(String[] args) {
     Platform.startup(() -> {}); // initialize JavaFX without a GUI
-    handleFetchRecipeRequest();
-    try {
-      Thread.sleep(5000);
-    } catch (InterruptedException e) {
-      // this can't happen in our program
-    }
+    Platform.runLater(() -> handleFetchRecipeRequest());
   }
 }
 ```
@@ -474,11 +460,11 @@ public class CookMyBooks {
 </div>
 <div className='fragment' style={{flex: '0 0 50%', fontSize: '0.65em'}}>
 <pre>
-<span style={{color: '#4ac'}}> 413ms main UI thread received fetch recipe request</span><br/>
-<span style={{color: '#4ac'}}> 436ms main UI is now responsive again</span><br/>
-<span style={{color: '#e06c75'}}> 437ms Thread-2 Fetching recipe...</span><br/>
-<span style={{color: '#e06c75'}}>2438ms Thread-2 Got recipe!</span><br/>
-<span style={{color: '#d19a66'}}>2439ms JavaFX Application Thread Updating UI: Cookie Recipe</span>
+<span style={{color: '#d19a66'}}> 419ms JavaFX Application Thread UI thread received fetch recipe request</span><br/>
+<span style={{color: '#d19a66'}}> 445ms JavaFX Application Thread UI is now responsive again</span><br/>
+<span style={{color: '#e06c75'}}> 446ms Thread-2 Fetching recipe...</span><br/>
+<span style={{color: '#e06c75'}}>2447ms Thread-2 Got recipe!</span><br/>
+<span style={{color: '#d19a66'}}>2448ms JavaFX Application Thread Updating UI: Cookie Recipe</span>
 </pre>
 
 <div style={{marginTop: '0.8em'}}>
@@ -496,48 +482,179 @@ https://github.com/cs3100-spertus-s26/concurrency-examples/blob/cmb-d/app/src/ma
 </div>
 
 <aside className="notes">
-**Key point:** Three threads visible in the output: main (UI thread), Thread-2 (background worker), and JavaFX Application Thread (callback delivery). updateUI() enforces the threading constraint explicitly — in a real JavaFX app, modifying an ObservableList or Property from the wrong thread throws automatically.
+**Key point:** All three threads are visible: JavaFX Application Thread (UI), Thread-2 (background worker), and JavaFX Application Thread again for the callback. handleFetchRecipeRequest() now correctly runs on the FX Application Thread via Platform.runLater(), just as it would in a real JavaFX app triggered by a button click.
 
-**Point out:** The FX Application Thread color is a third color, making the three-thread separation visually clear.
-
-> **Transition:** Now let's look at the pitfalls...
+> **Transition:** BackgroundTaskRunner returns a Task object we can use to cancel the operation...
 </aside>
 
 </Slide>
 
 <Slide>
 
-## The Threading Rule
+## The Task Object
 
-<div style={{fontSize: '0.75em', marginBottom: '0.8em'}}>
-JavaFX enforces a strict threading model:
+<div style={{fontSize: '0.8em'}}>
+
+`BackgroundTaskRunner.run()` returns a `Task<T>` object that can be used to monitor or cancel the background operation:
+```java
+Task<String> task = BackgroundTaskRunner.<String>run(
+    () -> fetchRecipe(),
+    recipe -> updateUI(recipe),
+    error -> showError(error));
+```
+
+<div style={{marginTop: '0.8em'}}>
+
+| Method | Purpose |
+|--------|---------|
+| `task.cancel()` | Request cancellation of the task |
+| `task.isCancelled()` | Check if the task has been cancelled — useful inside the callable to stop early |
+| `task.isDone()` | Checks if the task has completed (succeeded or failed) |
+
 </div>
 
-<ol style={{fontSize: '0.75em'}}>
-  <li><strong>FX thread</strong>: all UI updates — <code>ObservableList</code>, <code>Property</code>, JavaFX nodes</li>
-  <li><strong>Background thread</strong>: all I/O, network calls, heavy computation</li>
-  <li><strong><code>BackgroundTaskRunner</code></strong>: handles the handoff between the two</li>
-</ol>
-
-<div className='fragment' style={{fontSize: '0.8em', marginTop: '0.8em', backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.8em', borderRadius: '8px'}}>
-
-**TA meeting questions — be ready to answer:**
-- What thread does the callable run on?
-- What thread do the callbacks run on?
-- What would break if `onSuccess` ran on the background thread?
 
 </div>
 
 <aside className="notes">
-**This is the mental model students need to carry into GA1.** Everything else in this lecture — the pitfalls, the gotchas — flows from this rule.
+**isCancelled() inside the callable:** A long-running task can check isCancelled() periodically and return early rather than running to completion. This is especially useful for the Import feature where OCR might take several seconds.
 
-**The TA questions are directly from the GA1 spec.** Students who can't answer these in a code walk will lose points.
+> **Transition:** Let's see this in action...
+</aside>
 
-> **Transition:** Now let's look at three common pitfalls...
+</Slide>
+<Slide>
+
+## Cook My Books Example E
+
+<div style={{display: 'flex', gap: '1.5rem', alignItems: 'flex-start'}}>
+<div style={{flex: '0 0 45%'}}>
+```java
+public class CookMyBooks {
+  // ... log(), updateUI(), showError() unchanged
+  private static Task<String> fetchRecipeTask = null;
+
+  private static String fetchRecipe() {
+    log("Fetching recipe...");
+    try {
+      Thread.sleep(2000); // simulates slow network call
+    } catch (InterruptedException e) {
+      log("fetchRecipe() was interrupted");
+      log("isCancelled is: " + fetchRecipeTask.isCancelled());
+      return null;
+    }
+    log("Got recipe!");
+    return "Cookie Recipe";
+  }
+
+  // This runs in the UI thread
+  private static void handleFetchRecipeRequest() {
+    log("UI thread received fetch recipe request");
+    fetchRecipeTask = BackgroundTaskRunner.run(
+        () -> fetchRecipe(),
+        recipe -> updateUI(recipe),
+        error -> showError(error));
+    log("UI is now responsive again");
+  }
+
+  // This runs in the UI thread
+  private static void handleCancelFetchRecipeRequest() {
+    log("UI thread received cancel request");
+    if (fetchRecipeTask != null) {
+      fetchRecipeTask.cancel();
+    }
+  }
+
+  public static void main(String[] args) throws InterruptedException {
+    Platform.startup(() -> {}); // initialize JavaFX without a GUI
+    Platform.runLater(() -> handleFetchRecipeRequest());
+    Thread.sleep(1000); // simulate cancel after 1 second
+    handleCancelFetchRecipeRequest();
+  }
+}
+```
+
+</div>
+<div className='fragment' style={{flex: '0 0 50%', fontSize: '0.65em'}}>
+<pre>
+<span style={{color: '#d19a66'}}> 434ms JavaFX Application Thread UI thread received fetch recipe request</span><br/>
+<span style={{color: '#d19a66'}}> 459ms JavaFX Application Thread UI is now responsive again</span><br/>
+<span style={{color: '#e06c75'}}> 459ms Thread-2 Fetching recipe...</span><br/>
+<span style={{color: '#4ac'}}>1433ms main UI thread received cancel request</span><br/>
+<span style={{color: '#e06c75'}}>1434ms Thread-2 fetchRecipe() was interrupted</span><br/>
+<span style={{color: '#e06c75'}}>1437ms Thread-2 isCancelled is: true</span>
+</pre>
+
+<div style={{marginTop: '0.8em'}}>
+
+✅ Task is cancelled after 1 second
+
+✅ Worker thread is interrupted immediately
+
+✅ `isCancelled()` returns `true` inside the callable
+
+</div>
+</div>
+</div>
+
+<div style={{ fontSize: '.6em' }}>
+https://github.com/cs3100-spertus-s26/concurrency-examples/blob/cmb-e/app/src/main/java/concurrency/CookMyBooks.java
+</div>
+
+<aside className="notes">
+**Key point:** cancel() interrupts the blocked thread AND sets isCancelled() to true. Neither callback fires — students must handle state transitions directly in their cancel method.
+
+**Note:** handleCancelFetchRecipeRequest() runs on the main thread here (called directly from main()) rather than the FX thread — in a real app it would be triggered by a button click on the FX thread. Example F shows the corrected version.
+
+> **Transition:** Example F shows how to handle the state transition correctly...
 </aside>
 
 </Slide>
 
+<Slide>
+
+## What Goes on Which Thread?
+
+<div style={{fontSize: '0.8em'}}>
+
+<div style={{display: 'flex', gap: '1.5rem', marginTop: '0.8em'}}>
+
+<div style={{flex: '0 0 47%', backgroundColor: 'rgba(0,180,180,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+**FX / UI thread:**
+- Updating labels, lists, buttons
+- Responding to user input
+- Anything touching `ObservableList` or `Property`
+- Short, fast operations
+
+</div>
+
+<div style={{flex: '0 0 47%', backgroundColor: 'rgba(209,154,102,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+**Background / worker thread:**
+- Reading or writing files
+- Network calls
+- Database queries
+- Heavy computation
+- Anything slow
+
+</div>
+
+</div>
+
+<div className='fragment' style={{backgroundColor: 'rgba(200,74,74,0.15)', padding: '0.8em', borderRadius: '8px', marginTop: '0.8em'}}>
+
+**Why?** I/O operations can take thousands of times longer than UI operations. Blocking the FX thread on I/O freezes the entire UI — no redraws, no input handling, nothing.
+
+</div>
+
+</div>
+
+<aside className="notes">
+**Transition to the graphic:** Just how slow is I/O compared to what the CPU can do? Let's put it in perspective...
+</aside>
+
+</Slide>
 
 <Slide>
 
@@ -559,5 +676,552 @@ JavaFX enforces a strict threading model:
 
 </Slide>
 
+<Slide>
+
+## Poll: Which should run on a background thread?
+
+<PollSlide
+  choices={[
+    "Loading a list of collections from the database",
+    "Updating a ListView with search results",
+    "Computing optimal scene settings from sensor data",
+    "Handling a button click",
+    "Mining bitcoin"
+  ]}
+  username="espertus"/>
+
+<aside className="notes">
+**Answer:** 1, 3, and 5. Loading from the database is I/O, computing optimal scene settings is heavy computation — both belong on a background thread. Updating a ListView and handling a button click both touch the UI so they must stay on the FX thread.
+
+- multiple answer poll
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 2: THE 3 ASYNC PITFALLS */}
+{/* ============================================ */}
+
+<Slide>
+
+## Async Pitfalls
+
+<div style={{fontSize: '0.8em'}}>
+
+1. Running scheduled code on the wrong thread
+2. Cancelling tasks running on worker threads
+3. Preventing race conditions
+
+<div style={{backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.8em', borderRadius: '8px', marginTop: '0.8em'}}>
+
+You are required to handle all of these correctly in GA1.<br/> Let's find out how.
+
+</div>
+</div>
+
+<aside className="notes">
+> **Transition:** Let's start with timers...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Pitfall 1: Timer Thread Mistakes
+
+<div style={{fontSize: '0.8em'}}>
+
+<div style={{backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.8em', borderRadius: '8px', marginBottom: '0.8em'}}>
+
+**GA1 Gotcha:** For the 5-second undo window (Library View) and 300ms debounce (Search & Filter), use JavaFX's `PauseTransition`. Alternatives like `ScheduledExecutorService` or `java.util.Timer` run callbacks on non-FX threads, requiring manual `Platform.runLater` wrapping.
+
+</div>
+
+<div style={{display: 'flex', gap: '1.5rem'}}>
+<div style={{flex: '0 0 47%', backgroundColor: 'rgba(200,74,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+**❌ Wrong: fires on wrong thread**
+```java
+ScheduledExecutorService scheduler =
+    Executors.newSingleThreadScheduledExecutor();
+scheduler.schedule(
+    () -> commitDelete(),  // NOT on FX thread!
+    5, TimeUnit.SECONDS);
+```
+
+</div>
+<div style={{flex: '0 0 47%', backgroundColor: 'rgba(50,205,50,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+**✅ Correct: fires on FX thread**
+```java
+PauseTransition timer =
+    new PauseTransition(Duration.ofSeconds(5));
+timer.setOnFinished(e -> commitDelete());
+timer.play();
+```
+
+</div>
+</div>
+</div>
+
+<aside className="notes">
+**Key point:** PauseTransition is a JavaFX animation primitive — it fires its handler on the FX Application Thread automatically, just like any other JavaFX event handler.
+
+**Which features need this:**
+- Library View: 5-second undo window
+- Search & Filter: 300ms debounce delay
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Pitfall 1 (Image)
+
+<Img src='/img/lectures/web/l32-pitfall1.png'
+  prompt="Concept: 'Async Pitfall 1: Timers on the Wrong Thread' (Program Design and Implementation 2). Pixel art educational illustration, 16:9 aspect ratio, divided into two equal panels with a thin vertical divider.
+
+LEFT PANEL labeled 'Library View: Undo Delete' in bold sans-serif at the top. A pixel art app screen showing a list of cookbooks. One entry is greyed out with a strikethrough label 'Italian Classics'. Below it, a teal notification bar with the text 'Collection deleted.' and an 'Undo' button glowing in teal. A small circular countdown timer next to the Undo button shows '4s' remaining, with a teal arc draining clockwise. The rest of the cookbook list is visible below.
+
+RIGHT PANEL labeled 'Search & Filter: Debouncing' in bold sans-serif at the top. A pixel art app screen showing a search bar at the top with the text 'choc' partially typed, cursor blinking. Below the search bar, a results list is updating in real time: three recipe cards are visible — 'Chocolate Cake', 'Chocolate Chip Cookies', 'Hot Chocolate'. A small animated loading spinner is visible next to the search bar indicating a search is in progress. A subtle visual hint shows previous partial results fading out as new ones appear.
+
+Color palette: warm kitchen tones with teal accents for Library View (left), green accents for Search & Filter (right). 8-bit lo-fi pixel art style, clean outlines, retro game aesthetic, consistent with CS 3100 lecture imagery."
+  alt="Pixel art illustration divided into two panels. Left panel labeled 'Library View: Undo Delete': a cookbook app screen showing a list of collections with 'Italian Classics' greyed out and crossed through. A teal notification bar reads 'Collection deleted.' with an Undo button and a circular countdown timer showing 4 seconds remaining. Right panel labeled 'Search & Filter: Debouncing': a cookbook app search screen with 'choc' typed in the search bar and a loading spinner. Results show three recipe cards: Chocolate Cake, Chocolate Chip Cookies, and Hot Chocolate, updating in real time as the user types."
+/>
+
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Pitfall 1: Running Scheduled Code on the Wrong Thread
+
+<div style={{fontSize: '0.8em'}}>
+
+In CookYourBooks, two features require running code after a delay:
+
+<div style={{backgroundColor: 'rgba(0,180,180,0.15)', padding: '0.8em', borderRadius: '8px', marginTop: '0.8em'}}>
+
+**Library View:** After the user deletes a collection, show an "Undo" button for 5 seconds. If the timer expires without the user clicking Undo, permanently delete the collection.
+
+</div>
+
+<div style={{backgroundColor: 'rgba(50,180,100,0.15)', padding: '0.8em', borderRadius: '8px', marginTop: '0.8em'}}>
+
+**Search & Filter:** Don't fire a search on every keystroke. Wait 300ms after the user stops typing, then run the search.
+
+</div>
+
+
+</div>
+
+<aside className="notes">
+The first is really a delayed delete, not an undo.
+> **Transition:** Let's see the fix...
+</aside>
+
+</Slide>
+
+<Slide>
+
+<div style={{fontSize: '0.8em'}}>
+
+## PauseTransition
+
+Waits for a specified duration, then fires a callback on the FX thread:
+```java
+PauseTransition timer = new PauseTransition(Duration.ofSeconds(5));
+timer.setOnFinished(e -> doSomething());  // runs on FX thread
+timer.play();   // start the timer
+timer.stop();   // cancel the timer (e.g., on each keystroke)
+```
+
+| Method | Purpose |
+|--------|---------|
+| `new PauseTransition(Duration)` | Create a timer with a specified duration |
+| `setOnFinished(handler)` | Set the callback to run when the timer expires |
+| `play()` | Start (or restart) the timer |
+| `stop()` | Cancel the timer |
+
+<div className='fragment' style={{marginTop: '0.8em', backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+Because `PauseTransition` is part of the JavaFX animation system, its `onFinished` handler fires on the FX Application Thread automatically.
+
+</div>
+
+</div>
+
+<aside className="notes">
+**Debounce pattern:** Each keystroke calls stop() then play(), resetting the timer. The callback only fires when the user pauses typing.
+
+**Undo pattern:** Call play() after a delete. If the user clicks Undo, call stop() to cancel. If the timer expires, onFinished commits the delete.
+
+> **Transition:** Let's look at the next pitfall...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Poll: What should a Revert button handler do?
+
+<PollSlide
+  code={`
+// User activates a scene:
+PauseTransition revertTimer = new PauseTransition(Duration.ofSeconds(5));
+revertTimer.setOnFinished(e -> hideRevertButton());
+activateScene(scene);
+showRevertButton();
+revertTimer.play();
+
+// User clicks Revert before timer expires.
+// What should the Revert button handler do?
+  `}
+  choices={[
+    "revertTimer.stop(); deactivateScene(scene);",
+    "revertTimer.pause(); deactivateScene(scene);",
+    "deactivateScene(scene);",
+    "revertTimer.stop();"
+  ]}
+  username="espertus"/>
+
+<aside className="notes">
+**Answer:** revertTimer.stop() then deactivateScene(). stop() cancels the timer so hideRevertButton() never fires — we'll hide it ourselves as part of reverting. pause() is wrong — the timer could be resumed. deactivateScene() alone is wrong — the timer is still running and will call hideRevertButton() even though we've already handled the revert.
+</aside>
+
+</Slide>
+<Slide>
+
+## Pitfall 2: Task Cancellation
+
+<div style={{fontSize: '0.8em'}}>
+
+<div style={{backgroundColor: 'rgba(209,154,102,0.15)', padding: '0.8em', borderRadius: '8px', marginTop: '0.8em'}}>
+
+**Import Interface:** The user selects an image and clicks Import. OCR runs on a background thread. While it's running, a Cancel button is displayed. If the user clicks Cancel, the import should stop and the UI should return to the idle state.
+
+</div>
+
+<div className='fragment' style={{marginTop: '0.8em'}}>
+
+`Task.cancel()` does two things:
+- Interrupts the background thread if it is blocked
+- Sets `isCancelled()` to `true`
+
+But it does **not** trigger `onSuccess` or `onFailure`. If you rely on `onFailure` to transition your UI back to idle, nothing will happen.
+
+</div>
+
+<div className='fragment' style={{backgroundColor: 'rgba(200,74,74,0.15)', padding: '0.8em', borderRadius: '8px', marginTop: '0.8em'}}>
+
+**Fix:** Handle the state transition directly in your cancel method — do not rely on the callbacks.
+
+</div>
+
+</div>
+
+<aside className="notes">
+**Which features need this:** Import Interface only — cancelImport() must transition back to idle directly.
+
+> **Transition:** On to the final pitfall...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Cook My Books Example F
+
+<div style={{display: 'flex', gap: '1.5rem', alignItems: 'flex-start'}}>
+<div style={{flex: '0 0 45%'}}>
+```java
+public class CookMyBooks {
+  // ... log(), fetchRecipe(), updateUI(), showError() unchanged
+  private static Task<String> fetchRecipeTask = null;
+
+  // This runs in the UI thread
+  private static void handleFetchRecipeRequest() {
+    log("UI thread received fetch recipe request");
+    fetchRecipeTask = BackgroundTaskRunner.run(
+        () -> fetchRecipe(),
+        recipe -> updateUI(recipe),
+        error -> showError(error));
+    log("UI is now responsive again");
+  }
+
+  // This runs in the UI thread
+  private static void handleCancelFetchRecipeRequest() {
+    log("UI thread received cancel request");
+    if (fetchRecipeTask != null) {
+      fetchRecipeTask.cancel();
+      updateUI("fetch recipe request cancelled");
+      fetchRecipeTask = null;
+    }
+  }
+
+  public static void main(String[] args) throws InterruptedException {
+    Platform.startup(() -> {}); // initialize JavaFX without a GUI
+    Platform.runLater(() -> handleFetchRecipeRequest());
+    Thread.sleep(1000); // simulate cancel after 1 second
+    Platform.runLater(() -> handleCancelFetchRecipeRequest());
+  }
+}
+```
+
+</div>
+<div className='fragment' style={{flex: '0 0 50%', fontSize: '0.65em'}}>
+<pre>
+<span style={{color: '#d19a66'}}> 445ms JavaFX Application Thread UI thread received fetch recipe request</span><br/>
+<span style={{color: '#d19a66'}}> 469ms JavaFX Application Thread UI is now responsive again</span><br/>
+<span style={{color: '#e06c75'}}> 469ms Thread-2 Fetching recipe...</span><br/>
+<span style={{color: '#d19a66'}}>1444ms JavaFX Application Thread UI thread received cancel request</span><br/>
+<span style={{color: '#e06c75'}}>1448ms Thread-2 fetchRecipe() was interrupted</span><br/>
+<span style={{color: '#d19a66'}}>1448ms JavaFX Application Thread Updating UI: fetch recipe request cancelled</span><br/>
+<span style={{color: '#e06c75'}}>1449ms Thread-2 isCancelled is: true</span>
+</pre>
+
+<div style={{marginTop: '0.8em'}}>
+
+✅ Both handlers run on the FX Application Thread
+
+✅ Task is cancelled after 1 second
+
+✅ UI is updated directly in the cancel handler — not via callback
+
+</div>
+</div>
+</div>
+
+<div style={{ fontSize: '.6em' }}>
+https://github.com/cs3100-spertus-s26/concurrency-examples/blob/cmb-f/app/src/main/java/concurrency/CookMyBooks.java
+</div>
+
+<aside className="notes">
+**Key point:** The cancel handler updates the UI directly rather than relying on onSuccess or onFailure. This is the correct pattern for GA1's cancelImport() — handle the state transition yourself, don't wait for a callback that will never come.
+
+> **Transition:** Now let's look at the final pitfall...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Cook My Books Example G
+
+<div style={{display: 'flex', gap: '1.5rem', alignItems: 'flex-start'}}>
+<div style={{flex: '0 0 45%'}}>
+```java
+public class CookMyBooks {
+  // ... log(), updateUI(), showError() unchanged
+  private static Task<String> calculatePiTask = null;
+
+  private static String calculatePi() {
+    double pi = 0;
+    for (int i = 0; i < 100_000_000; i++) {
+        pi += Math.pow(-1, i) / (2 * i + 1);
+    }
+    pi *= 4;
+    log("Calculated Pi: " + pi);
+    return Double.toString(pi);
+  }
+
+  // This runs in the UI thread
+  private static void handleCalculatePiRequest() {
+    log("UI thread received calculate Pi request");
+    calculatePiTask = BackgroundTaskRunner.run(
+        () -> calculatePi(),
+        pi -> updateUI(pi),
+        error -> showError(error));
+    log("UI is now responsive again");
+  }
+
+  // This runs in the UI thread
+  private static void handleCancelCalculatePiRequest() {
+    log("UI thread received cancel request");
+    if (calculatePiTask != null) {
+      calculatePiTask.cancel();
+      updateUI("calculate Pi request cancelled");
+      calculatePiTask = null;
+    }
+  }
+
+  public static void main(String[] args) throws InterruptedException {
+    Platform.startup(() -> {}); // initialize JavaFX without a GUI
+    Platform.runLater(() -> handleCalculatePiRequest());
+    Thread.sleep(1000); // simulate cancel after 1 second
+    Platform.runLater(() -> handleCancelCalculatePiRequest());
+  }
+}
+```
+
+</div>
+<div className='fragment' style={{flex: '0 0 50%', fontSize: '0.65em'}}>
+<pre>
+<span style={{color: '#d19a66'}}> 449ms JavaFX Application Thread UI thread received calculate Pi request</span><br/>
+<span style={{color: '#d19a66'}}> 474ms JavaFX Application Thread UI is now responsive again</span><br/>
+<span style={{color: '#d19a66'}}>1448ms JavaFX Application Thread UI thread received cancel request</span><br/>
+<span style={{color: '#d19a66'}}>1454ms JavaFX Application Thread Updating UI: calculate Pi request cancelled</span><br/>
+<span style={{color: '#e06c75'}}>3215ms Thread-2 Calculated Pi: 3.141592643589326</span>
+</pre>
+
+<div style={{marginTop: '0.8em'}}>
+
+✅ UI is updated directly in the cancel handler
+
+❌ `cancel()` does not interrupt a CPU-bound loop
+
+❌ Result is computed but never shown — callback never fires
+
+</div>
+</div>
+</div>
+
+<div style={{ fontSize: '.6em' }}>
+https://github.com/cs3100-spertus-s26/concurrency-examples/blob/cmb-g/app/src/main/java/concurrency/CookMyBooks.java
+</div>
+
+<aside className="notes">
+**Key point:** cancel() only interrupts blocking operations (sleep, I/O). A CPU-bound loop runs to completion regardless. The callable would need to check isCancelled() periodically to stop early.
+
+**Contrast with Example E/F:** In those examples, cancel() interrupted Thread.sleep() immediately. Here, the loop runs for another 2 seconds after cancel() is called.
+
+> **Transition:** Now let's look at the final pitfall...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Cook My Books Example G
+
+<div style={{display: 'flex', gap: '1.5rem', alignItems: 'flex-start'}}>
+<div style={{flex: '0 0 48%'}}>
+```java
+public class CookMyBooks {
+  // ... log(), updateUI(), showError() unchanged
+  private static volatile Task<String> calculatePiTask = null;
+
+  private static String calculatePi() {
+    double pi = 0;
+    for (int i = 0; i < 100_000_000; i++) {
+        pi += Math.pow(-1, i) / (2 * i + 1);
+        if (calculatePiTask != null && calculatePiTask.isCancelled()) {
+          log("calculatePi was cancelled after " + i + " iterations");
+          return "Cancelled";
+        }
+    }
+    pi *= 4;
+    log("Calculated Pi: " + pi);
+    return Double.toString(pi);
+  }
+}
+```
+
+<div className='fragment' style={{fontSize: '0.75em', marginTop: '0.5em'}}>
+<pre>
+<span style={{color: '#d19a66'}}> 413ms JavaFX Application Thread UI thread received calculate Pi request</span><br/>
+<span style={{color: '#d19a66'}}> 435ms JavaFX Application Thread UI is now responsive again</span><br/>
+<span style={{color: '#d19a66'}}>1412ms JavaFX Application Thread UI thread received cancel request</span><br/>
+<span style={{color: '#d19a66'}}>1414ms JavaFX Application Thread Updating UI: calculate Pi request cancelled</span><br/>
+<span style={{color: '#e06c75'}}>1414ms Thread-2 calculatePi was cancelled after 36863664 iterations</span>
+</pre>
+</div>
+
+</div>
+<div style={{flex: '0 0 48%'}}>
+```java
+  // This runs in the UI thread
+  private static void handleCalculatePiRequest() {
+    log("UI thread received calculate Pi request");
+    calculatePiTask = BackgroundTaskRunner.run(
+        () -> calculatePi(),
+        pi -> updateUI(pi),
+        error -> showError(error));
+    log("UI is now responsive again");
+  }
+
+  // This runs in the UI thread
+  private static void handleCancelCalculatePiRequest() {
+    log("UI thread received cancel request");
+    if (calculatePiTask != null) {
+      calculatePiTask.cancel();
+      updateUI("calculate Pi request cancelled");
+      calculatePiTask = null;
+    }
+  }
+```
+
+<div style={{fontSize: '0.75em', marginTop: '0.5em'}}>
+
+✅ CPU-bound loop stops early by checking `isCancelled()`
+
+✅ UI updated directly in cancel handler
+
+✅ Neither callback fires
+
+</div>
+</div>
+</div>
+
+<div style={{ fontSize: '.6em' }}>
+https://github.com/cs3100-spertus-s26/concurrency-examples/blob/cmb-g/app/src/main/java/concurrency/CookMyBooks.java
+</div>
+
+<aside className="notes">
+**Key point:** For CPU-bound work, cancel() alone isn't enough — the callable must check isCancelled() periodically to stop early. volatile ensures the background thread always sees the most recent value of calculatePiTask.
+
+**Contrast with Example E/F:** cancel() interrupted Thread.sleep() immediately. Here, the loop ran ~37 million iterations before noticing the cancellation.
+
+> **Transition:** Now let's look at the final pitfall...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The `volatile` Keyword
+
+<div style={{fontSize: '0.8em'}}>
+
+Recall from L31: threads can cache variable values locally, leading to visibility problems — one thread's writes may not be seen by another thread.
+```java
+// Without volatile: background thread may never see the update
+private static Task<String> calculatePiTask = null;
+
+// With volatile: all threads always see the most recent value
+private static volatile Task<String> calculatePiTask = null;
+```
+
+<div style={{display: 'flex', gap: '1.5rem', marginTop: '0.8em'}}>
+
+<div style={{flex: '0 0 47%', backgroundColor: 'rgba(50,180,100,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+**Use `volatile` when:**
+- A variable is written by one thread and read by another
+- You only need visibility, not atomicity
+
+</div>
+
+<div style={{flex: '0 0 47%', backgroundColor: 'rgba(200,74,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+**`volatile` is not enough when:**
+you need compound operations to be atomic (e.g., `count++` → use `AtomicInteger`)
+
+</div>
+
+</div>
+
+</div>
+
+<aside className="notes">
+**Connection to L31:** Students saw the Java Memory Model and happens-before in L31. volatile is a lightweight synchronization mechanism — it guarantees visibility but not atomicity.
+
+**In our example:** calculatePiTask is written on the FX thread and read on the background thread. volatile ensures the background thread always sees the most recent value.
+</aside>
+
+</Slide>
 
 </RevealJS>
