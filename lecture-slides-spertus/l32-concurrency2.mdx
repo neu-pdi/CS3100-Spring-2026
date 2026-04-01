@@ -933,7 +933,6 @@ https://github.com/cs3100-spertus-s26/concurrency-examples/blob/cookmybooks-f/ap
 <aside className="notes">
 **Key point:** The cancel handler updates the UI directly rather than relying on onSuccess or onFailure. This is the correct pattern for GA1's cancelImport() — handle the state transition yourself, don't wait for a callback that will never come.
 
-> **Transition:** Now let's look at the final pitfall...
 </aside>
 
 </Slide>
@@ -1019,7 +1018,6 @@ https://github.com/cs3100-spertus-s26/concurrency-examples/blob/cookmybooks-g/ap
 
 **Contrast with Example E/F:** In those examples, cancel() interrupted Thread.sleep() immediately. Here, the loop runs for another 2 seconds after cancel() is called.
 
-> **Transition:** Now let's look at the final pitfall...
 </aside>
 
 </Slide>
@@ -1106,7 +1104,7 @@ https://github.com/cs3100-spertus-s26/concurrency-examples/blob/cookmybooks-h/ap
 
 **Contrast with Example E/F:** cancel() interrupted Thread.sleep() immediately. Here, the loop ran ~37 million iterations before noticing the cancellation.
 
-> **Transition:** Now let's look at the final pitfall...
+> **Transition:** Here's what the volatile keyword does...
 </aside>
 
 </Slide>
@@ -1223,7 +1221,7 @@ https://github.com/cs3100-spertus-s26/concurrency-examples/blob/cookmybooks-h/ap
 
 **Contrast with Example E/F:** cancel() interrupted Thread.sleep() immediately. Here, the loop ran ~37 million iterations before noticing the cancellation.
 
-> **Transition:** Now let's look at the final pitfall...
+> **Transition:** Let's see how to fix this...
 </aside>
 
 </Slide>
