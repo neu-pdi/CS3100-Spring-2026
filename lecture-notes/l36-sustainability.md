@@ -56,6 +56,10 @@ In [L23 (Open Source)](/lecture-notes/l23-oss), we discussed how OpenSSL — sec
 
 **Social sustainability:** Does the system serve people well — including people who aren't direct users? This includes accessibility ([L28](/lecture-notes/l28-accessibility)), inclusivity, fairness, privacy, and effects on indirect stakeholders. SceneItAll's usage analytics reveal when a home is occupied — not a concern at 50 beta homes, but a potential burglary-risk or insurance-discrimination vector at 100,000 homes.
 
+Social sustainability also includes **data sovereignty** — the principle that communities should control their own data. The most-used diabetes dataset in machine learning — `PimaIndiansDiabetes2`, in every ML textbook — was collected from the Akimel O'odham people. The US diverted the Gila River, destroying the community's agricultural livelihood and triggering a famine. During that famine, the NIH arrived to study the resulting diabetes epidemic — a health crisis *caused by the same government now studying it*. The community served as a captive research population for 40 years. Their health data has been used in thousands of ML papers since 1988. The dataset name erases the people; ChatGPT describes it as "an accessible and influential benchmark" without mentioning the famine, the water diversion, or the community that still lives with the consequences.
+
+As [Dr. Kylie Ariel Bemis](https://www.kylieabemis.com/) frames it: "the story of a dataset" is actually "the story of people." The harm is not just "no benefits" — it is extraction during crisis, erasure of context, and a system that converts human suffering into a convenient CSV file. When we talk about training data, we are talking about people — and the systems we build determine whether those people are treated as stakeholders or as raw material.
+
 ### The Dimensions Interact
 
 The dimensions are not independent. Improving one can worsen another:
@@ -109,7 +113,7 @@ This doesn't mean you should stop using LLMs — the productivity gains are real
 | Cost layer | Who pays | Who benefits |
 |-----------|---------|-------------|
 | GPU hardware + energy | Cloud providers (passed to AI companies) | Developers using the tools |
-| Training data creation | Original authors (often unconsented) | AI companies + users |
+| Training data creation | Original authors (often unconsented); content labelers ([Kenyan workers paid $2/hr](https://time.com/6247678/openai-chatgpt-kenya-workers/) to remove toxic content) | AI companies + users |
 | Subsidy gap (\$200 vs \$5,000 estimate) | AI company investors (for now) | Individual developers |
 | Environmental externality | Everyone (carbon emissions) | Direct users of the service |
 | Labor displacement risk | Workers in affected roles | Companies reducing headcount |
@@ -135,6 +139,8 @@ Software design decisions cascade in ways that are hard to predict:
 | **First** (direct) | Hub uses power; cloud service uses compute | Autograder uses compute per submission | GPU inference per prompt |
 | **Second** (enabling) | Convenience may increase energy use; data reveals occupancy | Unlimited submissions change study habits | Developers write more code, explore more approaches |
 | **Third** (systemic) | Smart home data reshapes insurance, surveillance | Auto-gradeable assignments narrow curriculum | Software labor market restructures; codebases grow faster than teams can maintain |
+
+The Pima diabetes dataset illustrates all three orders in one story. **First order:** NIH researchers collect health data from the Akimel O'odham community during a famine the US government caused. **Second order:** the data becomes a convenient ML benchmark — small, clean, binary classification — and appears in every textbook and tutorial, detached from its origins. **Third order:** the dataset becomes infrastructure. Thousands of papers cite it. ML courses teach it. The community's suffering is laundered into a `.csv` file with a name that erases them. No individual researcher intended this — but the system they collectively built converts a community's health crisis into an industry resource. That is a systemic effect.
 
 You cannot predict all second- and third-order effects. But you can ask: "If this system is wildly successful, what behaviors does it enable, and who is affected?" That question — asked early and revisited as the system scales — is how you catch cascading effects before they become entrenched.
 
