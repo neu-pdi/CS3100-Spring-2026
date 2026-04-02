@@ -809,44 +809,41 @@ The veil doesn't tell you what to build. It tells you which trade-offs deserve e
 
 <Slide>
 
-## The Veil Decides: Who Bears the Risk of Rate Limiting?
+## The Veil Decides: Who Bears the Cost of "Unlimited" Submissions?
 
 <div style={{fontSize: '0.72em'}}>
 
-**Scenario:** Pawtograder implements IP-based rate limiting (max 10 submissions/minute per IP) to prevent autograder abuse.
-
-Behind the veil, you might be:
+**Scenario:** Pawtograder offers unlimited autograder submissions. The compute cost is real — but invisible to students. Behind the veil, you might be:
 
 </div>
 
 <div style={{fontSize: '0.68em', marginTop: '0.3em'}}>
 
-| Stakeholder | Impact |
+| Stakeholder | Impact of "unlimited" |
 |------------|--------|
-| Student on campus WiFi | Shared IP — hits limit during finals when everyone submits |
-| Student at home | Stable IP — unaffected |
-| Student using a VPN (required in some countries) | Shared VPN IP — locked out |
-| TA testing grading scripts | Can request exemption |
-| International student on university proxy | Proxy IP shared with hundreds — effectively blocked |
+| Student at Northeastern | Submit freely, fast feedback, iterate quickly |
+| Student at community college self-hosting | Their IT budget pays per container-minute — unlimited = unaffordable |
+| Student with slow internet | Each submission is a 30-second upload + 2-minute wait — "unlimited" isn't free |
+| Student who uses autograder as debugger | Learns less; relies on output instead of reasoning ([L13](/lecture-notes/l13-intro-ai-agents)) |
+| The planet | 12,000 submissions/day × 2 min compute = real energy (Jevons) |
 
 </div>
 
 <p style={{fontSize: '0.85em', color: '#9370DB', marginTop: '0.3em'}}>
-Does the veil of ignorance flag a fairness problem? If so, what's the fix?
+"Unlimited" is a design choice that encodes a value: iteration over efficiency. Does the veil change your assessment?
 </p>
 
 <aside className="notes">
-**This is the exercise that makes the veil of ignorance concrete.** Students must reason from behind the veil — if you might be ANY of these stakeholders, would you accept IP-based rate limiting?
+**This exercise makes the veil of ignorance concrete using a system students use every day.** "Unlimited submissions" sounds universally good — but behind the veil, the distributional effects are uneven.
 
-**The answer is clearly no.** Students on campus WiFi and VPN users are disproportionately affected. The rate limiting decision benefits the infrastructure team (less abuse) but the risk falls on students who happen to share IPs — and those students are often the most vulnerable (international students, students in countries requiring VPNs).
+**The Northeastern student benefits most.** Fast internet, modern hardware, free compute (subsidized by the university). The community college student bears the cost — their IT team pays per container-minute, and "unlimited" means the budget runs out by midterms. The student with slow internet is rate-limited by physics. The student who uses it as a debugger trades learning for convenience.
 
-**Possible fixes students might propose:**
-- Rate limit by authenticated user, not IP
-- Higher limits for shared IPs (detect by login count)
-- Exempt known institutional IP ranges
-- Rate limit by submission count per user, not per IP
+**Discussion prompts:**
+- Should there be a daily submission cap? What would a fair cap look like?
+- Should Pawtograder show the compute cost of each submission? (Transparency as sufficiency nudge)
+- Is "unlimited for us, unaffordable for them" a sustainability problem?
 
-**Key teaching point:** The "obvious" technical solution (IP-based limiting) embeds a value judgment about who matters. The veil of ignorance surfaces that judgment.
+**Key teaching point:** A design that looks equitable ("everyone gets unlimited") can be inequitable in practice when stakeholders have different resources. The veil of ignorance surfaces this.
 
 > **Transition:** Let's apply all four dimensions to a system you know well...
 </aside>
@@ -991,15 +988,15 @@ You can state values clearly. Translating them into **testable requirements** is
 </div>
 
 <p className="fragment" style={{fontSize: '0.85em', marginTop: '0.8em'}}>
-Every design decision encodes a value judgment — whether you think about it or not.
+C.T. Nguyen calls this <strong>value capture.</strong> Economists call it <strong>Goodhart's Law</strong>: "when a measure becomes a target, it ceases to be a good measure."
 </p>
 
 <aside className="notes">
-**This is the intellectually honest slide.** We've been teaching students that good engineering means clear requirements, testable specifications, measurable quality attributes. Sustainability reveals the limits of that approach: some of the most important properties resist clean operationalization.
+**Nguyen's "value capture":** The philosopher C.T. Nguyen names the mechanism behind this table: once you create a simplified metric for a rich value, people orient toward the metric and forget the value. The law school optimizes for U.S. News rankings instead of its actual pedagogical mission. The developer optimizes for code coverage instead of code quality. The metric *captures* and overwrites the original value. This is why the gap isn't just hard to close — closing it too aggressively (with a clean metric) can make things worse.
 
 **The table is deliberately frustrating.** Each "attempted requirement" sounds reasonable until you see the problem. "Grade identically" is fair in one sense and unfair in another. "Don't collect unnecessary data" is vague because "necessary" is contextual. "Minimize compute" directly conflicts with pedagogical goals.
 
-**Key message:** The goal of sustainability analysis isn't to resolve these tensions. It's to make them visible so decision-makers understand what they're trading off.
+**Ask students:** Has code coverage ever distorted what tests you write? That's value capture. Has a GPA ever distorted what courses you choose? Same thing.
 
 > **Transition:** Let's check your understanding, and then we'll close the semester...
 </aside>

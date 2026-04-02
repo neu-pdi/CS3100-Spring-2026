@@ -16,7 +16,7 @@ These terms are often used interchangeably, but they mean different things — a
 
 **Reliability** is whether the system does what it is supposed to do, consistently. A reliable system works. You measure it in error rates, mean time between failures (MTBF), and successful operation counts. A SceneItAll hub that correctly activates scenes 99.99% of the time is highly reliable.
 
-**Availability** is whether the system is accessible when users need it. A highly available system is there when you call. You measure it in "nines" — 99.9% (8.7 hours of downtime per year), 99.99% (52 minutes), 99.999% (5 minutes). GitHub's recent struggle [to maintain even 90% availability is an availability failure](https://github.blog/news-insights/company-news/github-availability-report-february-2026/).
+**Availability** is whether the system is accessible when users need it. A highly available system is there when you call. You measure it in "nines" — 99.9% (8.7 hours of downtime per year), 99.99% (52 minutes), 99.999% (5 minutes). GitHub experienced [multiple major outages in February–March 2026](https://github.blog/news-insights/company-news/addressing-githubs-recent-availability-issues-2/) — a core authentication database overloaded when client apps drove a tenfold increase in read traffic, and GitHub Actions failed due to insufficient failover. That's an availability failure — significant downtime — but not a safety failure (nobody was physically harmed).
 
 **Safety** is whether the system avoids causing unacceptable harm, even when it fails. A safe system fails without hurting people. You measure it not in uptime but in incident severity — did anyone get hurt? Did anyone lose data? Did anyone lose money?
 

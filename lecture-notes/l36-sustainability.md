@@ -69,6 +69,8 @@ The dimensions are not independent. Improving one can worsen another:
 
 No decision optimizes all four dimensions simultaneously. Sustainability analysis is about making the trade-offs *visible* — not about finding the "right" answer.
 
+Why do organizations default to single-dimension thinking? The historian of quantification [Theodore Porter explains](https://press.princeton.edu/books/paperback/9780691208411/trust-in-numbers): quantitative information is *portable*. A dashboard number — 99.9% uptime, 85% code coverage, 200ms p99 latency — travels from the engineering team to the VP to the board without needing shared context. But as [C.T. Nguyen puts it](https://www.penguinrandomhouse.com/books/735252/the-score-by-c-thi-nguyen/): "We're getting portability at the price of nuance." The uptime number doesn't show if the 0.1% downtime was concentrated during finals week when students needed Pawtograder most. The code coverage number doesn't show that the uncovered 15% is the error-handling logic where bugs actually live. Sustainability analysis is an attempt to resist that compression — to keep the four-dimensional view visible even when it's harder to put on a dashboard.
+
 ## Recognize how efficiency gains can increase total resource consumption, and identify cascading effects of design decisions (10 minutes)
 
 ### Jevons' Paradox: Efficiency Is Not Sustainability
@@ -89,6 +91,8 @@ The same pattern appears throughout software:
 **Pawtograder example:** Efficient automated grading enables unlimited submissions. Students submit 3-12k times per day across the course. Each submission triggers a container spin-up, test execution, and result reporting. The per-submission cost is small; the total compute is significant. Before Pawtograder, students submitted once or twice and a human graded it. The *system* is more efficient; the *total resource consumption* is higher.
 
 The implication: **optimizing per-unit efficiency is necessary but not sufficient for environmental sustainability.** You also need to ask: "Will this efficiency enable usage patterns that increase total consumption?" If yes, that's not a reason to avoid the optimization — but it is a reason to design with consumption budgets, rate limits, and awareness of the rebound effect.
+
+Here is a useful diagnostic: distinguish *goals* from *purposes*. In a card game, the goal is to win, but the purpose of playing with your friends is to have fun. Healthy players know the difference. What happens when a system's goal displaces its purpose? The *purpose* of making Pawtograder submissions efficient was to help students learn. The *goal* became minimizing per-submission cost. When the goal succeeds, it enables 12,000 submissions per day — and the purpose (deep learning) may be undermined as students use the autograder as a debugger instead of reasoning about their code. Digital sufficiency (Lago's question: "Should we build this at all?") is the practice of remembering the purpose and asking whether the goal still serves it.
 
 ### LLMs: Jevons' Paradox in Real Time
 
@@ -214,6 +218,10 @@ But operationalizing those values into requirements that engineers can implement
 | Privacy | "Don't collect unnecessary data" | What counts as "necessary" depends on who's asking — debugging needs telemetry, but telemetry is surveillance |
 | Environmental | "Minimize compute" | Minimizing compute conflicts with unlimited submissions, thorough test suites, and fast feedback |
 
+Philosopher C.T. Nguyen calls this pattern [value capture](https://philpapers.org/archive/NGUVCH.pdf): when a simplified scoring system overwrites the richer values it was meant to represent. The university that genuinely valued diverse pedagogical missions starts optimizing for U.S. News rankings instead. The developer who valued code quality starts optimizing for code coverage percentage. Value capture is not a failure of willpower — it is a structural consequence of creating portable, quantified proxies for qualitative goals. Once a metric exists, people orient toward it, and the original value recedes.
+
+Economists have a name for this: **Goodhart's Law** — "when a measure becomes a target, it ceases to be a good measure." Code coverage is a useful *measure* of test quality. The moment it becomes a *target* (CI fails below 80%), developers write tests that hit lines without testing behavior. The metric improves; the thing it was measuring gets worse. This is why the values-requirements gap is not just an engineering challenge but a *design hazard*: the very act of operationalizing a value into a testable requirement creates the conditions for the value to be displaced by the requirement.
+
 Every design decision encodes a value judgment — whether you think about it or not. The choice to offer unlimited submissions values learning-by-iteration over compute efficiency. The choice to require GitHub access values platform standardization over universal access. The choice to auto-grade rather than human-grade values speed and scale over the nuance a human reader provides.
 
 The goal of sustainability analysis is not to resolve these tensions — many of them are genuinely unresolvable. The goal is to make them *visible*, so that the people making the decisions understand what they're trading off and who bears the cost.
@@ -250,3 +258,4 @@ Sustainability is not a new topic. It is the name for what all of these topics h
 - **[Green Software Foundation](https://greensoftware.foundation/)** — Industry standards for measuring and reducing software carbon footprint
 - **[David Parnas' ICSE 2025 Keynote](https://www.youtube.com/watch?v=YyFouLdwxY0)** — Professional responsibility in the age of AI-generated code
 - **John Rawls, *A Theory of Justice*** — The original veil of ignorance thought experiment
+- **[C.T. Nguyen, *The Score*](https://www.penguinrandomhouse.com/books/735252/the-score-by-c-thi-nguyen/)** — Value capture, the gap between metrics and meaning, and why scoring systems shape what we care about

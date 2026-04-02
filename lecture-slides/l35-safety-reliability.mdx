@@ -167,7 +167,7 @@ Accessible when users need it.
 
 *Measure:* "nines" — 99.9% = 8.7 hrs downtime/yr
 
-*GitHub:* struggled to maintain even 90% availability (Feb 2026)
+*GitHub:* multiple major outages Feb–Mar 2026 (auth DB overload, Actions failover failures)
 
 </div>
 
@@ -195,7 +195,7 @@ Avoids harm, **even when it fails.**
 <aside className="notes">
 **The critical insight is the Therac-25 example.** Students' intuition is that reliable = safe. The Therac-25 was highly reliable — it worked correctly the vast majority of the time. But when it failed, people died. Reliability measures how often something works. Safety measures what happens when it doesn't.
 
-**GitHub availability:** Their February 2026 availability report showed they struggled to maintain even 90% availability. That's an availability failure — lots of downtime — but not a safety failure (nobody was physically harmed).
+**GitHub availability (Feb–Mar 2026):** Three major outages — Feb 2, Feb 9, Mar 5. Root causes: a tenfold spike in read traffic from client apps overloaded the auth database (a cache TTL reduced from 12 to 2 hours made it worse), and Actions failover exposed latent Redis config issues. GitHub is now migrating to Azure (12.5% → 50% by July) and decomposing the monolith. Classic architectural coupling: localized failures cascaded across services.
 
 **The hub example:** If SceneItAll's hub crashes every day but always preserves device state, keeps doors locked, and keeps lights on, it's unreliable but relatively safe. Annoying, but not dangerous.
 
