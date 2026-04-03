@@ -48,13 +48,14 @@ Throughout GA1, your team will have **weekly 30-minute meetings** with your assi
 
 **Meeting schedule for GA1:**
 
-| Meeting | Target Dates | Focus |
-|---------|-------------|-------|
-| 1 | Mar 23–24 | Design sprint check-in — team introductions, progress review, workflow setup (ungraded) |
-| 2 | Mar 30–31 | Core features kickoff — early code, first graded code walk |
-| 3 | Apr 6–7 | Core features deep dive — detailed code walks, PR review, integration check |
+| Meeting | Target Dates | Focus | Applies to | Max Deduction |
+|---------|-------------|-------|-----------|---------------|
+| 1 | Mar 23–24 | Design sprint check-in — team introductions, progress review, workflow setup | — | Not graded |
+| 2 | Mar 30–31 | Design sprint walk-through — explain your GA0 submission | GA0 | -5 pts |
+| 3 | Apr 6–7 | GA1 progress check-in — what you've built so far, PR review | GA1 | -2 pts |
+| 4 | Apr 13–14 | GA1 submission walk-through — explain your completed feature | GA1 | -5 pts |
 
-Starting with Meeting 2, your TA scores each student on a **10-point scale** using the rubric below. These scores are the primary input into the **Individual Accountability Adjustment** (see Grading Rubric) — they directly determine whether your individual grade is adjusted up or down. A student who consistently demonstrates strong comprehension and collaboration in meetings is unlikely to receive a downward adjustment; a student who cannot explain their own code will.
+Starting with Meeting 2, your TA assesses each student using the rubric below. These assessments are the primary input into the **Individual Accountability Adjustment** (see Grading Rubric). Code walk scores function as **deductions only** — a student who demonstrates comprehension receives no deduction; a student who cannot explain their own code will see a downward adjustment applied to the assignment the meeting covers. A student who consistently demonstrates strong comprehension and collaboration in meetings is unlikely to receive a downward adjustment; a student who cannot explain their own code will.
 
 | Category | Points | What your TA is looking for |
 |----------|--------|-----------------------------|
@@ -469,7 +470,15 @@ Each table below lists the testable requirements for one feature. The **Points**
 
 ### Individual Accountability Adjustment
 
-TA meeting observations and weekly collaboration surveys can adjust an individual's final grade by up to **-20 points** or award an **upward adjustment of up to +20 points**. If a team member cannot explain their code in TA meetings while the rest of the team succeeds, their grade may be reduced. The upward adjustment exists for a specific scenario: if your team's project isn't fully complete, but you went above and beyond to support struggling teammates — helping them get unblocked, taking on extra integration work, providing thorough code reviews — you can still earn full marks. This is **not an extra credit mechanism**; it is unlikely to bring a student above the assignment's total points. Simply doing your own work well is the expected baseline, not grounds for an upward adjustment. The weekly collaboration surveys (due Mar 23, Mar 30, Apr 6, Apr 13) inform this adjustment.
+TA meeting observations, code walk scores, and weekly collaboration surveys can adjust an individual's final grade by up to **-20 points** or award an **upward adjustment of up to +20 points**.
+
+**Code walk deductions** are applied based on the meeting schedule above. Meeting 3 (GA1 progress) carries a maximum deduction of 2 points; Meeting 4 (GA1 submission walk-through) carries a maximum deduction of 5 points. These are applied if a student cannot explain their own code or design decisions during the meeting. Students who demonstrate comprehension receive no deduction. Partial deductions (half of the maximum) may be applied when comprehension is partial.
+
+**Other deductions** (up to the remaining balance of -20) may be applied for missing meetings without notice, failing to complete collaboration surveys, lack of code review participation, or other indicators that a student is not contributing meaningfully.
+
+**Upward adjustments** exist for a specific scenario: if your team's integration didn't fully come together because a teammate dropped the ball, but you stepped in — picking up their integration work, helping them get unblocked, providing thorough code reviews — your grade can be adjusted upward even if the team score is lower than ideal. This is determined case-by-case between your TA mentor and the instructor. This is **not an extra credit mechanism**; it is unlikely to bring a student above the assignment's total points. Simply doing your own work well is the expected baseline, not grounds for an upward adjustment.
+
+The weekly collaboration surveys (due Mar 23, Mar 30, Apr 6, Apr 13) inform this adjustment.
 
 ## Feature Balance and Selection
 
