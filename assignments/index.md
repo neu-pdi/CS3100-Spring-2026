@@ -153,14 +153,14 @@ Two recurring processes run throughout the group project and are **required** fo
 
 **Weekly TA Mentor Meetings** — Your team meets with your assigned TA mentor for 30 minutes each week (Mon–Tue). Every team member is expected to attend and to explain what they worked on—including the design decisions behind their code. The meeting also covers progress relative to upcoming checkpoints and next steps. These meetings are not a scheduling formality; they are the primary mechanism by which TA mentors verify that each team member understands their own code and is contributing meaningfully.
 
-| Meeting | Week | Dates | Project Phase | Graded? |
-|---------|------|-------|---------------|---------|
-| 1 | 12 | Mar 23–24 | Design Sprint (GA0 due Mar 26) | No — introductory "slow walk" |
-| 2 | 13 | Mar 30–31 | Core Features kickoff (GA1 due Apr 9) | Yes — 10 pts per student |
-| 3 | 14 | Apr 6–7 | Core Features deep dive | Yes — 10 pts per student |
-| 4 | 15 | Apr 13–14 | Feature Buffet & integration (GA2 due Apr 16) | Yes — 10 pts per student |
+| Meeting | Week | Dates | Project Phase | Applies to | Graded? |
+|---------|------|-------|---------------|-----------|---------|
+| 1 | 12 | Mar 23–24 | Design Sprint (GA0 due Mar 26) | — | No — introductory "slow walk" |
+| 2 | 13 | Mar 30–31 | Design Sprint walk-through | GA0 | Yes — up to -5 pts |
+| 3 | 14 | Apr 6–7 | Core Features progress check-in | GA1 | Yes — up to -2 pts |
+| 4 | 15 | Apr 13–14 | Core Features submission walk-through | GA1 | Yes — up to -5 pts |
 
-Starting with Meeting 2, your TA scores each student on code comprehension, process & workflow, collaboration evidence, and forward planning. See the GA1 and GA2 assignment pages for the full rubric.
+Starting with Meeting 2, your TA assesses each student on code comprehension, process & workflow, collaboration evidence, and forward planning. Code walk scores function as **deductions only** — demonstrating comprehension means no deduction; inability to explain your own code results in a downward adjustment applied to the assignment the meeting covers. See the GA1 and GA2 assignment pages for the full rubric.
 
 Before your first meeting, make sure your team has read the **[Git Workflow for Team Projects](/assignments/git-workflow)** guide and set up your branching strategy.
 
@@ -212,12 +212,12 @@ The accountability adjustments exist to protect teammates who carry their weight
 
   **TA Mentor Meeting schedule during group project:**
 
-  | Week | Meeting | Dates | Focus | Graded? |
-  |------|---------|-------|-------|---------|
-  | 12 | Meeting 1 | Mar 23–24 | Design sprint check-in, team intros, workflow setup | No |
-  | 13 | Meeting 2 | Mar 30–31 | Core features kickoff — early code walks | Yes (10 pts) |
-  | 14 | Meeting 3 | Apr 6–7 | Core features deep dive — detailed code walks, integration check | Yes (10 pts) |
-  | 15 | Meeting 4 | Apr 13–14 | Feature buffet & integration — architecture review, final sprint | Yes (10 pts) |
+  | Week | Meeting | Dates | Focus | Applies to | Graded? |
+  |------|---------|-------|-------|-----------|---------|
+  | 12 | Meeting 1 | Mar 23–24 | Design sprint check-in, team intros, workflow setup | — | No |
+  | 13 | Meeting 2 | Mar 30–31 | Design sprint walk-through | GA0 | Yes (up to -5 pts) |
+  | 14 | Meeting 3 | Apr 6–7 | Core features progress check-in | GA1 | Yes (up to -2 pts) |
+  | 15 | Meeting 4 | Apr 13–14 | Core features submission walk-through | GA1 | Yes (up to -5 pts) |
 
 - [**Lab 12: GUI Programming**](/labs/lab12-gui) (Week 13)
   - JavaFX workshop

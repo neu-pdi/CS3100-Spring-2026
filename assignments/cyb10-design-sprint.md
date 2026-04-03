@@ -214,6 +214,12 @@ This is your chance to exercise full UCD creativity without implementation const
 
 **Total: 30 points**
 
+### Individual Accountability Adjustment
+
+In **Meeting 2** (week of Mar 30–31), your TA will ask your team to walk through your GA0 submission — the architecture diagram, wireframes, and design decisions. Each student should be prepared to explain not only their own individual deliverables but also the team deliverables. **Any team member may be asked about any team deliverable**, so make sure you understand the full design, not just the part you personally created.
+
+Students who cannot explain the design artifacts may receive a deduction of **up to 5 points** on their GA0 grade. Students who demonstrate comprehension receive no deduction. This is a calibration for the more detailed code walks in GA1 — treat it as practice for explaining your design thinking.
+
 ## Submission
 
 All deliverables go in the **`README.md`** provided in your team's handout repository. The template includes section headers for each deliverable — fill them in. Embed or link wireframes, diagrams, and other images directly in the document, and commit image files to the `design/` folder.
