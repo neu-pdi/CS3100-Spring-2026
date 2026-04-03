@@ -28,7 +28,15 @@ In [L18 (Thinking Architecturally)](/lecture-notes/l18-architecture-design), we 
 
 ### Safety Isn't a Feature — It's a Property That Emerges (or Doesn't)
 
-You can't add safety the way you add a search bar. Safety is not a feature you build in Sprint 4 — it is a property that emerges from how every other feature is built. When SceneItAll's firmware update uses an atomic write with rollback, that's not a "safety feature" — it's a firmware update that was *designed safely.* When it doesn't use an atomic write, the firmware update still works in the happy path. The safety gap only becomes visible when the Zigbee connection drops mid-write and the device is bricked.
+You can't add safety the way you add a search bar. Safety is not a feature you build in Sprint 4 — it is a property that emerges from how every other feature is built. This should sound familiar, because you've heard this exact pattern all semester, applied to different quality attributes:
+
+- In [L7 (Design for Change)](/lecture-notes/l7-design-for-change), we argued that changeability comes from coupling and cohesion decisions made *during* design, not from a refactoring sprint later. Low coupling doesn't happen by accident — it happens because someone chose the right module boundaries before the code was tangled.
+- In [L16 (Designing for Testability)](/lecture-notes/l16-testing2), we showed that testability requires hexagonal architecture — separating domain logic from infrastructure — and that bolting tests onto code that wasn't designed for testability is painful and incomplete.
+- In [L18 (Thinking Architecturally)](/lecture-notes/l18-architecture-design), we introduced "just enough architecture": decide the hard-to-reverse things up front, design the system so deferred decisions stay cheap. The cost of getting those early decisions wrong grows exponentially over time.
+- In [L20 (Networks and Security)](/lecture-notes/l20-networks), we stated it directly: "Security isn't a feature you bolt on at the end — it's an architectural concern that shapes design decisions throughout."
+- In [L28 (Accessibility)](/lecture-notes/l28-accessibility), we showed that accessibility designed in from the start is straightforward; accessibility retrofitted onto an inaccessible interface is expensive, incomplete, and often patronizing.
+
+Safety follows the same rule — and the stakes are higher. When SceneItAll's firmware update uses an atomic write with rollback, that's not a "safety feature" — it's a firmware update that was *designed safely.* When it doesn't use an atomic write, the firmware update still works in the happy path. The safety gap only becomes visible when the Zigbee connection drops mid-write and the device is bricked.
 
 This is why safety concerns change as a system grows:
 
@@ -340,6 +348,6 @@ Until that happens, the last Swiss cheese layer is **you.** Your professional ju
 
 - **David Parnas, [ICSE 2025 Keynote: "Regulation of AI and AI-Enabled Software"](https://www.youtube.com/watch?v=YyFouLdwxY0)** — The argument for regulating critical software, not "AI"
 - **Joe Morgenstern, ["The Fifty-Nine-Story Crisis,"](https://www.newyorker.com/magazine/1995/05/29/the-fifty-nine-story-crisis) *The New Yorker*, 1995** — The full Citicorp Tower story
-- **[CS 4973: Accessibility and Disability](https://catalog.northeastern.edu/course-descriptions/cs/)** — Safety and accessibility as interconnected quality attributes
-- **[CS 4730: Distributed Systems](https://catalog.northeastern.edu/course-descriptions/cs/)** — Formal treatment of fault tolerance, consensus, and safety in distributed systems
+- **[CS 4973: Accessibility and Disability](https://actlab.sites.northeastern.edu/teaching/)** — Safety and accessibility as interconnected quality attributes
+- **[CS 4730: Distributed Systems](https://4730.network/)** — Formal treatment of fault tolerance, consensus, and safety in distributed systems
 - **Nancy Leveson, *Engineering a Safer World*:** The definitive academic treatment of systems safety engineering

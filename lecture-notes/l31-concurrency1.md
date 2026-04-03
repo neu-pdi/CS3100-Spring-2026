@@ -609,6 +609,6 @@ In the next lecture, we'll explore an alternative to threads—**asynchronous pr
 
 This lecture covers the fundamentals of concurrent programming, but there's much more to explore:
 
-- **[CS 3650: Computer Systems](https://catalog.northeastern.edu/course-descriptions/cs/)** — How the operating system manages processes, threads, virtual memory, and scheduling. The low-level mental model for what happens when you call `Thread.start()`.
-- **[CS 4730: Distributed Systems](https://catalog.northeastern.edu/course-descriptions/cs/)** — Concurrency across machines, not just threads. Consensus algorithms, fault tolerance, distributed transactions.
+- **[CS 3650: Computer Systems](https://course.khoury.northeastern.edu/cs3650/)** — How the operating system manages processes, threads, virtual memory, and scheduling. The low-level mental model for what happens when you call `Thread.start()`.
+- **[CS 4730: Distributed Systems](https://4730.network/)** — Concurrency across machines, not just threads. Consensus algorithms, fault tolerance, distributed transactions.
 

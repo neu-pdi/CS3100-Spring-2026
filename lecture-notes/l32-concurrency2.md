@@ -642,5 +642,5 @@ Choose threads for CPU-bound work, async for I/O-bound work, and always reason c
 
 Asynchronous programming is a gateway to several deeper topics:
 
-- **[CS 3700: Networks and Distributed Systems](https://catalog.northeastern.edu/course-descriptions/cs/)** — The network protocols that async I/O operates over. TCP, UDP, HTTP internals, and building distributed programs.
-- **[CS 4730: Distributed Systems](https://catalog.northeastern.edu/course-descriptions/cs/)** — Async coordination across machines: reliable systems when network calls fail, messages arrive out of order, and clocks disagree.
+- **[CS 3700: Networks and Distributed Systems](https://3700.network/)** — The network protocols that async I/O operates over. TCP, UDP, HTTP internals, and building distributed programs.
+- **[CS 4730: Distributed Systems](https://4730.network/)** — Async coordination across machines: reliable systems when network calls fail, messages arrive out of order, and clocks disagree.

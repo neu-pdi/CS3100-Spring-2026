@@ -343,5 +343,5 @@ The SceneItAll hub might run fine on a modern Raspberry Pi 5, but what about the
 
 ### Want to go deeper?
 
-- **[CS 3650: Computer Systems](https://catalog.northeastern.edu/course-descriptions/cs/)** — Memory hierarchy, virtual memory, CPU caches, OS-level performance
-- **[CS 6620: Fundamentals of Cloud Computing](https://catalog.northeastern.edu/course-descriptions/cs/)** — Performance at data center scale, auto-scaling, load balancing
+- **[CS 3650: Computer Systems](https://course.khoury.northeastern.edu/cs3650/)** — Memory hierarchy, virtual memory, CPU caches, OS-level performance
+- **[CS 6620: Fundamentals of Cloud Computing](https://catalog.northeastern.edu/search/?P=CS+6620)** — Performance at data center scale, auto-scaling, load balancing

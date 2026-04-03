@@ -248,4 +248,4 @@ We started with Observer — a pattern for decoupling components within a proces
 
 ### Want to go deeper?
 
-These ideas are explored further in [CS 3700: Networks and Distributed Systems](https://catalog.northeastern.edu/course-descriptions/cs/), [CS 4730: Distributed Systems](https://catalog.northeastern.edu/course-descriptions/cs/) (formal consistency models, CAP theorem, Paxos/Raft), and [CS 6620: Fundamentals of Cloud Computing](https://catalog.northeastern.edu/course-descriptions/cs/) (cloud-native event systems at scale).
+These ideas are explored further in [CS 3700: Networks and Distributed Systems](https://3700.network/), [CS 4730: Distributed Systems](https://4730.network/) (formal consistency models, CAP theorem, Paxos/Raft), and [CS 6620: Fundamentals of Cloud Computing](https://catalog.northeastern.edu/search/?P=CS+6620) (cloud-native event systems at scale).

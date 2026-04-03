@@ -189,13 +189,13 @@ Avoids harm, **even when it fails.**
 
 <div style={{fontSize: '0.8em', marginTop: '1em'}}>
 
-- **Reliable and unsafe:** Therac-25 delivered correct doses most of the time — but its failure mode was lethal.
+- **Reliable and unsafe:** A medical device delivers correct doses 99.99% of the time — but its failure mode is lethal. Reliable? Extremely. Safe? Not if one failure kills a patient.
 - **Safe but unreliable:** Hub crashes frequently but preserves device state and fails to safe defaults.
 
 </div>
 
 <aside className="notes">
-**The critical insight is the Therac-25 example.** Students' intuition is that reliable = safe. The Therac-25 was highly reliable — it worked correctly the vast majority of the time. But when it failed, people died. Reliability measures how often something works. Safety measures what happens when it doesn't.
+**The critical insight is the medical device example.** Students' intuition is that reliable = safe. Keep it generic here — the Therac-25 case study comes later and will hit harder if students haven't already heard the punchline. For now, just establish the principle: reliability measures how often something works, safety measures what happens when it doesn't.
 
 **GitHub availability (Feb–Mar 2026):** Three major outages — Feb 2, Feb 9, Mar 5. Root causes: a tenfold spike in read traffic from client apps overloaded the auth database (a cache TTL reduced from 12 to 2 hours made it worse), and Actions failover exposed latent Redis config issues. GitHub is now migrating to Azure (12.5% → 50% by July) and decomposing the monolith. Classic architectural coupling: localized failures cascaded across services.
 
@@ -265,7 +265,7 @@ Recommendation algorithms optimize for engagement, select for outrage. Missing-s
 
 <div style={{fontSize: '0.8em', marginTop: '1em', backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.8em', borderRadius: '8px'}}>
 
-**AI connection:** You use Claude Code to generate a door lock controller. If you paste it without careful review, you've removed a Swiss cheese layer — **human code review** — the same layer Therac-25 removed when hardware interlocks were replaced. **You are responsible for the output.**
+**AI connection:** You use Claude Code to generate a door lock controller. If you paste it without careful review, you've removed a Swiss cheese layer — **human code review**. Replacing human judgment with automation is cheaper and faster, but if the automation has bugs that the human would have caught, you've traded a defense for a vulnerability. **You are responsible for the output.**
 
 </div>
 
