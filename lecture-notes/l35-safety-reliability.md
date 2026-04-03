@@ -309,19 +309,37 @@ Boeing sold sensor redundancy as an optional upgrade. Budget airlines — often 
 
 This pattern recurs. [L36](/lecture-notes/l36-sustainability) will formalize it: **who profits from a design decision, and who bears the risk?** If the answer is "different people," the decision deserves extra scrutiny. The same logic applies to [L28 (Accessibility)](/lecture-notes/l28-accessibility): the people who decide not to invest in accessibility are rarely the people excluded by that decision.
 
-### Performance, safety, and the tradeoff
+## Evaluate safety trade-offs and explain why professional judgment is currently the primary safety mechanism in most software (8 minutes)
 
-In [L34 (Performance)](/lecture-notes/l34-performance), we discussed garbage collection as a safety-performance tradeoff: automatic memory management trades performance (GC pauses) for safety (no use-after-free bugs). The same tradeoff appears throughout:
+### Safety Is Always in Tension
 
-- Strong consistency is slower than eventual — but safer for door locks
-- Error handling adds code complexity — but prevents silent failures
-- Staged rollouts are slower than pushing to all devices — but limit blast radius
-- Redundant sensors cost more — but eliminate single points of failure
+Safety is never free. Every safety mechanism costs something, and ignoring those costs leads to safety mechanisms that get stripped out under pressure:
+
+| Safety mechanism | What it costs | Example |
+|-----------------|--------------|---------|
+| **Strong consistency** | Performance — sequential consistency is slower than eventual | SceneItAll door lock: sequential consistency adds latency to every lock/unlock command |
+| **Error handling** | Complexity — `.exceptionally()` on every async chain, timeout logic, retry policies | L32's scene activation: 15 device commands each need error handling, timeouts, and status verification |
+| **Staged rollout** | Deployment speed — rolling out to 1% first and monitoring adds hours or days | CrowdStrike skipped staged rollout for "content updates" to push security patches faster |
+| **Redundant sensors** | Money — dual sensors, disagree indicators, additional wiring | Boeing sold sensor redundancy as an optional upgrade to save airlines money |
+| **Automatic memory management** | Performance — GC pauses, memory overhead | [L34](/lecture-notes/l34-performance): Java's GC trades performance for safety (no use-after-free bugs) |
+| **Human-in-the-loop** | Throughput — humans are slow | Pawtograder: "internal error, needs manual review" is safer than auto-assigning zero, but requires a TA to act |
 
 In every case, safety costs something: performance, complexity, money, or time. The question is not "can we afford safety?" but "can we afford the consequences of not having it?" The answer depends on the blast radius.
 
+### From Citicorp to Code: Who Regulates Software?
+
+LeMessurier was a **licensed professional engineer.** Building codes required specific structural analyses. Inspectors reviewed the work. Professional boards could revoke his license. When he disclosed the Citicorp flaw, city officials had the authority and expertise to evaluate his analysis and coordinate the response.
+
+Most software has none of that. Avionics software must comply with DO-178C. Medical device software goes through FDA review. These are the exceptions. Banking software, social media algorithms, smart home firmware, autograders, hiring tools — all unregulated. There is no professional licensing requirement for writing software that controls door locks, manages student grades, or recommends content to billions of users.
+
+In his [ICSE 2025 keynote](https://www.youtube.com/watch?v=YyFouLdwxY0), David Parnas — who invented the information hiding concepts you learned in [L6](/lecture-notes/l6-immutability-abstraction) — argued that we should **regulate critical software the same way we regulate bridges:** licensed engineers, accredited education, required specifications, independent testing. Not because it's "AI" or "not AI," but because "the amount of regulation doesn't depend on what we call it or how it's built — it depends on how important the answer is."
+
+Until that happens, the last Swiss cheese layer is **you.** Your professional judgment. Your willingness to ask "what's the blast radius?" before you ship, and to disclose when you find a hole. That's not a great safety mechanism — it depends on individual conscience and employer culture rather than institutional enforcement. It's why Parnas argues for regulation. But right now, it's what we have.
+
 ### Want to go deeper?
 
+- **David Parnas, [ICSE 2025 Keynote: "Regulation of AI and AI-Enabled Software"](https://www.youtube.com/watch?v=YyFouLdwxY0)** — The argument for regulating critical software, not "AI"
+- **Joe Morgenstern, ["The Fifty-Nine-Story Crisis,"](https://www.newyorker.com/magazine/1995/05/29/the-fifty-nine-story-crisis) *The New Yorker*, 1995** — The full Citicorp Tower story
 - **[CS 4973: Accessibility and Disability](https://catalog.northeastern.edu/course-descriptions/cs/)** — Safety and accessibility as interconnected quality attributes
 - **[CS 4730: Distributed Systems](https://catalog.northeastern.edu/course-descriptions/cs/)** — Formal treatment of fault tolerance, consensus, and safety in distributed systems
 - **Nancy Leveson, *Engineering a Safer World*:** The definitive academic treatment of systems safety engineering

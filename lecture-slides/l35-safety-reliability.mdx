@@ -84,6 +84,7 @@ After this lecture, you will be able to:
   <li>Apply the Swiss cheese model to analyze layered defenses</li>
   <li>Analyze blast radius and fail-safe design</li>
   <li>Recognize prior course concepts as safety mechanisms</li>
+  <li>Evaluate safety trade-offs against cost, complexity, and performance, and explain why professional judgment is currently the primary safety mechanism in most software</li>
 </ol>
 
 <aside className="notes">
@@ -91,9 +92,10 @@ After this lecture, you will be able to:
 - Objective 1: Safety vs reliability definitions, emergence, indirect effects (~10 min)
 - Objective 2: Swiss cheese model + three case studies (~15 min)
 - Objective 3: Blast radius, Citicorp Tower, fail-safe vs fail-operational (~10 min)
-- Objective 4: Scenarios, reframing table, safety debt, wrap-up (~20 min)
+- Objective 4: Scenarios, reframing table, safety debt (~15 min)
+- Objective 5: Safety trade-offs, Citicorp → Parnas regulation argument, professional responsibility (~5 min)
 
-**Key pedagogical goal:** Students should leave understanding that every tool they've learned this semester (synchronized, .exceptionally(), circuit breakers, staged rollouts) is a safety mechanism. The difference is the stakes.
+**Key pedagogical goal:** Students should leave understanding that every tool they've learned this semester (synchronized, .exceptionally(), circuit breakers, staged rollouts) is a safety mechanism — and that safety always costs something (performance, complexity, money, time). The question is not "can we afford safety?" but "can we afford the consequences of not having it?" And until software is regulated like bridges, they are the last line of defense.
 
 > **Transition:** Let's bridge from L34...
 </aside>
