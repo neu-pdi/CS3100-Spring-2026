@@ -694,6 +694,67 @@ City officials "commended LeMessurier for his courage and candor." As project ma
 
 **The Parnas connection:** David Parnas (who invented information hiding from L6) said at ICSE 2025: "It's not the AI that's liable. It's either the people who made it or the people who use it or both." Same L4 contracts framework applied to professional accountability.
 
+> **Transition:** LeMessurier was a licensed professional engineer. What about us?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## From Citicorp to Code: Who Regulates Software?
+
+<div style={{fontSize: '0.75em'}}>
+
+LeMessurier was a **licensed professional engineer.** Building codes. Inspections. Liability. Professional boards that can revoke your license.
+
+</div>
+
+<div className="fragment" style={{fontSize: '0.75em', marginTop: '0.5em'}}>
+
+**Most software has none of that.** Avionics (DO-178C) and medical devices (FDA) are regulated. Everything else — banking software, social media, autograders, smart home hubs — is governed by... your personal judgment.
+
+</div>
+
+<div className="fragment" style={{fontSize: '0.75em', marginTop: '0.5em'}}>
+
+> "It's not the AI that's liable. It's either the people who made it or the people who use it or both."
+>
+> — David Parnas, ICSE 2025 Keynote
+
+</div>
+
+<div className="fragment" style={{fontSize: '0.75em', marginTop: '0.5em'}}>
+
+Parnas argues we should **regulate critical software the same way we regulate bridges** — licensed engineers, accredited education, independent testing, required specifications. Not because it's "AI" or "not AI," but because **the amount of regulation should depend on how important the answer is.**
+
+</div>
+
+<div className="fragment" style={{fontSize: '0.72em', marginTop: '0.5em'}}>
+
+Until that happens, the last Swiss cheese layer is **you.** Your professional judgment. Your willingness to say *"I got a problem, I made the problem, let's fix the problem."*
+
+</div>
+
+<aside className="notes">
+**The gap:** LeMessurier operated in a regulated profession — building codes, inspections, professional licensing, liability insurance. When he disclosed the Citicorp flaw, city officials had authority to review his work, commend or sanction him, and require specific remediation. Software engineers have almost none of this infrastructure.
+
+**What IS regulated:** Avionics software must comply with DO-178C (certification levels A-E based on criticality). Medical device software must go through FDA 510(k) or PMA review. These are the exceptions, not the rule.
+
+**What is NOT regulated:** Banking software, social media algorithms, autonomous vehicle software (in most states), smart home firmware, autograders, hiring algorithms. There are no professional licensing requirements for writing software that controls door locks, manages student grades, or recommends content to billions of users.
+
+**Parnas's argument (ICSE 2025):** Don't regulate "AI" — nobody can define what AI is, so anyone can say "I'm not doing AI, I'm just doing engineering." Instead, regulate *critical software* — any software where the answer matters. The amount of regulation should scale with how important the answer is, not with what technique was used to build it.
+
+Key Parnas quotes:
+- "It's not the AI that's liable. It's either the people who made it or the people who use it or both."
+- "The people who made it have a duty to have a specification for it and to make sure it meets that specification."
+- "We should be regulating who can write critical software. When it comes to building bridges, you have to be a licensed engineer."
+- "If the answers a system gives don't matter, then we don't need to regulate it. But if it does matter, then we must regulate it."
+- "The amount of regulation doesn't depend on what we call it or how it's built. It depends on how important the answer is."
+
+**The personal responsibility framing:** Until software is regulated like other engineering disciplines, the only safety mechanism is individual professional judgment. Will you sleep OK at night? Will you get fired? Those aren't great safety mechanisms — they depend on the individual developer's conscience and their employer's culture. That's why Parnas argues for regulation: personal virtue is not a scalable safety mechanism. But right now, it's what we have.
+
+**Connection to the course:** This is why we teach specifications (L4), testing (L15), safety analysis (today), and sustainability (L36). Not because a regulator requires it, but because the blast radius of your software demands it — and right now, you are the only person who will enforce those standards.
+
 > **Transition:** Let's formalize the relationship between blast radius and defense layers...
 </aside>
 
