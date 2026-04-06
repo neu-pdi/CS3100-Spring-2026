@@ -32,7 +32,7 @@
           ],
           "startTime": "10:35",
           "endTime": "11:40",
-          "location": "Oakland, CA (TBD)"
+          "location": "Oakland, CA (CPM 100)"
         }
       ],
       "instructors": [
@@ -54,7 +54,7 @@
           ],
           "startTime": "13:35",
           "endTime": "14:40",
-          "location": "Oakland, CA (TBD)"
+          "location": "Oakland, CA (NSB 215)"
         }
       ],
       "instructors": [
@@ -746,6 +746,25 @@
       ],
       "topics": [
         "Performance"
+      ],
+      "sections": [
+        "03",
+        "04",
+        "05",
+        "06"
+      ]
+    },
+    {
+      "lectureId": "l34-technical-interviews",
+      "dates": [
+        "2026-04-06"
+      ],
+      "topics": [
+        "Technical Interview Skills"
+      ],
+      "sections": [
+        "01",
+        "02"
       ]
     },
     {
