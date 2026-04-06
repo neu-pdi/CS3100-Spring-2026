@@ -8,6 +8,6 @@ import BrowserOnly from '@docusaurus/BrowserOnly';
 <BrowserOnly>
   {() => {
     window.location.replace("https://docs.google.com/presentation/d/1ZZI_wdIcmWcPiNWLSxSA7XcqZ8Sb6P9C2RjxJHMPULs/edit?usp=sharing");
-    return <p>Redirecting… <a href="https://docs.google.com/presentation/d/YOUR_ID/edit?usp=sharing">Click here if not redirected.</a></p>;
+    return null;
   }}
 </BrowserOnly>
