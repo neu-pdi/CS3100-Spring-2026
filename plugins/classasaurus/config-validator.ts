@@ -169,20 +169,53 @@ export function validateHoliday(holiday: Holiday): void {
 /**
  * Validate lecture mapping
  */
-export function validateLecture(lecture: LectureMapping): void {
+export function validateLecture(
+  lecture: LectureMapping,
+  knownSectionIds: Set<string>
+): void {
   if (!lecture.lectureId || lecture.lectureId.trim() === '') {
     throw new ValidationError('Lecture must have a non-empty lectureId');
   }
-  
-  if (!lecture.dates || lecture.dates.length === 0) {
+
+  const hasGlobalDates = Array.isArray(lecture.dates) && lecture.dates.length > 0;
+  const hasSectionDates =
+    !!lecture.datesBySection &&
+    Object.values(lecture.datesBySection).some(
+      (dates) => Array.isArray(dates) && dates.length > 0
+    );
+
+  if (!hasGlobalDates && !hasSectionDates) {
     throw new ValidationError(
-      `Lecture ${lecture.lectureId} must have at least one date`
+      `Lecture ${lecture.lectureId} must have at least one date source: dates or datesBySection`
     );
   }
-  
-  lecture.dates.forEach((date, idx) => {
-    validateDate(date, `Lecture ${lecture.lectureId}, date ${idx}`);
-  });
+
+  if (hasGlobalDates) {
+    lecture.dates!.forEach((date, idx) => {
+      validateDate(date, `Lecture ${lecture.lectureId}, date ${idx}`);
+    });
+  }
+
+  if (lecture.datesBySection) {
+    Object.entries(lecture.datesBySection).forEach(([sectionId, dates]) => {
+      if (!knownSectionIds.has(sectionId)) {
+        throw new ValidationError(
+          `Lecture ${lecture.lectureId} references unknown section in datesBySection: ${sectionId}`
+        );
+      }
+      if (!Array.isArray(dates) || dates.length === 0) {
+        throw new ValidationError(
+          `Lecture ${lecture.lectureId}, section ${sectionId} must have at least one date`
+        );
+      }
+      dates.forEach((date, idx) => {
+        validateDate(
+          date,
+          `Lecture ${lecture.lectureId}, section ${sectionId}, date ${idx}`
+        );
+      });
+    });
+  }
 }
 
 /**
@@ -268,7 +301,8 @@ export function validateCourseConfig(config: CourseConfig): void {
       throw new ValidationError(`Duplicate lecture id: ${lecture.lectureId}`);
     }
     lectureIds.add(lecture.lectureId);
-    validateLecture(lecture);
+    //validating with section ids to ensure datesBySection references are valid
+    validateLecture(lecture, sectionIds);
     
     // Validate section references
     if (lecture.sections) {

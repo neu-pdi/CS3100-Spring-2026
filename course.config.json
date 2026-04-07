@@ -25,19 +25,13 @@
       "meetings": [
         {
           "type": "lecture",
-          "days": [
-            "Monday",
-            "Wednesday",
-            "Thursday"
-          ],
+          "days": ["Monday", "Wednesday", "Thursday"],
           "startTime": "10:35",
           "endTime": "11:40",
           "location": "Oakland, CA (TBD)"
         }
       ],
-      "instructors": [
-        "Spertus, E."
-      ]
+      "instructors": ["Spertus, E."]
     },
     {
       "id": "02",
@@ -47,19 +41,13 @@
       "meetings": [
         {
           "type": "lecture",
-          "days": [
-            "Monday",
-            "Wednesday",
-            "Thursday"
-          ],
+          "days": ["Monday", "Wednesday", "Thursday"],
           "startTime": "13:35",
           "endTime": "14:40",
           "location": "Oakland, CA (TBD)"
         }
       ],
-      "instructors": [
-        "Spertus, E."
-      ]
+      "instructors": ["Spertus, E."]
     },
     {
       "id": "03",
@@ -70,19 +58,13 @@
       "meetings": [
         {
           "type": "lecture",
-          "days": [
-            "Monday",
-            "Wednesday",
-            "Thursday"
-          ],
+          "days": ["Monday", "Wednesday", "Thursday"],
           "startTime": "10:30",
           "endTime": "11:35",
           "location": "CG 097"
         }
       ],
-      "instructors": [
-        "Bell, J."
-      ]
+      "instructors": ["Bell, J."]
     },
     {
       "id": "04",
@@ -92,19 +74,13 @@
       "meetings": [
         {
           "type": "lecture",
-          "days": [
-            "Monday",
-            "Wednesday",
-            "Thursday"
-          ],
+          "days": ["Monday", "Wednesday", "Thursday"],
           "startTime": "13:35",
           "endTime": "14:40",
           "location": "SH 335"
         }
       ],
-      "instructors": [
-        "Vesely, F."
-      ]
+      "instructors": ["Vesely, F."]
     },
     {
       "id": "05",
@@ -114,19 +90,13 @@
       "meetings": [
         {
           "type": "lecture",
-          "days": [
-            "Monday",
-            "Wednesday",
-            "Thursday"
-          ],
+          "days": ["Monday", "Wednesday", "Thursday"],
           "startTime": "13:35",
           "endTime": "14:40",
           "location": "HA 322"
         }
       ],
-      "instructors": [
-        "Shesh, A."
-      ]
+      "instructors": ["Shesh, A."]
     },
     {
       "id": "06",
@@ -136,19 +106,13 @@
       "meetings": [
         {
           "type": "lecture",
-          "days": [
-            "Monday",
-            "Wednesday",
-            "Thursday"
-          ],
+          "days": ["Monday", "Wednesday", "Thursday"],
           "startTime": "16:35",
           "endTime": "17:40",
           "location": "SH 135"
         }
       ],
-      "instructors": [
-        "Vesely, F."
-      ]
+      "instructors": ["Vesely, F."]
     }
   ],
   "labSections": [
@@ -160,17 +124,13 @@
       "meetings": [
         {
           "type": "lab",
-          "days": [
-            "Tuesday"
-          ],
+          "days": ["Tuesday"],
           "startTime": "12:25",
           "endTime": "14:05",
           "location": "M48 102"
         }
       ],
-      "instructors": [
-        "Spertus, E."
-      ]
+      "instructors": ["Spertus, E."]
     },
     {
       "id": "L02",
@@ -180,17 +140,13 @@
       "meetings": [
         {
           "type": "lab",
-          "days": [
-            "Tuesday"
-          ],
+          "days": ["Tuesday"],
           "startTime": "15:00",
           "endTime": "16:40",
           "location": "M48 102"
         }
       ],
-      "instructors": [
-        "Spertus, E."
-      ]
+      "instructors": ["Spertus, E."]
     },
     {
       "id": "L04",
@@ -200,17 +156,13 @@
       "meetings": [
         {
           "type": "lab",
-          "days": [
-            "Tuesday"
-          ],
+          "days": ["Tuesday"],
           "startTime": "10:35",
           "endTime": "12:15",
           "location": "M41 212"
         }
       ],
-      "instructors": [
-        "Spertus, E."
-      ]
+      "instructors": ["Spertus, E."]
     },
     {
       "id": "L05",
@@ -220,17 +172,13 @@
       "meetings": [
         {
           "type": "lab",
-          "days": [
-            "Monday"
-          ],
+          "days": ["Monday"],
           "startTime": "08:00",
           "endTime": "09:40",
           "location": "WVH 210A"
         }
       ],
-      "instructors": [
-        "Bell, J."
-      ]
+      "instructors": ["Bell, J."]
     },
     {
       "id": "L06",
@@ -240,17 +188,13 @@
       "meetings": [
         {
           "type": "lab",
-          "days": [
-            "Monday"
-          ],
+          "days": ["Monday"],
           "startTime": "09:50",
           "endTime": "11:30",
           "location": "WVH 210A"
         }
       ],
-      "instructors": [
-        "Bell, J."
-      ]
+      "instructors": ["Bell, J."]
     },
     {
       "id": "L07",
@@ -260,17 +204,13 @@
       "meetings": [
         {
           "type": "lab",
-          "days": [
-            "Monday"
-          ],
+          "days": ["Monday"],
           "startTime": "09:50",
           "endTime": "11:30",
           "location": "WVH 210B"
         }
       ],
-      "instructors": [
-        "Bell, J."
-      ]
+      "instructors": ["Bell, J."]
     },
     {
       "id": "L08",
@@ -280,17 +220,13 @@
       "meetings": [
         {
           "type": "lab",
-          "days": [
-            "Monday"
-          ],
+          "days": ["Monday"],
           "startTime": "11:45",
           "endTime": "13:25",
           "location": "WVH 210A"
         }
       ],
-      "instructors": [
-        "Bell, J."
-      ]
+      "instructors": ["Bell, J."]
     },
     {
       "id": "L09",
@@ -300,17 +236,13 @@
       "meetings": [
         {
           "type": "lab",
-          "days": [
-            "Monday"
-          ],
+          "days": ["Monday"],
           "startTime": "11:45",
           "endTime": "13:25",
           "location": "WVH 210B"
         }
       ],
-      "instructors": [
-        "Bell, J."
-      ]
+      "instructors": ["Bell, J."]
     },
     {
       "id": "L10",
@@ -320,17 +252,13 @@
       "meetings": [
         {
           "type": "lab",
-          "days": [
-            "Monday"
-          ],
+          "days": ["Monday"],
           "startTime": "11:45",
           "endTime": "13:25",
           "location": "WVH 212"
         }
       ],
-      "instructors": [
-        "Bell, J."
-      ]
+      "instructors": ["Bell, J."]
     },
     {
       "id": "L11",
@@ -340,17 +268,13 @@
       "meetings": [
         {
           "type": "lab",
-          "days": [
-            "Monday"
-          ],
+          "days": ["Monday"],
           "startTime": "15:25",
           "endTime": "17:05",
           "location": "WVH 210A"
         }
       ],
-      "instructors": [
-        "Bell, J."
-      ]
+      "instructors": ["Bell, J."]
     },
     {
       "id": "L12",
@@ -360,17 +284,13 @@
       "meetings": [
         {
           "type": "lab",
-          "days": [
-            "Monday"
-          ],
+          "days": ["Monday"],
           "startTime": "15:25",
           "endTime": "17:05",
           "location": "WVH 210B"
         }
       ],
-      "instructors": [
-        "Bell, J."
-      ]
+      "instructors": ["Bell, J."]
     },
     {
       "id": "L13",
@@ -380,17 +300,13 @@
       "meetings": [
         {
           "type": "lab",
-          "days": [
-            "Monday"
-          ],
+          "days": ["Monday"],
           "startTime": "15:25",
           "endTime": "17:05",
           "location": "WVH 212"
         }
       ],
-      "instructors": [
-        "Bell, J."
-      ]
+      "instructors": ["Bell, J."]
     },
     {
       "id": "L14",
@@ -400,17 +316,13 @@
       "meetings": [
         {
           "type": "lab",
-          "days": [
-            "Monday"
-          ],
+          "days": ["Monday"],
           "startTime": "17:15",
           "endTime": "18:55",
           "location": "WVH 210A"
         }
       ],
-      "instructors": [
-        "Bell, J."
-      ]
+      "instructors": ["Bell, J."]
     }
   ],
   "holidays": [
@@ -444,819 +356,515 @@
   "lectures": [
     {
       "lectureId": "l1-intro",
-      "dates": [
-        "2026-01-07"
-      ],
-      "topics": [
-        "Course Overview and Introduction to Java"
-      ]
+      "dates": ["2026-01-07"],
+      "topics": ["Course Overview and Introduction to Java"]
     },
     {
       "lectureId": "l2-data-in-jvm",
-      "dates": [
-        "2026-01-08"
-      ],
-      "topics": [
-        "Inheritance and Polymorphism in Java"
-      ]
+      "dates": ["2026-01-08"],
+      "topics": ["Inheritance and Polymorphism in Java"]
     },
     {
       "lectureId": "l3-more-java",
-      "dates": [
-        "2026-01-12"
-      ],
-      "topics": [
-        "Inheritance and Polymorphism in Java II"
-      ]
+      "dates": ["2026-01-12"],
+      "topics": ["Inheritance and Polymorphism in Java II"]
     },
     {
       "lectureId": "l4-specs-contracts",
-      "dates": [
-        "2026-01-14"
-      ],
-      "topics": [
-        "Specifications and Common Contracts"
-      ]
+      "dates": ["2026-01-14"],
+      "topics": ["Specifications and Common Contracts"]
     },
     {
       "lectureId": "l5-fp-readability-reusability",
-      "dates": [
-        "2026-01-15"
-      ],
-      "topics": [
-        "Functional Programming and Readability"
-      ]
+      "dates": ["2026-01-15"],
+      "topics": ["Functional Programming and Readability"]
     },
     {
       "lectureId": "l6-immutability-abstraction",
-      "dates": [
-        "2026-01-21"
-      ],
-      "topics": [
-        "Changeability I: Modularity and Information Hiding"
-      ]
+      "dates": ["2026-01-21"],
+      "topics": ["Changeability I: Modularity and Information Hiding"]
     },
     {
       "lectureId": "l7-design-for-change",
-      "dates": [
-        "2026-01-22"
-      ],
-      "topics": [
-        "Changeability II: Coupling and Cohesion"
-      ]
+      "dates": ["2026-01-22"],
+      "topics": ["Changeability II: Coupling and Cohesion"]
     },
     {
       "lectureId": "l8-design-for-change-2",
-      "dates": [
-        "2026-01-26"
-      ],
-      "topics": [
-        "Changeability III: Principles for inheritance"
-      ]
+      "dates": ["2026-01-26"],
+      "topics": ["Changeability III: Principles for inheritance"]
     },
     {
       "lectureId": "l9-requirements",
-      "dates": [
-        "2026-01-28"
-      ],
-      "topics": [
-        "Interpreting Requirements"
-      ]
+      "dates": ["2026-01-28"],
+      "topics": ["Interpreting Requirements"]
     },
     {
       "lectureId": "l10-review1",
-      "dates": [
-        "2026-01-29"
-      ],
-      "topics": [
-        "Review 1"
-      ]
+      "dates": ["2026-01-29"],
+      "topics": ["Review 1"]
     },
     {
       "lectureId": "l11-exam1",
-      "dates": [
-        "2026-02-02"
-      ],
-      "topics": [
-        "Exam 1"
-      ]
+      "dates": ["2026-02-02"],
+      "topics": ["Exam 1"]
     },
     {
       "lectureId": "l12-domain-modeling",
-      "dates": [
-        "2026-02-04"
-      ],
-      "topics": [
-        "Domain Modeling"
-      ]
+      "dates": ["2026-02-04"],
+      "topics": ["Domain Modeling"]
     },
     {
       "lectureId": "l13-intro-ai-agents",
-      "dates": [
-        "2026-02-05"
-      ],
-      "topics": [
-        "Introduction to AI Coding Agents"
-      ]
+      "dates": ["2026-02-05"],
+      "topics": ["Introduction to AI Coding Agents"]
     },
     {
       "lectureId": "l14-program-understanding",
-      "dates": [
-        "2026-02-09"
-      ],
-      "topics": [
-        "Program Understanding & Debugging"
-      ]
+      "dates": ["2026-02-09"],
+      "topics": ["Program Understanding & Debugging"]
     },
     {
       "lectureId": "l15-testing",
-      "dates": [
-        "2026-02-11"
-      ],
-      "topics": [
-        "Test Doubles and Isolation"
-      ]
+      "dates": ["2026-02-11"],
+      "topics": ["Test Doubles and Isolation"]
     },
     {
       "lectureId": "l16-testing2",
-      "dates": [
-        "2026-02-12"
-      ],
-      "topics": [
-        "Designing for Testability"
-      ]
+      "dates": ["2026-02-12"],
+      "topics": ["Designing for Testability"]
     },
     {
       "lectureId": "l17-creation-patterns",
-      "dates": [
-        "2026-02-18"
-      ],
-      "topics": [
-        "From Code Patterns to Architecture Patterns"
-      ]
+      "dates": ["2026-02-18"],
+      "topics": ["From Code Patterns to Architecture Patterns"]
     },
     {
       "lectureId": "l18-architecture-design",
-      "dates": [
-        "2026-02-19"
-      ],
-      "topics": [
-        "Thinking Architecturally"
-      ]
+      "dates": ["2026-02-19"],
+      "topics": ["Thinking Architecturally"]
     },
     {
       "lectureId": "l19-monoliths",
-      "dates": [
-        "2026-02-23"
-      ],
-      "topics": [
-        "Architectural Qualities"
-      ]
+      "dates": ["2026-02-23"],
+      "topics": ["Architectural Qualities"]
     },
     {
       "lectureId": "l20-networks",
-      "dates": [
-        "2026-02-25"
-      ],
-      "topics": [
-        "Distributed Architecture, Networks, and Security"
-      ]
+      "dates": ["2026-02-25"],
+      "topics": ["Distributed Architecture, Networks, and Security"]
     },
     {
       "lectureId": "l21-serverless",
-      "dates": [
-        "2026-02-26"
-      ],
-      "topics": [
-        "Serverless Architecture"
-      ]
+      "dates": ["2026-02-26"],
+      "topics": ["Serverless Architecture"]
     },
     {
       "lectureId": "l22-teams",
-      "dates": [
-        "2026-03-09"
-      ],
-      "topics": [
-        "Teams and Collaboration"
-      ]
+      "dates": ["2026-03-09"],
+      "topics": ["Teams and Collaboration"]
     },
     {
       "lectureId": "l23-oss",
-      "dates": [
-        "2026-03-11"
-      ],
-      "topics": [
-        "Open Source, Libraries, and Frameworks"
-      ]
+      "datesBySection": {
+        "01": ["2026-03-11"],
+        "02": ["2026-03-11"],
+        "03": ["2026-03-11"],
+        "04": ["2026-03-11"],
+        "05": ["2026-03-11"],
+        "06": ["2026-03-11"]
+      },
+      "topics": ["Open Source, Libraries, and Frameworks"]
     },
     {
       "lectureId": "l24-usability",
-      "dates": [
-        "2026-03-12"
-      ],
-      "topics": [
-        "Usability"
-      ]
+      "datesBySection": {
+        "01": ["2026-03-12"],
+        "02": ["2026-03-12"],
+        "03": ["2026-03-12"],
+        "04": ["2026-03-12"],
+        "05": ["2026-03-19"],
+        "06": ["2026-03-12"]
+      },
+      "topics": ["Usability"]
     },
     {
       "lectureId": "l25-review2",
-      "dates": [
-        "2026-03-16"
-      ],
-      "topics": [
-        "Review 2"
-      ]
+      "datesBySection": {
+        "01": ["2026-03-16"],
+        "02": ["2026-03-16"],
+        "03": ["2026-03-16"],
+        "04": ["2026-03-16"],
+        "05": ["2026-03-16"],
+        "06": ["2026-03-16"]
+      },
+      "topics": ["Review 2"]
     },
     {
       "lectureId": "l26-exam2",
-      "dates": [
-        "2026-03-18"
-      ],
-      "topics": [
-        "Exam 2"
-      ]
+      "datesBySection": {
+        "01": ["2026-03-18"],
+        "02": ["2026-03-18"],
+        "03": ["2026-03-18"],
+        "04": ["2026-03-18"],
+        "05": ["2026-03-18"],
+        "06": ["2026-03-18"]
+      },
+      "topics": ["Exam 2"]
     },
     {
       "lectureId": "l27-ucd",
-      "dates": [
-        "2026-03-19"
-      ],
-      "topics": [
-        "User-Centered Design"
-      ]
+      "datesBySection": {
+        "01": ["2026-03-19"],
+        "02": ["2026-03-19"],
+        "03": ["2026-03-19"],
+        "04": ["2026-03-19"],
+        "05": ["2026-03-23"],
+        "06": ["2026-03-19"]
+      },
+      "topics": ["User-Centered Design"]
     },
     {
       "lectureId": "l28-accessibility",
-      "dates": [
-        "2026-03-23"
-      ],
-      "topics": [
-        "Accessibility and Inclusivity"
-      ]
+      "datesBySection": {
+        "01": ["2026-03-23"],
+        "02": ["2026-03-23"],
+        "03": ["2026-03-23"],
+        "04": ["2026-03-23"],
+        "05": ["2026-03-25"],
+        "06": ["2026-03-23"]
+      },
+      "topics": ["Accessibility and Inclusivity"]
     },
     {
       "lectureId": "l29-gui1",
-      "dates": [
-        "2026-03-25"
-      ],
-      "topics": [
-        "GUIs in Java"
-      ]
+      "datesBySection": {
+        "01": ["2026-03-25"],
+        "02": ["2026-03-25"],
+        "03": ["2026-03-25"],
+        "04": ["2026-03-25"],
+        "05": ["2026-03-26"],
+        "06": ["2026-03-25"]
+      },
+      "topics": ["GUIs in Java"]
     },
     {
       "lectureId": "l30-gui2",
-      "dates": [
-        "2026-03-26"
-      ],
-      "topics": [
-        "GUI Patterns and Testing"
-      ]
+      "datesBySection": {
+        "01": ["2026-03-26"],
+        "02": ["2026-03-26"],
+        "03": ["2026-03-26"],
+        "04": ["2026-03-26"],
+        "05": ["2026-03-30"],
+        "06": ["2026-03-26"]
+      },
+      "topics": ["GUI Patterns and Testing"]
     },
     {
       "lectureId": "l31-concurrency1",
-      "dates": [
-        "2026-03-30"
-      ],
-      "topics": [
-        "Concurrency I"
-      ]
+      "datesBySection": {
+        "01": ["2026-03-30"],
+        "02": ["2026-03-30"],
+        "03": ["2026-03-30"],
+        "04": ["2026-03-30"],
+        "05": ["2026-04-01"],
+        "06": ["2026-03-30"]
+      },
+      "topics": ["Concurrency I"]
     },
     {
       "lectureId": "l32-concurrency2",
-      "dates": [
-        "2026-04-01"
-      ],
-      "topics": [
-        "Concurrency II: Asynchronous Programming"
-      ]
+      "datesBySection": {
+        "01": ["2026-04-01"],
+        "02": ["2026-04-01"],
+        "03": ["2026-04-01"],
+        "04": ["2026-04-01"],
+        "05": ["2026-04-02"],
+        "06": ["2026-04-01"]
+      },
+      "topics": ["Concurrency II: Asynchronous Programming"]
     },
     {
       "lectureId": "l33-event-architecture",
-      "dates": [
-        "2026-04-02"
-      ],
-      "topics": [
-        "Event-Driven Architecture"
-      ]
+      "datesBySection": {
+        "01": ["2026-04-02"],
+        "02": ["2026-04-02"],
+        "03": ["2026-04-02"],
+        "04": ["2026-04-02"],
+        "05": ["2026-04-06"],
+        "06": ["2026-04-02"]
+      },
+      "topics": ["Event-Driven Architecture"]
     },
     {
       "lectureId": "l34-performance",
-      "dates": [
-        "2026-04-06"
-      ],
-      "topics": [
-        "Performance"
-      ]
+      "datesBySection": {
+        "01": ["2026-04-06"],
+        "02": ["2026-04-06"],
+        "03": ["2026-04-06"],
+        "04": ["2026-04-06"],
+        "05": ["2026-04-08"],
+        "06": ["2026-04-06"]
+      },
+      "topics": ["Performance"]
     },
     {
       "lectureId": "l35-safety-reliability",
-      "dates": [
-        "2026-04-08"
-      ],
-      "topics": [
-        "Safety and Reliability"
-      ]
+      "datesBySection": {
+        "01": ["2026-04-08"],
+        "02": ["2026-04-08"],
+        "03": ["2026-04-08"],
+        "04": ["2026-04-08"],
+        "05": ["2026-04-09"],
+        "06": ["2026-04-08"]
+      },
+      "topics": ["Safety and Reliability"]
     },
     {
       "lectureId": "l36-sustainability",
-      "dates": [
-        "2026-04-09"
-      ],
-      "topics": [
-        "Sustainability"
-      ]
+      "datesBySection": {
+        "01": ["2026-04-09"],
+        "02": ["2026-04-09"],
+        "03": ["2026-04-09"],
+        "04": ["2026-04-09"],
+        "05": ["2026-04-13"],
+        "06": ["2026-04-09"]
+      },
+      "topics": ["Sustainability"]
     },
     {
       "lectureId": "l37-map-reduce",
-      "dates": [
-        "2026-04-13"
-      ],
-      "topics": [
-        "Design case-study: Map-Reduce"
-      ]
+      "datesBySection": {
+        "01": ["2026-04-13"],
+        "02": ["2026-04-13"],
+        "03": ["2026-04-13"],
+        "04": ["2026-04-13"],
+        "06": ["2026-04-13"]
+      },
+      "topics": ["Design case-study: Map-Reduce"]
     },
     {
       "lectureId": "l38-future-programming",
-      "dates": [
-        "2026-04-15"
-      ],
-      "topics": [
-        "The Future of Programming"
-      ]
+      "datesBySection": {
+        "01": ["2026-04-15"],
+        "02": ["2026-04-15"],
+        "03": ["2026-04-15"],
+        "04": ["2026-04-15"],
+        "05": ["2026-04-15"],
+        "06": ["2026-04-15"]
+      },
+      "topics": ["The Future of Programming"]
     },
     {
       "lectureId": "l39-review",
-      "dates": [
-        "2026-04-16"
-      ],
-      "topics": [
-        "Review"
-      ]
+      "datesBySection": {
+        "01": ["2026-04-16"],
+        "02": ["2026-04-16"],
+        "03": ["2026-04-16"],
+        "04": ["2026-04-16"],
+        "05": ["2026-04-16"],
+        "06": ["2026-04-16"]
+      },
+      "topics": ["Review"]
     }
   ],
   "labs": [
     {
       "id": "lab1-mon",
       "title": "Lab 1: Java Tooling and Setup",
-      "dates": [
-        "2026-01-07"
-      ],
-      "sections": [
-        "L05",
-        "L06",
-        "L07",
-        "L08",
-        "L09",
-        "L10",
-        "L11",
-        "L12",
-        "L13",
-        "L14"
-      ],
+      "dates": ["2026-01-07"],
+      "sections": ["L05", "L06", "L07", "L08", "L09", "L10", "L11", "L12", "L13", "L14"],
       "url": "/labs/lab1-java-setup",
       "notes": "Due to registrar scheduling that gives different numbers of class meetings to different sections, Lab 1 will be completed asynchronously (on students' own time). TAs will organize workshops for troubleshooting and co-working as needed."
     },
     {
       "id": "lab1-tue",
       "title": "Lab 1: Java Tooling and Setup",
-      "dates": [
-        "2026-01-07"
-      ],
-      "sections": [
-        "L01",
-        "L02",
-        "L04"
-      ],
+      "dates": ["2026-01-07"],
+      "sections": ["L01", "L02", "L04"],
       "url": "/labs/lab1-java-setup",
       "notes": "Due to registrar scheduling that gives different numbers of class meetings to different sections, Lab 1 will be completed asynchronously (on students' own time). TAs will organize workshops for troubleshooting and co-working as needed."
     },
     {
       "id": "lab2-mon",
       "title": "Lab 2: Java Abstraction and Data Types",
-      "dates": [
-        "2026-01-12"
-      ],
-      "sections": [
-        "L05",
-        "L06",
-        "L07",
-        "L08",
-        "L09",
-        "L10",
-        "L11",
-        "L12",
-        "L13",
-        "L14"
-      ],
+      "dates": ["2026-01-12"],
+      "sections": ["L05", "L06", "L07", "L08", "L09", "L10", "L11", "L12", "L13", "L14"],
       "url": "/labs/lab2-polymorphism-and-collections"
     },
     {
       "id": "lab2-tue",
       "title": "Lab 2: Java Abstraction and Data Types",
-      "dates": [
-        "2026-01-13"
-      ],
-      "sections": [
-        "L01",
-        "L02",
-        "L04"
-      ],
+      "dates": ["2026-01-13"],
+      "sections": ["L01", "L02", "L04"],
       "url": "/labs/lab2-polymorphism-and-collections"
     },
     {
       "id": "lab3-mon",
       "title": "Lab 3: Specification Detective",
-      "dates": [
-        "2026-01-19"
-      ],
-      "sections": [
-        "L05",
-        "L06",
-        "L07",
-        "L08",
-        "L09",
-        "L10",
-        "L11",
-        "L12",
-        "L13",
-        "L14"
-      ],
+      "dates": ["2026-01-19"],
+      "sections": ["L05", "L06", "L07", "L08", "L09", "L10", "L11", "L12", "L13", "L14"],
       "url": "/labs/lab3-dev-toolkit"
     },
     {
       "id": "lab3-tue",
       "title": "Lab 3: Developer Toolkit",
-      "dates": [
-        "2026-01-20"
-      ],
-      "sections": [
-        "L01",
-        "L02",
-        "L04"
-      ],
+      "dates": ["2026-01-20"],
+      "sections": ["L01", "L02", "L04"],
       "url": "/labs/lab3-dev-toolkit"
     },
     {
       "id": "lab4-mon",
       "title": "Lab 4: Changeability",
-      "dates": [
-        "2026-01-26"
-      ],
-      "sections": [
-        "L05",
-        "L06",
-        "L07",
-        "L08",
-        "L09",
-        "L10",
-        "L11",
-        "L12",
-        "L13",
-        "L14"
-      ],
+      "dates": ["2026-01-26"],
+      "sections": ["L05", "L06", "L07", "L08", "L09", "L10", "L11", "L12", "L13", "L14"],
       "url": "/labs/lab4-changeability"
     },
     {
       "id": "lab4-tue",
       "title": "Lab 4: Changeability",
-      "dates": [
-        "2026-01-27"
-      ],
-      "sections": [
-        "L01",
-        "L02",
-        "L04"
-      ],
+      "dates": ["2026-01-27"],
+      "sections": ["L01", "L02", "L04"],
       "url": "/labs/lab4-changeability"
     },
     {
       "id": "lab5-mon",
       "title": "Lab 5: Requirements Engineering",
-      "dates": [
-        "2026-02-02"
-      ],
-      "sections": [
-        "L05",
-        "L06",
-        "L07",
-        "L08",
-        "L09",
-        "L10",
-        "L11",
-        "L12",
-        "L13",
-        "L14"
-      ],
+      "dates": ["2026-02-02"],
+      "sections": ["L05", "L06", "L07", "L08", "L09", "L10", "L11", "L12", "L13", "L14"],
       "url": "/labs/lab5-requirements"
     },
     {
       "id": "lab5-tue",
       "title": "Lab 5: Requirements Engineering",
-      "dates": [
-        "2026-02-03"
-      ],
-      "sections": [
-        "L01",
-        "L02",
-        "L04"
-      ],
+      "dates": ["2026-02-03"],
+      "sections": ["L01", "L02", "L04"],
       "url": "/labs/lab5-requirements"
     },
     {
       "id": "lab6-mon",
       "title": "Lab 6: AI Coding Agents",
-      "dates": [
-        "2026-02-09"
-      ],
-      "sections": [
-        "L05",
-        "L06",
-        "L07",
-        "L08",
-        "L09",
-        "L10",
-        "L11",
-        "L12",
-        "L13",
-        "L14"
-      ],
+      "dates": ["2026-02-09"],
+      "sections": ["L05", "L06", "L07", "L08", "L09", "L10", "L11", "L12", "L13", "L14"],
       "url": "/labs/lab6-copilot"
     },
     {
       "id": "lab6-tue",
       "title": "Lab 6: AI Coding Agents",
-      "dates": [
-        "2026-02-10"
-      ],
-      "sections": [
-        "L01",
-        "L02",
-        "L04"
-      ],
+      "dates": ["2026-02-10"],
+      "sections": ["L01", "L02", "L04"],
       "url": "/labs/lab6-copilot"
     },
     {
       "id": "lab7-mon",
       "title": "Lab 7: Debugging",
-      "dates": [
-        "2026-02-16"
-      ],
-      "sections": [
-        "L05",
-        "L06",
-        "L07",
-        "L08",
-        "L09",
-        "L10",
-        "L11",
-        "L12",
-        "L13",
-        "L14"
-      ],
+      "dates": ["2026-02-16"],
+      "sections": ["L05", "L06", "L07", "L08", "L09", "L10", "L11", "L12", "L13", "L14"],
       "url": "/labs/lab7-debugging"
     },
     {
       "id": "lab7-tue",
       "title": "Lab 7: Debugging",
-      "dates": [
-        "2026-02-17"
-      ],
-      "sections": [
-        "L01",
-        "L02",
-        "L04"
-      ],
+      "dates": ["2026-02-17"],
+      "sections": ["L01", "L02", "L04"],
       "url": "/labs/lab7-debugging"
     },
     {
       "id": "lab8-mon",
       "title": "Lab 8: Architecture",
-      "dates": [
-        "2026-02-23"
-      ],
-      "sections": [
-        "L05",
-        "L06",
-        "L07",
-        "L08",
-        "L09",
-        "L10",
-        "L11",
-        "L12",
-        "L13",
-        "L14"
-      ],
+      "dates": ["2026-02-23"],
+      "sections": ["L05", "L06", "L07", "L08", "L09", "L10", "L11", "L12", "L13", "L14"],
       "url": "/labs/lab8-architecture"
     },
     {
       "id": "lab8-tue",
       "title": "Lab 8: Architecture",
-      "dates": [
-        "2026-02-24"
-      ],
-      "sections": [
-        "L01",
-        "L02",
-        "L04"
-      ],
+      "dates": ["2026-02-24"],
+      "sections": ["L01", "L02", "L04"],
       "url": "/labs/lab8-architecture"
     },
     {
       "id": "lab9-mon",
       "title": "Lab 9: Network Fault Tolerance",
-      "dates": [
-        "2026-03-09"
-      ],
-      "sections": [
-        "L05",
-        "L06",
-        "L07",
-        "L08",
-        "L09",
-        "L10",
-        "L11",
-        "L12",
-        "L13",
-        "L14"
-      ],
+      "dates": ["2026-03-09"],
+      "sections": ["L05", "L06", "L07", "L08", "L09", "L10", "L11", "L12", "L13", "L14"],
       "url": "/labs/lab9-network-cli"
     },
     {
       "id": "lab9-tue",
       "title": "Lab 9: Network Fault Tolerance",
-      "dates": [
-        "2026-03-10"
-      ],
-      "sections": [
-        "L01",
-        "L02",
-        "L04"
-      ],
+      "dates": ["2026-03-10"],
+      "sections": ["L01", "L02", "L04"],
       "url": "/labs/lab9-network-cli"
     },
     {
       "id": "lab10-mon",
       "title": "Lab 10: Usability",
-      "dates": [
-        "2026-03-16"
-      ],
-      "sections": [
-        "L05",
-        "L06",
-        "L07",
-        "L08",
-        "L09",
-        "L10",
-        "L11",
-        "L12",
-        "L13",
-        "L14"
-      ],
+      "dates": ["2026-03-16"],
+      "sections": ["L05", "L06", "L07", "L08", "L09", "L10", "L11", "L12", "L13", "L14"],
       "url": "/labs/lab10-usability"
     },
     {
       "id": "lab10-tue",
       "title": "Lab 10: Usability",
-      "dates": [
-        "2026-03-17"
-      ],
-      "sections": [
-        "L01",
-        "L02",
-        "L04"
-      ],
+      "dates": ["2026-03-17"],
+      "sections": ["L01", "L02", "L04"],
       "url": "/labs/lab10-usability"
     },
     {
       "id": "lab11-mon",
       "title": "Lab 11: User-Centered Design",
-      "dates": [
-        "2026-03-23"
-      ],
-      "sections": [
-        "L05",
-        "L06",
-        "L07",
-        "L08",
-        "L09",
-        "L10",
-        "L11",
-        "L12",
-        "L13",
-        "L14"
-      ],
+      "dates": ["2026-03-23"],
+      "sections": ["L05", "L06", "L07", "L08", "L09", "L10", "L11", "L12", "L13", "L14"],
       "url": "/labs/lab11-ucd"
     },
     {
       "id": "lab11-tue",
       "title": "Lab 11: User-Centered Design",
-      "dates": [
-        "2026-03-24"
-      ],
-      "sections": [
-        "L01",
-        "L02",
-        "L04"
-      ],
+      "dates": ["2026-03-24"],
+      "sections": ["L01", "L02", "L04"],
       "url": "/labs/lab11-ucd"
     },
     {
       "id": "lab12-mon",
       "title": "Lab 12: GUI",
-      "dates": [
-        "2026-03-30"
-      ],
-      "sections": [
-        "L05",
-        "L06",
-        "L07",
-        "L08",
-        "L09",
-        "L10",
-        "L11",
-        "L12",
-        "L13",
-        "L14"
-      ],
+      "dates": ["2026-03-30"],
+      "sections": ["L05", "L06", "L07", "L08", "L09", "L10", "L11", "L12", "L13", "L14"],
       "url": "/labs/lab12-gui"
     },
     {
       "id": "lab12-tue",
       "title": "Lab 12: GUI",
-      "dates": [
-        "2026-03-31"
-      ],
-      "sections": [
-        "L01",
-        "L02",
-        "L04"
-      ],
+      "dates": ["2026-03-31"],
+      "sections": ["L01", "L02", "L04"],
       "url": "/labs/lab12-gui"
     },
     {
       "id": "lab13-mon",
       "title": "Lab 13: Asynchronous Programming",
-      "dates": [
-        "2026-04-06"
-      ],
-      "sections": [
-        "L05",
-        "L06",
-        "L07",
-        "L08",
-        "L09",
-        "L10",
-        "L11",
-        "L12",
-        "L13",
-        "L14"
-      ],
+      "dates": ["2026-04-06"],
+      "sections": ["L05", "L06", "L07", "L08", "L09", "L10", "L11", "L12", "L13", "L14"],
       "url": "/labs/lab13-async"
     },
     {
       "id": "lab13-tue",
       "title": "Lab 13: Asynchronous Programming",
-      "dates": [
-        "2026-04-07"
-      ],
-      "sections": [
-        "L01",
-        "L02",
-        "L04"
-      ],
+      "dates": ["2026-04-07"],
+      "sections": ["L01", "L02", "L04"],
       "url": "/labs/lab13-async"
     },
     {
       "id": "lab14-mon",
       "title": "Lab 14: Prep for Future of Programming",
-      "dates": [
-        "2026-04-13"
-      ],
-      "sections": [
-        "L05",
-        "L06",
-        "L07",
-        "L08",
-        "L09",
-        "L10",
-        "L11",
-        "L12",
-        "L13",
-        "L14"
-      ],
+      "dates": ["2026-04-13"],
+      "sections": ["L05", "L06", "L07", "L08", "L09", "L10", "L11", "L12", "L13", "L14"],
       "url": "/labs/lab14-future-prep"
     },
     {
       "id": "lab14-tue",
       "title": "Lab 14: Prep for Future of Programming",
-      "dates": [
-        "2026-04-14"
-      ],
-      "sections": [
-        "L01",
-        "L02",
-        "L04"
-      ],
+      "dates": ["2026-04-14"],
+      "sections": ["L01", "L02", "L04"],
       "url": "/labs/lab14-future-prep"
     }
   ],
@@ -1375,41 +983,15 @@
   "scheduleNotes": [
     {
       "message": "Due to registrar scheduling that gives different numbers of class meetings to different sections, Lab 1 lab will be completed asynchronously (on students' own time). TAs will organize workshops for troubleshooting and co-working as needed.",
-      "weeks": [
-        1
-      ],
-      "labSections": [
-        "L05",
-        "L06",
-        "L07",
-        "L08",
-        "L09",
-        "L10",
-        "L11",
-        "L12",
-        "L13",
-        "L14"
-      ],
+      "weeks": [1],
+      "labSections": ["L05", "L06", "L07", "L08", "L09", "L10", "L11", "L12", "L13", "L14"],
       "status": "info",
       "date": "2026-01-07"
     },
     {
       "message": "Due to registrar scheduling that gives different numbers of class meetings to different sections, Lab 3 will be completed asynchronously (on students' own time). TAs will hold extra office hours for troubleshooting and co-working as needed.",
-      "weeks": [
-        3
-      ],
-      "labSections": [
-        "L05",
-        "L06",
-        "L07",
-        "L08",
-        "L09",
-        "L10",
-        "L11",
-        "L12",
-        "L13",
-        "L14"
-      ],
+      "weeks": [3],
+      "labSections": ["L05", "L06", "L07", "L08", "L09", "L10", "L11", "L12", "L13", "L14"],
       "status": "info",
       "date": "2026-01-07"
     }
@@ -1431,9 +1013,7 @@
   "metadata": {
     "department": "Khoury College of Computer Sciences",
     "credits": 4,
-    "prerequisites": [
-      "CS 2100"
-    ],
+    "prerequisites": ["CS 2100"],
     "description": "Building on foundations introduced in CS 2100, examines program design at increasing scales of complexity. Reviews abstraction, encapsulation, inheritance, and interfaces in statically-typed object-oriented languages. Presents a comparative approach to software design patterns and paradigms, including object-oriented and functional programming. Fosters a deeper understanding of the principles of program design, including interface design, test-driven development, graphical design notations, reusable software components, and open-source ecosystems. Illustrates the impact of design-time decisions on software correctness, including accessibility, changeability, performance, reusability and privacy. Students collaborate throughout the semester to design and implement a large software project."
   }
 }

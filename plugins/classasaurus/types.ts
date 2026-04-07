@@ -156,7 +156,10 @@ export interface LectureMapping {
   title?: string;
   
   /** Date(s) when this lecture is covered */
-  dates: DateString[];
+  dates: DateString[]; //optional if using datesBySection
+
+  /** Section-specific dates (preferred over `dates` when section id matches) */
+  datesBySection?: Record<string, DateString[]>; //optional mapping of section ID to dates for that section 
   
   /** Optional section IDs if this lecture is only for specific sections */
   sections?: string[];

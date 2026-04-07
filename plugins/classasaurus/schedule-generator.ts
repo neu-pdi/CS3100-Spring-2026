@@ -47,7 +47,6 @@ function isHoliday(date: DateString, holidays: Holiday[]): Holiday | undefined {
   const checkDate = parseISO(date);
   return holidays.find((holiday) => {
     if (holiday.endDate) {
-      // Multi-day holiday - check if date is within the range
       return isWithinInterval(checkDate, {
         start: parseISO(holiday.date),
         end: parseISO(holiday.endDate)
@@ -70,23 +69,18 @@ function generateMeetingDates(
   const endDate = parseISO(section.endDate || courseEndDate);
   const meetingDates = new Map<DateString, MeetingPattern[]>();
   
-  // Iterate through each day in the date range
   let currentDate = startDate;
   while (currentDate <= endDate) {
     const dateStr = formatDate(currentDate);
     const dayOfWeek = getDayOfWeek(currentDate);
     
-    // Check if there's a meeting on this day of week
     for (const meeting of section.meetings) {
       if (meeting.days.includes(dayOfWeek)) {
-        // Include all meeting days, even if they fall on holidays
-        // (holidays will be marked as cancelled in the schedule entries)
         const existing = meetingDates.get(dateStr) || [];
         meetingDates.set(dateStr, [...existing, meeting]);
       }
     }
     
-    // Move to next day
     currentDate = addDays(currentDate, 1);
   }
   
@@ -94,7 +88,51 @@ function generateMeetingDates(
 }
 
 /**
- * Find lecture for a given date
+ * Get dates for a lecture mapping for a specific section.
+ * Prefers datesBySection over dates when a section-specific entry exists.
+ */
+function getLectureDatesForSection(
+  lecture: LectureMapping,
+  sectionId: string
+): DateString[] {
+  const sectionDates = lecture.datesBySection?.[sectionId];
+  if (Array.isArray(sectionDates) && sectionDates.length > 0) {
+    return sectionDates; //preferred if section-specific dates are provided and non-empty
+  }
+  return lecture.dates ?? [];
+}
+
+
+/**
+ * Validate lecture mappings and warn if any have no dates configured.
+ */
+function validateLectureMappings(lectures: LectureMapping[]): void {
+  for (const lecture of lectures) {
+    
+    const hasGlobalDates = Array.isArray(lecture.dates) && lecture.dates.length > 0;
+    const hasSectionDates =
+      !!lecture.datesBySection &&
+      Object.values(lecture.datesBySection).some(
+        (dates) => Array.isArray(dates) && dates.length > 0
+      );
+
+    if (!hasGlobalDates && !hasSectionDates) {
+      console.warn(
+        `[schedule-generator] Lecture "${lecture.lectureId}" has no dates. Provide "dates" or "datesBySection".`
+      );
+    }
+
+    if (lecture.datesBySection && !hasSectionDates) {
+      console.warn(
+        `[schedule-generator] Lecture "${lecture.lectureId}" has "datesBySection" but no non-empty section date arrays.`
+      );
+    }
+  }
+}
+
+/**
+ * Find lecture for a given date and section.
+ * Uses section-specific dates (datesBySection) if available, falls back to global dates.
  */
 function findLectureForDate(
   date: DateString,
@@ -102,17 +140,17 @@ function findLectureForDate(
   lectures: LectureMapping[]
 ): LectureMapping | undefined {
   return lectures.find((lecture) => {
-    // Check if this lecture is for this date
-    if (!lecture.dates.includes(date)) {
+    const lectureDates = getLectureDatesForSection(lecture, sectionId);
+
+    if (!lectureDates.includes(date)) {
       return false;
     }
     
-    // Check if lecture is section-specific
+    // Check if lecture is restricted to specific sections
     if (lecture.sections && lecture.sections.length > 0) {
       return lecture.sections.includes(sectionId);
     }
     
-    // Lecture applies to all sections
     return true;
   });
 }
@@ -128,17 +166,14 @@ function findLabForDate(
   if (!labs || labs.length === 0) return undefined;
   
   return labs.find((lab) => {
-    // Check if this lab is for this date
     if (!lab.dates.includes(date)) {
       return false;
     }
     
-    // Check if lab is section-specific
     if (lab.sections && lab.sections.length > 0) {
       return lab.sections.includes(sectionId);
     }
     
-    // Lab applies to all sections
     return true;
   });
 }
@@ -166,12 +201,11 @@ function generateSectionSchedule(
   const scheduledLectureDates = new Set<DateString>();
   if (config.lectures && config.lectures.length > 0) {
     for (const lecture of config.lectures) {
-      // Check if this lecture applies to this section
       const appliesToSection = !lecture.sections || lecture.sections.length === 0 || lecture.sections.includes(section.id);
       if (appliesToSection) {
-        // Add all dates for this lecture
-        for (const lectureDate of lecture.dates) {
-          // Check if date is within course date range
+        // Use section-specific dates if available, else global dates
+        const lectureDates = getLectureDatesForSection(lecture, section.id);
+        for (const lectureDate of lectureDates) {
           const dateObj = parseISO(lectureDate);
           const startDate = parseISO(section.startDate || config.startDate);
           const endDate = parseISO(section.endDate || config.endDate);
@@ -187,12 +221,9 @@ function generateSectionSchedule(
   const scheduledLabDates = new Set<DateString>();
   if (config.labs && config.labs.length > 0) {
     for (const lab of config.labs) {
-      // Check if this lab applies to this section (labs can be associated with lecture sections too)
       const appliesToSection = !lab.sections || lab.sections.length === 0;
       if (appliesToSection) {
-        // Add all dates for this lab
         for (const labDate of lab.dates) {
-          // Check if date is within course date range
           const dateObj = parseISO(labDate);
           const startDate = parseISO(section.startDate || config.startDate);
           const endDate = parseISO(section.endDate || config.endDate);
@@ -204,12 +235,9 @@ function generateSectionSchedule(
     }
   }
 
-  // Add scheduled lecture/lab dates that don't match normal meeting pattern
   const allScheduledDates = new Set([...scheduledLectureDates, ...scheduledLabDates]);
   for (const scheduledDate of allScheduledDates) {
     if (!meetingDates.has(scheduledDate)) {
-      // Create a synthetic meeting pattern for this date
-      // Use the first meeting pattern from the section, or create a default one
       const defaultMeeting: MeetingPattern = section.meetings.length > 0
         ? section.meetings[0]
         : {
@@ -227,7 +255,6 @@ function generateSectionSchedule(
   const schedule: ScheduleEntry[] = [];
   let meetingNumber = 1;
   
-  // Sort dates chronologically
   const sortedDates = Array.from(meetingDates.keys()).sort();
   
   for (const date of sortedDates) {
@@ -273,7 +300,6 @@ function generateLabSectionSchedule(
   const meetingDates = generateMeetingDates(
     {
       ...labSection,
-      // Lab sections already only carry lab meetings, so the shape matches MeetingPattern expectations
       meetings: labSection.meetings,
     },
     config.startDate,
@@ -281,16 +307,12 @@ function generateLabSectionSchedule(
     allHolidays
   );
 
-  // Find all labs scheduled for this lab section that might not match normal meeting pattern
   const scheduledLabDates = new Set<DateString>();
   if (config.labs && config.labs.length > 0) {
     for (const lab of config.labs) {
-      // Check if this lab applies to this lab section
       const appliesToSection = !lab.sections || lab.sections.length === 0 || lab.sections.includes(labSection.id);
       if (appliesToSection) {
-        // Add all dates for this lab
         for (const labDate of lab.dates) {
-          // Check if date is within course date range
           const dateObj = parseISO(labDate);
           const startDate = parseISO(labSection.startDate || config.startDate);
           const endDate = parseISO(labSection.endDate || config.endDate);
@@ -302,11 +324,8 @@ function generateLabSectionSchedule(
     }
   }
 
-  // Add scheduled lab dates that don't match normal meeting pattern
   for (const labDate of scheduledLabDates) {
     if (!meetingDates.has(labDate)) {
-      // Create a synthetic meeting pattern for this date
-      // Use the first meeting pattern from the lab section, or create a default one
       const defaultMeeting: MeetingPattern = labSection.meetings.length > 0
         ? labSection.meetings[0]
         : {
@@ -357,18 +376,18 @@ function generateLabSectionSchedule(
  * Generate complete course schedule
  */
 export function generateSchedule(config: CourseConfig): CourseSchedule {
+  validateLectureMappings(config.lectures || []);
+
   const scheduleBySection: { [sectionId: string]: ScheduleEntry[] } = {};
   const allEntries: ScheduleEntry[] = [];
   const labScheduleBySection: { [labSectionId: string]: ScheduleEntry[] } = {};
   
-  // Generate schedule for each section
   for (const section of config.sections) {
     const sectionSchedule = generateSectionSchedule(section, config);
     scheduleBySection[section.id] = sectionSchedule;
     allEntries.push(...sectionSchedule);
   }
 
-  // Generate schedule for each lab section (if provided)
   if (config.labSections && config.labSections.length > 0) {
     for (const labSection of config.labSections) {
       const labSectionSchedule = generateLabSectionSchedule(labSection, config);
@@ -386,10 +405,8 @@ export function generateSchedule(config: CourseConfig): CourseSchedule {
     }
   }
   
-  // Sort all entries by date
   allEntries.sort((a, b) => a.date.localeCompare(b.date));
   
-  // Extract important dates
   const examDates = config.holidays
     .filter((h) => h.type === 'exam-period')
     .map((h) => h.date);
@@ -455,4 +472,3 @@ export function exportScheduleToMarkdown(
   
   return markdown;
 }
-
