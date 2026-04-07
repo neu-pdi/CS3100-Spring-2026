@@ -27,7 +27,6 @@ This lab has a very different energy from the coding labs. Your role shifts from
 - **Keep table presentations short** — each pair gets 2 minutes max. Time it.
 - **Seed the class discussion** (Part 3) with specific questions, not "what did you think?" Use the prompts below.
 - **It's OK if students disagree.** The best discussions happen when they do. Your job is to make sure disagreement stays respectful and evidence-based ("what makes you think that?" not "you're wrong").
-- **Students who are quiet in coding labs sometimes shine here.** Create space for them.
 :::
 
 ---
@@ -40,14 +39,14 @@ Pick **one** reading from the list below. Read it in lab. As you read, jot down 
 2. **The strongest evidence** — what's the most convincing data point or example?
 3. **Your reaction** — do you agree? What's missing? What surprised you?
 
-| # | Reading | Time | Key question |
-|---|---------|------|-------------|
-| 1 | [METR: "Measuring the Impact of AI on Experienced Developer Productivity"](https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/) — Read the blog post summary, not the full paper. | 12 min | Experienced devs were 19% *slower* with AI — while believing they were 20% faster. Why? |
-| 2 | ["The Debt Behind the AI Boom"](https://arxiv.org/html/2603.28592v1) — Read abstract, introduction, and conclusion (skip the methodology). | 12 min | 15% of AI-generated commits introduce issues. 24% of those survive unfixed. What does this mean for codebases you'll work on? |
-| 3 | [Brynjolfsson et al., "Canaries in the Coal Mine?"](https://digitaleconomy.stanford.edu/publications/canaries-in-the-coal-mine/) — Read the summary/blog post, not the full paper. | 10 min | Entry-level developer employment dropped ~20% from its 2022 peak. Is this AI, the hiring cycle, or both? What evidence would distinguish them? |
-| 4 | [David Parnas, ICSE 2025 Keynote](https://www.youtube.com/watch?v=YyFouLdwxY0) — Watch 0:00–12:00. | 12 min | The inventor of information hiding (L6) argues AI should be called "Imitation Intelligence." What's his point, and is he right? |
-| 5 | [Martin Kleppmann: "AI Will Make Formal Verification Mainstream"](https://martin.kleppmann.com/2025/12/08/ai-formal-verification.html) | 10 min | If AI generates code we can't fully review, should we *prove* it correct instead of testing it? |
-| 6 | Any article or podcast shared on the **"The Future of Programming" discussion board** in Pawtograder — staff and students have been adding to this. | Varies | What did you find interesting and why? |
+| # | Reading | Key question |
+|---|---------|-------------|
+| 1 | [METR: "Measuring the Impact of AI on Experienced Developer Productivity"](https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/) — Read the blog post summary, not the full paper. | Experienced devs were 19% *slower* with AI — while believing they were 20% faster. Why? |
+| 2 | ["The Debt Behind the AI Boom"](https://arxiv.org/html/2603.28592v1) — Read abstract, introduction, and conclusion (skip the methodology). | 15% of AI-generated commits introduce issues. 24% of those survive unfixed. What does this mean for codebases you'll work on? |
+| 3 | [Brynjolfsson et al., "Canaries in the Coal Mine?"](https://digitaleconomy.stanford.edu/publications/canaries-in-the-coal-mine/) — Read the summary/blog post, not the full paper. | Entry-level developer employment dropped ~20% from its 2022 peak. Is this AI, the hiring cycle, or both? What evidence would distinguish them? |
+| 4 | [David Parnas, ICSE 2025 Keynote](https://www.youtube.com/watch?v=YyFouLdwxY0) — Watch 0:00–12:00. | The inventor of information hiding (L6) argues AI should be called "Imitation Intelligence." What's his point, and is he right? |
+| 5 | [Martin Kleppmann: "AI Will Make Formal Verification Mainstream"](https://martin.kleppmann.com/2025/12/08/ai-formal-verification.html) | If AI generates code we can't fully review, should we *prove* it correct instead of testing it? |
+| 6 | Any article or podcast shared on the **"The Future of Programming" discussion board** in Pawtograder — staff and students have been adding to this. | What did you find interesting and why? |
 
 :::note For TAs
 If students finish early, encourage them to skim a second reading — it makes the pair discussion richer when partners have read different things. Students who pick #4 (Parnas video) should use headphones or pair up to watch together.
@@ -76,7 +75,7 @@ As a pair, prepare a **one-sentence takeaway** you want your table to hear.
 
 ## Part 3: Table Share & Class Discussion (25 min)
 
-### Table share (8 min)
+### Table share (10 min)
 
 Join a table group of 3-4 pairs (6-8 students). Each pair gives a **2-minute summary**:
 - What you read
@@ -89,14 +88,14 @@ After all pairs present, the table identifies: **What's the most interesting dis
 Time this strictly — 2 minutes per pair. Use a visible timer. This keeps energy up and prevents any one pair from dominating.
 :::
 
-### Class discussion (17 min)
+### Class discussion (15 min)
 
 :::note For TAs
 Bring the class together. Start by asking each table to report their "most interesting disagreement" (1 min per table). Then open the floor with the prompts below. You don't need to get through all of them — go where the energy is.
 
 **Facilitation tips:**
 - After a student speaks, ask "Does anyone disagree?" before moving on
-- If discussion stalls, share a specific data point: "The METR study found a 39-percentage-point perception gap — devs thought they were 20% faster but were actually 19% slower. Does that match your experience?"
+- If discussion stalls, share a specific data point: "The METR study found a 39-percentage-point perception gap — devs thought they were 20% faster but were actually 19% slower. Does that match your experience?" (bring your own ideas for specific data points)
 - If one person dominates, say "Let's hear from someone who hasn't spoken yet"
 - It's fine to share your own opinion — students appreciate when TAs have views — but frame it as "I think..." not "the answer is..."
 :::
@@ -109,7 +108,7 @@ Bring the class together. Start by asking each table to report their "most inter
 
 3. **Essential vs. accidental:** Brooks said no technology would deliver 10x productivity. Has AI proven him wrong, or is it just another tool that moves accidental complexity around? Think about your GA1 project — what parts were genuinely hard regardless of tools?
 
-4. **Vibe coding:** Where on the vibe coding spectrum should a professional work? Does it depend on the blast radius ([L35](/lecture-notes/l35-safety-reliability))? Is vibe coding ever acceptable in production?
+4. **Vibe coding:** Where on the vibe coding spectrum should a professional work? Does it depend on the blast radius ([L35](/lecture-notes/l35-safety-reliability))? What kind of "vibe coding" could ever be acceptable in production?
 
 5. **Regulation:** Parnas says we should regulate critical software like bridges — with licensed engineers. Is that realistic? What would it mean for your career?
 
@@ -123,22 +122,9 @@ Write this individually. Submit through Pawtograder.
 
 ### REFLECTION.md
 
-**Section 1: What I Read**
-- Which reading did you choose?
-- One sentence: the core claim
-- One sentence: did you find it convincing, and why?
-
-**Section 2: The Discussion**
-- What was the most interesting point someone else raised? (Attribute it: "My partner said..." or "Someone at my table argued...")
-- Did anyone change your mind about something? What and why?
-
-**Section 3: The Semester**
-- What's one thing you learned this semester that you didn't expect to learn?
-- What's one skill from this course that you think will still matter in 10 years? Why?
-- What's one area where you accumulated "learning debt" — something you relied on AI for that you couldn't explain to a TA? Is it worth paying down?
-
-**Section 4: What's Next**
-- What do you want to learn next? (A course, a technology, a skill, or a question you want to answer.)
+- **What I read:** Which reading did you choose? Paste your notes from Part 1 (core claim, strongest evidence, your reaction).
+- **The discussion:** What was the most interesting point someone else raised? (Attribute it: "My partner said..." or "Someone at my table argued...") Did anyone change your mind about something? What and why?
+- **What's next:** What do you want to learn next? (A course, a technology, a skill, or a question you want to answer.)
 
 ---
 
