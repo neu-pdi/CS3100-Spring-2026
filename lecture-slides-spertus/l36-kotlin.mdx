@@ -1,0 +1,625 @@
+---
+sidebar_position: 35
+title: "Kotlin: A Better Java"
+---
+
+import RevealJS, { Slide } from '@site/src/components/RevealJS';
+import Img from '@site/src/components/Img';
+import PollSlide from '@site/src/components/PollSlide';
+import CodeBlock from '@theme/CodeBlock';
+
+<style>
+{`
+  .reveal {
+    font-size: 32px;
+  }
+`}
+</style>
+
+<RevealJS transition="slide">
+
+<Slide>
+
+## Poll: What's your least favorite thing about Java?
+
+<PollSlide username='espertus'
+  choices={[]}
+/>
+
+This is a word cloud poll, so answer briefly, with hyphens separating words (e.g., `null-pointers`)
+
+<aside className="notes">
+- word cloud
+</aside>
+
+</Slide>
+
+<Slide>
+## Common Criticisms of Java
+
+* Verbosity and boilerplate code
+
+* Everything must be in a class
+
+* Lack of null-safety
+
+* Checked exceptions
+
+</Slide>
+
+<Slide>
+
+## What Is Kotlin?
+
+<ul style={{lineHeight: '1.6'}}>
+  <li>Created by <strong>JetBrains</strong> (makers of IntelliJ IDEA), released 2016</li>
+  <li>Designed to be <strong>fully interoperable with Java</strong> — runs on the JVM</li>
+  <li>Goals: fix Java's pain points while staying familiar to Java developers</li>
+  <li>In 2017, Google named it a <strong>first-class language for Android</strong></li>
+  <li>Today used in Android, backend (Spring), and multiplatform development</li>
+</ul>
+
+</Slide>
+
+<Slide>
+
+## Java and Kotlin on the JVM
+
+
+<div style={{display: 'flex', gap: '2em', marginBottom: '0.5em'}}>
+
+<div style={{flex: '0 0 45%'}}>
+
+**Java**
+```java
+static int cube(int x) {
+    return x * x * x;
+}
+public static void main(String[] args) {
+    System.out.println(cube(3));
+}
+```
+
+</div>
+
+<div style={{flex: '0 0 45%'}}>
+
+**Kotlin**
+```kotlin
+fun cube(x: Int) = x * x * x
+
+fun main() {
+    println(cube(3))
+}
+```
+
+</div>
+
+</div>
+
+<div style={{textAlign: 'center', marginBottom: '0.4em'}}>⬇️ compiler ⬇️</div>
+
+**Byte Code**
+
+```
+static cube(I)I        public static main(Ljava/lang/String;)V
+    ILOAD 0                L0
+    ILOAD 0                LINENUMBER 8 L0
+    IMUL                   GETSTATIC System.out : Ljava/io/PrintStream;
+    ILOAD 0                ICONST_3
+    IMUL                   INVOKESTATIC Main.cube (I)I
+    IRETURN                INVOKEVIRTUAL java/io/PrintStream.println (I)V
+```
+
+<div style={{display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '0.5em', marginTop: '0.4em'}}>
+  <span>JVM ➡️</span>
+  <span style={{fontSize: '1.4em', fontWeight: 'bold'}}>27</span>
+</div>
+
+</Slide>
+
+<Slide>
+
+## A Closer Look
+
+<div style={{display: 'flex', gap: '2em', marginBottom: '0.5em'}}>
+
+<div style={{flex: '0 0 45%'}}>
+
+**Java**
+```java
+public MyClass {
+  static int cube(int x) {
+    return x * x * x;
+  }
+
+  public static void main(String[] args) {
+    System.out.println(cube(3));
+  }
+}
+```
+
+</div>
+
+<div style={{flex: '0 0 45%'}}>
+
+**Kotlin**
+```kotlin
+fun cube(x: Int) = x * x * x
+
+fun main() {
+  println(cube(3))
+}
+```
+
+<div>
+* Code outside class (top-level functions)
+* Visibility defaults to `public`
+* `fun` keyword
+* Different parameter lists
+  * name followed by `:` and type
+  * all types are capitalized (objects)
+* A function body can be an expression
+* Return type can be inferred
+</div>
+
+</div>
+
+</div>
+
+
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Kotlin Koans
+
+An interactive Kotlin tutorial
+
+https://play.kotlinlang.org/koans/Introduction/Hello,%20world!/Task.kt
+
+Complete Koan 1: `Hello, world!`
+
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+<Slide>
+## Remember Telescoping Constructors (L17)?
+<div style={{ fontSize: '.8em' }}>
+```java
+public class Recipe {
+  // Telescoping constructors — each adds one more parameter
+  Recipe(String name) { this(name, List.of(), List.of(), List.of(), null, false); }
+  Recipe(String name, List<Ingredient> ingredients) { this(name, ingredients, List.of(), List.of(), null, false); }
+  Recipe(String name, List<Ingredient> ingredients, List<String> instructions) { ... }
+  Recipe(String name, List<Ingredient> ingredients, List<String> instructions, List<String> notes) { ... }
+  Recipe(String name, List<Ingredient> ingredients, List<String> instructions, List<String> notes, String source) { ... }
+  Recipe(String name, List<Ingredient> ingredients, List<String> instructions, List<String> notes, String source, boolean isVegan) { ... }
+}
+```
+</div>
+
+
+</Slide>
+
+
+<Slide>
+
+## Default Arguments
+
+**Java**
+```java
+void greet(String name, String greeting, int times) {
+    for (int i = 0; i < times; i++) {
+        System.out.printf("%s, %s\n", greeting, name);
+    }
+}
+void greet(String name, String greeting) { greet(name, greeting, 1); }
+void greet(String name) { greet(name, "Hello", 1); }
+```
+
+**Kotlin**
+```kotlin
+fun greet(name: String, greeting: String = "Hello", times: Int = 1) {
+    repeat(times) { println("$greeting, $name!") }
+}
+```
+
+As in Python and JavaScript
+* Parameters can have default values
+* String templates are built-in
+
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+
+<Slide>
+
+## Named Arguments
+
+<div style={{display: 'flex', gap: '2em', alignItems: 'flex-start', marginTop: '0.5em'}}>
+
+<div style={{flex: '0 0 48%'}}>
+
+**Java**
+```java
+void createUser(String firstName,
+    String lastName, String email) { ... }
+
+createUser("John", "Smith",
+    "john@example.com");
+
+// or is it:
+createUser("Smith", "John",
+    "john@example.com");
+```
+
+</div>
+
+<div style={{flex: '0 0 48%'}}>
+
+**Kotlin**
+```kotlin
+fun createUser(firstName: String,
+    lastName: String, email: String) { ... }
+
+createUser(
+    firstName = "John",
+    lastName = "Smith",
+    email = "john@example.com")
+
+// This also works:
+createUser(
+    lastName = "Smith",
+    firstName = "John",
+    email = "john@example.com")
+```
+
+</div>
+
+</div>
+
+</Slide>
+
+
+<Slide>
+
+## Named Arguments: `joinToString`
+
+<div style={{ fontSize: '.8em' }}>
+
+`joinToString` is declared with default parameter values:
+
+```kotlin
+fun joinToString(
+    separator: String = ", ",
+    prefix: String = "",
+    postfix: String = "",
+    /* ... */
+): String
+```
+
+Make `joinOptions()` return JSON format (e.g. `[a, b, c]`) using only two arguments:
+
+```kotlin
+fun joinOptions(options: Collection<String>) =
+    options.joinToString(TODO())
+```
+
+https://play.kotlinlang.org/koans/Introduction/Named%20arguments/Task.kt
+</div>
+
+</Slide>
+
+<Slide>
+
+## Default Arguments
+
+<div style={{ fontSize: '.8em' }}>
+Replace all these Java overloads:
+
+```java
+public String foo(String name, int number, boolean toUpperCase) {
+    return (toUpperCase ? name.toUpperCase() : name) + number;
+}
+public String foo(String name, int number) {
+    return foo(name, number, false);
+}
+public String foo(String name, boolean toUpperCase) {
+    return foo(name, 42, toUpperCase);
+}
+public String foo(String name) {
+    return foo(name, 42);
+}
+```
+
+with one Kotlin function so that `useFoo()` compiles:
+
+```kotlin
+fun useFoo() = listOf(
+        foo("a"),
+        foo("b", number = 1),
+        foo("c", toUpperCase = true),
+        foo(name = "d", number = 2, toUpperCase = true)
+)
+```
+
+https://play.kotlinlang.org/koans/Introduction/Default%20arguments/Task.kt
+</div>
+
+</Slide>
+<Slide>
+
+## Nullable Types
+
+In Java, any reference can be `null` — the compiler won't stop you:
+
+```java
+String name = null;
+System.out.println(name.length()); // NullPointerException at runtime
+```
+
+In Kotlin, non-nullable is the default:
+
+```kotlin
+var name: String = null  // does not compile
+var name: String? = null // ok — question mark indicates nullability
+```
+
+</Slide>
+
+<Slide>
+
+## Safe Call Operator `?.`
+
+Kotlin won't let you call methods on a nullable type without handling the null case:
+
+```kotlin
+var name: String? = null
+println(name.length)  // does not compile
+```
+
+The safe call operator returns `null` instead of throwing an exception:
+
+```kotlin
+println(name?.length)  // prints null
+```
+
+Chains short-circuit at the first `null`:
+
+```kotlin
+println(user?.address?.city)  // prints null if any part is null
+```
+
+</Slide>
+
+<Slide>
+
+## Nullable Types: Koan
+<div style={{ fontSize: '.8em' }}>
+Rewrite this Java code so it only has one `if`:
+
+```java
+public void sendMessageToClient(
+        @Nullable Client client,
+        @Nullable String message,
+        @NotNull Mailer mailer
+) {
+    if (client == null || message == null) return;
+    PersonalInfo personalInfo = client.getPersonalInfo();
+    if (personalInfo == null) return;
+    String email = personalInfo.getEmail();
+    if (email == null) return;
+    mailer.sendMessage(email, message);
+}
+```
+
+```kotlin
+class Client(val personalInfo: PersonalInfo?)
+class PersonalInfo(val email: String?)
+interface Mailer {
+    fun sendMessage(email: String, message: String)
+}
+
+fun sendMessageToClient(
+        client: Client?, message: String?, mailer: Mailer
+) {
+    TODO()
+}
+```
+https://play.kotlinlang.org/koans/Introduction/Nullable%20types/Task.kt
+</div>
+</Slide>
+
+
+<Slide>
+
+## L5: Before Records: 30 Lines for "I Want x and y"
+
+<div style={{fontSize: '0.75em'}}>
+
+```java
+public final class Point {           // final = can't extend
+    private final int x;             // final = immutable
+    private final int y;
+
+    public Point(int x, int y) { this.x = x; this.y = y; }
+
+    public int x() { return x; }     // accessors
+    public int y() { return y; }
+
+    @Override public boolean equals(@Nullable Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Point other)) return false;
+        return x == other.x && y == other.y;
+    }
+
+    @Override public int hashCode() { return Objects.hash(x, y); }
+
+    @Override public String toString() { return "Point[x=" + x + ", y=" + y + "]"; }
+}
+```
+
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#e74c3c'}}>
+  All of this just to say: "I have an immutable point with x and y."
+</p>
+
+<aside className="notes">
+
+→ **Transition:** Records compress all of this...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## L5: Records (Java 16, 2021): Data Classes Without Boilerplate
+
+<p style={{fontSize: '0.9em'}}>
+  A <strong>record</strong> is all 30 lines in one:
+</p>
+
+```java
+public record Point(int x, int y)
+```
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+  You get automatically:
+</p>
+
+<ul style={{fontSize: '0.8em'}}>
+  <li>Constructor: <code>new Point(1, 2)</code></li>
+  <li>Accessors: <code>point.x()</code>, <code>point.y()</code></li>
+  <li>Correct <code>equals</code>, <code>hashCode</code>, <code>toString</code></li>
+  <li><strong>Immutability</strong>: all fields are <code>final</code>, class is <code>final</code></li>
+</ul>
+
+<aside className="notes">
+Kotlin was introduced in 2011. Kotlin 1.0 came out in 2016.
+→ Kotlin had it sooner -- and better.
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Kotlin Data Classes
+
+```kotlin
+data class BankAccount(private val accountNumber: String, var balance: BigDecimal)
+```
+
+Kotlin data classes **predate** Java records and are more powerful.
+
+| | Java Record | Kotlin Data Class |
+|---|---|---|
+| Mutability | Always `final` (immutable) | `val` (immutable) or `var` (mutable) |
+| Visibility | Always `private` | Configurable (`private`, `public`, etc.) |
+
+
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## A Mob Class
+
+<div style={{display: 'flex', gap: '2em', alignItems: 'flex-start', marginTop: '0.5em'}}>
+
+<div style={{flex: '0 0 40%'}}>
+
+**Java**
+```java
+public class Mob {
+  public enum Behavior {
+    Passive, Neutral, Hostile, Boss
+  }
+  public enum Status {
+    Healthy, Injured, Dead
+  }
+
+  private final String type;
+  private final int maxHearts;
+  private final Behavior behavior;
+  private int hearts;
+
+  public Mob(String type, int maxHearts,
+             Behavior behavior) {
+    this.type = type;
+    this.maxHearts = maxHearts;
+    this.behavior = behavior;
+    this.hearts = maxHearts;
+  }
+
+  public String getType() { return type; }
+  public int getMaxHearts() { return maxHearts; }
+  public Behavior getBehavior() { return behavior; }
+  public int getHearts() { return hearts; }
+
+  public Status getStatus() {
+    if (hearts == maxHearts) return Status.Healthy;
+    if (hearts == 0) return Status.Dead;
+    return Status.Injured;
+  }
+
+  @Override
+  public String toString() { return type; }
+}
+```
+
+</div>
+
+<div style={{flex: '0 0 55%'}}>
+
+**Kotlin**
+```kotlin
+class Mob(val type: String, val maxHearts: Int, val behavior: Behavior) {
+  enum class Behavior {
+    Passive, Neutral, Hostile, Boss
+  }
+  enum class Status {
+    Healthy, Injured, Dead
+  }
+
+  override fun toString() = type
+
+  var hearts = maxHearts
+    private set
+
+  val status: Status
+    get() = when (hearts) {
+      maxHearts -> Status.Healthy
+      0 -> Status.Dead
+      else -> Status.Injured
+    }
+
+  fun main() {
+    val zombie = Mob("zombie", 20, Mob.Behavior.Hostile)
+    println("$zombie has ${zombie.hearts} hearts and is ${zombie.status}.")
+  }
+}
+```
+https://pl.kotl.in/BbQ6lxOeg
+
+</div>
+
+</div>
+
+</Slide>
+
+</RevealJS>
