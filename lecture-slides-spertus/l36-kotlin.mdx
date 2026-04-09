@@ -138,6 +138,36 @@ Wellness Days are within these six.
 
 <Slide>
 
+## Poll: Why do/don't you attend class/lecture when ungraded?
+
+<PollSlide username="espertus"/>
+
+This poll is anonymous but counts toward participation.
+
+</Slide>
+
+<Slide>
+
+## Poll: What was your favorite puzzler?
+
+<PollSlide
+  username="espertus"
+  choices={[
+    "Time for a Change: System.out.println(2.00 - 1.10);",
+    "A Change is Gonna Come: BigDecimal payment = new BigDecimal(2.00);",
+    'Animal Farm: "Animals are equal: " + pig == dog',
+    "Histogram Mystery: Math.abs(pair.hashCode()) % histogram.length",
+    "Ping Pong: t.run()",
+    "Long Division: long MICROS_PER_DAY = 24 * 60 * 60 * 1000 * 1000;",
+    "It's Elementary: System.out.println(12345 + 5432l); System.out.println(01234 + 43210);",
+    "Dang, I missed it.",
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
 ## Poll: What's your least favorite thing about Java?
 
 <PollSlide username='espertus'
@@ -366,7 +396,7 @@ As in Python and JavaScript
 
 <Slide>
 
-## Named Arguments
+## Kotlin Koan: Named Arguments
 
 <div style={{display: 'flex', gap: '2em', alignItems: 'flex-start', marginTop: '0.5em'}}>
 
@@ -444,7 +474,7 @@ https://play.kotlinlang.org/koans/Introduction/Named%20arguments/Task.kt
 
 <Slide>
 
-## Default Arguments
+## Kotlin Koan: Default Arguments
 
 <div style={{ fontSize: '.8em' }}>
 Replace all these Java overloads:
@@ -526,7 +556,7 @@ println(user?.address?.city)  // prints null if any part is null
 
 <Slide>
 
-## Nullable Types: Koan
+## Kotlin Koan: Nullable Types
 <div style={{ fontSize: '.8em' }}>
 Rewrite this Java code so it only has one `if`:
 
@@ -789,10 +819,10 @@ classDiagram
 ```
 
 </div>
+</div>
 
 https://play.kotlinlang.org/koans/Classes/Smart%20casts/Task.kt
 
-</div>
 
 <aside className="notes">
 Do together.
@@ -843,9 +873,8 @@ classDiagram
 
 </div>
 
-https://play.kotlinlang.org/koans/Classes/Smart%20casts/Task.kt
-
 </div>
+https://play.kotlinlang.org/koans/Classes/Smart%20casts/Task.kt
 
 <aside className="notes">
 Do together.
@@ -862,7 +891,6 @@ Can you add a new method to an existing class *whose source code you don't have*
 
 <div className='fragment'>
 Not in Java, but in Kotlin...
-</div>
 
 ```kotlin
 fun String.truncate(maxLength: Int): String {
@@ -883,6 +911,7 @@ fun main() {
     // println("woo".isPalindrome()) // false
 }
 ```
+</div>
 
 https://pl.kotl.in/RWcXCXM3p
 
