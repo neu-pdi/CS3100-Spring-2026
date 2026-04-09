@@ -105,7 +105,7 @@ Your letter grade is determined by both your total points AND meeting minimum th
 | B | &ge;800 | &ge;210 (70%) | &ge;140 (70%) | &ge;220 (55%) | &ge;9 completed | &ge;25 (50%) |
 | C | &ge;700 | &ge;180 (60%) | &ge;120 (60%) | &ge;200 (50%) | &ge;7 completed | — |
 | D | &ge;600 | — | — | — | — | — |
-| F | &lt;600 | | | | |
+| F | &lt;600 | | | | | |
 
 **Plus/Minus Grades:** Once you meet the thresholds for a letter grade, your +/- modifier is determined by where your total points fall within that range:
 
