@@ -40,8 +40,8 @@ import CodeBlock from '@theme/CodeBlock';
 ## Learning Objectives
 
 <p style={{fontSize: '0.85em', textAlign: 'left'}}>
-After this lecture, you will be able to explain how these Kotlin features
-address Java pain points, such as:
+After this lecture, you will be able to explain the benefits
+of these Kotlin features:
 </p>
 
 <ul style={{fontSize: '0.75em', textAlign: 'left'}}>
@@ -98,26 +98,6 @@ I'm awaiting clarification on the Qualtrics participation credit.
 <PollSlide username="espertus"/>
 
 This poll is anonymous but counts toward participation.
-
-</Slide>
-
-<Slide>
-
-## Poll: What was your favorite puzzler?
-
-<PollSlide
-  username="espertus"
-  choices={[
-    "Time for a Change: System.out.println(2.00 - 1.10);",
-    "A Change is Gonna Come: BigDecimal payment = new BigDecimal(2.00);",
-    'Animal Farm: "Animals are equal: " + pig == dog',
-    "Histogram Mystery: Math.abs(pair.hashCode()) % histogram.length",
-    "Ping Pong: t.run()",
-    "Long Division: long MICROS_PER_DAY = 24 * 60 * 60 * 1000 * 1000;",
-    "It's Elementary: System.out.println(12345 + 5432l); System.out.println(01234 + 43210);",
-    "Dang, I missed it.",
-  ]}
-/>
 
 </Slide>
 
@@ -218,12 +198,56 @@ static cube(I)I        public static main(Ljava/lang/String;)V
   <span>JVM ➡️</span>
   <span style={{fontSize: '1.4em', fontWeight: 'bold'}}>27</span>
 </div>
+</Slide>
+
+<Slide>
+
+## What differences can you spot?
+
+<div style={{display: 'flex', gap: '2em', marginBottom: '0.5em'}}>
+
+<div style={{flex: '0 0 45%'}}>
+
+**Java**
+```java
+public class MyClass {
+  static int cube(int x) {
+    return x * x * x;
+  }
+
+  public static void main(String[] args) {
+    System.out.println(cube(3));
+  }
+}
+```
+
+</div>
+
+<div style={{flex: '0 0 45%'}}>
+
+**Kotlin**
+```kotlin
+fun cube(x: Int) = x * x * x
+
+fun main() {
+  println(cube(3))
+}
+```
+
+</div>
+
+</div>
+
+
+<aside className="notes">
+
+</aside>
 
 </Slide>
 
 <Slide>
 
-## A Closer Look
+## Some Differences
 
 <div style={{display: 'flex', gap: '2em', marginBottom: '0.5em'}}>
 
@@ -256,6 +280,7 @@ fun main() {
 ```
 
 <div>
+* No semicolons
 * Code outside class (top-level functions)
 * Visibility defaults to `public`
 * `fun` keyword
@@ -279,79 +304,7 @@ fun main() {
 
 <Slide>
 
-## Kotlin Koans
-
-An interactive Kotlin tutorial
-
-https://play.kotlinlang.org/koans/Introduction/Hello,%20world!/Task.kt
-
-Complete Koan 1: `Hello, world!`
-
-<aside className="notes">
-
-</aside>
-
-</Slide>
-
-<Slide>
-## Remember Telescoping Constructors (L17)?
-<div style={{ fontSize: '.8em' }}>
-```java
-public class Recipe {
-  // Telescoping constructors — each adds one more parameter
-  Recipe(String name) { this(name, List.of(), List.of(), List.of(), null, false); }
-  Recipe(String name, List<Ingredient> ingredients) { this(name, ingredients, List.of(), List.of(), null, false); }
-  Recipe(String name, List<Ingredient> ingredients, List<String> instructions) { ... }
-  Recipe(String name, List<Ingredient> ingredients, List<String> instructions, List<String> notes) { ... }
-  Recipe(String name, List<Ingredient> ingredients, List<String> instructions, List<String> notes, String source) { ... }
-  Recipe(String name, List<Ingredient> ingredients, List<String> instructions, List<String> notes, String source, boolean isVegan) { ... }
-}
-```
-</div>
-
-<aside className="notes">
-→ This can also happen with methods...
-</aside>
-
-</Slide>
-
-
-<Slide>
-
-## Default Arguments
-
-**Java**
-```java
-void greet(String name, String greeting, int times) {
-    for (int i = 0; i < times; i++) {
-        System.out.printf("%s, %s\n", greeting, name);
-    }
-}
-void greet(String name, String greeting) { greet(name, greeting, 1); }
-void greet(String name) { greet(name, "Hello", 1); }
-```
-
-**Kotlin**
-```kotlin
-fun greet(name: String, greeting: String = "Hello", times: Int = 1) {
-    repeat(times) { println("$greeting, $name!") }
-}
-```
-
-As in Python and JavaScript
-* Parameters can have default values
-* String templates are built-in
-
-<aside className="notes">
-
-</aside>
-
-</Slide>
-
-
-<Slide>
-
-## Kotlin Koan: Named Arguments
+## Transforming describeItems()
 
 <div style={{display: 'flex', gap: '2em', alignItems: 'flex-start', marginTop: '0.5em'}}>
 
@@ -359,15 +312,22 @@ As in Python and JavaScript
 
 **Java**
 ```java
-void createUser(String firstName,
-    String lastName, String email) { ... }
+// describeItems(1, "rock") => "1 rock"
+// describeItems(2, "rock") => "2 rocks"
+static String describeItems(
+    int quantity, String item) {
+  String description = quantity + " " + item;
+  if (quantity != 1) {
+    return description + "s";
+  } else {
+    return description;
+  }
+}
 
-createUser("John", "Smith",
-    "john@example.com");
-
-// or is it:
-createUser("Smith", "John",
-    "john@example.com");
+public static void main(String[] args) {
+  System.out.println(describeItems(1, "rock"));
+  System.out.println(describeItems(2, "rock"));
+}
 ```
 
 </div>
@@ -376,94 +336,165 @@ createUser("Smith", "John",
 
 **Kotlin**
 ```kotlin
-fun createUser(firstName: String,
-    lastName: String, email: String) { ... }
+// describeItems(1, "rock") => "1 rock"
+// describeItems(2, "rock") => "2 rocks"
+fun describeItems(
+    quantity: Int, item: String): String {
+  val description = quantity.toString() + " " + item
+  if (quantity != 1) {
+    return description + "s"
+  } else {
+    return description
+  }
+}
 
-createUser(
-    firstName = "John",
-    lastName = "Smith",
-    email = "john@example.com")
-
-// This also works:
-createUser(
-    lastName = "Smith",
-    firstName = "John",
-    email = "john@example.com")
+fun main() {
+  println(describeItems(1, "rock"))
+  println(describeItems(2, "rock"))
+}
 ```
+
+Kotlin variables are declared with
+  - `val` (immutable)
+  - `var` (mutable)
 
 </div>
 
 </div>
 
-</Slide>
-
-
-<Slide>
-
-## Named Arguments: `joinToString`
-
-<div style={{ fontSize: '.8em' }}>
-
-`joinToString` is declared with default parameter values:
-
-```kotlin
-fun joinToString(
-    separator: String = ", ",
-    prefix: String = "",
-    postfix: String = "",
-    /* ... */
-): String
-```
-
-Make `joinOptions()` return JSON format (e.g. `[a, b, c]`) using only two arguments:
-
-```kotlin
-fun joinOptions(options: Collection<String>) =
-    options.joinToString(TODO())
-```
-
-https://play.kotlinlang.org/koans/Introduction/Named%20arguments/Task.kt
-</div>
+https://pl.kotl.in/KhDNBlWcH
 
 </Slide>
 
 <Slide>
 
-## Kotlin Koan: Default Arguments
+### Transformation
 
-<div style={{ fontSize: '.8em' }}>
-Replace all these Java overloads:
+<div style={{display: 'flex', gap: '2em', alignItems: 'flex-start', marginTop: '0.5em'}}>
 
+<div style={{flex: '0 0 48%'}}>
+
+```kotlin
+fun describeItems(
+    quantity: Int, item: String): String {
+  val description =
+    quantity.toString() + " " + item
+  if (quantity != 1) {
+    return description + "s"
+  } else {
+    return description
+  }
+}
+```
+
+</div>
+
+<div style={{flex: '0 0 48%'}}>
+
+```kotlin
+fun describeItems(
+    quantity: Int, item: String) =
+  "$quantity $item" +
+  if (quantity != 1) "s" else ""
+```
+
+</div>
+
+</div>
+
+Changes:
+* String templates
+* Return type omitted
+* Return statement omitted
+* `if`-expression value used
+
+</Slide>
+
+<Slide>
+
+## You Transform 3-Argument Max
+
+<div style={{display: 'flex', gap: '2em', alignItems: 'flex-start', marginTop: '0.5em'}}>
+
+<div style={{flex: '0 0 48%'}}>
+
+**Java**
 ```java
-public String foo(String name, int number, boolean toUpperCase) {
-    return (toUpperCase ? name.toUpperCase() : name) + number;
-}
-public String foo(String name, int number) {
-    return foo(name, number, false);
-}
-public String foo(String name, boolean toUpperCase) {
-    return foo(name, 42, toUpperCase);
-}
-public String foo(String name) {
-    return foo(name, 42);
+static int max(int a, int b, int c) {
+  if (a >= b && a >= c) {
+    return a;
+  } else if (b >= c) {
+    return b;
+  } else {
+    return c;
+  }
 }
 ```
 
-with one Kotlin function so that `useFoo()` compiles:
+</div>
 
+<div style={{flex: '0 0 48%'}}>
+
+**Kotlin**
 ```kotlin
-fun useFoo() = listOf(
-        foo("a"),
-        foo("b", number = 1),
-        foo("c", toUpperCase = true),
-        foo(name = "d", number = 2, toUpperCase = true)
-)
+fun max(a: Int, b: Int, c: Int): Int {
+  if (a >= b && a >= c) {
+    return a
+  } else if (b >= c) {
+    return b
+  } else {
+    return c
+  }
+}
 ```
 
-https://play.kotlinlang.org/koans/Introduction/Default%20arguments/Task.kt
+</div>
+
+</div>
+
+https://pl.kotl.in/vbnzB1wzd
+
+</Slide>
+
+<Slide>
+
+### Transformation
+
+<div style={{display: 'flex', gap: '2em', alignItems: 'flex-start', marginTop: '0.5em'}}>
+
+<div style={{flex: '0 0 48%'}}>
+
+**Before**
+```kotlin
+fun max(a: Int, b: Int, c: Int): Int {
+  if (a >= b && a >= c) {
+    return a
+  } else if (b >= c) {
+    return b
+  } else {
+    return c
+  }
+}
+```
+
+</div>
+
+<div style={{flex: '0 0 48%'}}>
+
+**After**
+```kotlin
+fun max(a: Int, b: Int, c: Int) =
+  if (a >= b && a >= c) a
+  else if (b >= c) b
+  else c
+```
+
+</div>
+
 </div>
 
 </Slide>
+
 <Slide>
 
 ## Nullable Types
@@ -509,312 +540,121 @@ println(user?.address?.city)  // prints null if any part is null
 
 </Slide>
 
-
 <Slide>
 
-## Kotlin Koan: Nullable Types
-<div style={{ fontSize: '.8em' }}>
-Rewrite this Java code so it only has one `if`:
+## Exercise: Nullable Types
 
+<div style={{display: 'flex', gap: '2em', alignItems: 'flex-start', marginTop: '0.5em', fontSize: '0.8em'}}>
+
+<div style={{flex: '0 0 48%'}}>
+
+**Java**
 ```java
-public void sendMessageToClient(
-        @Nullable Client client,
-        @Nullable String message,
-        @NotNull Mailer mailer
-) {
-    if (client == null || message == null) return;
-    PersonalInfo personalInfo = client.getPersonalInfo();
-    if (personalInfo == null) return;
-    String email = personalInfo.getEmail();
-    if (email == null) return;
-    mailer.sendMessage(email, message);
+record Client(PersonalInfo personalInfo) {}
+record PersonalInfo(String email) {}
+interface Mailer {
+  void sendMessage(String email, String message);
+}
+
+void sendMessageToClient(
+    @Nullable Client client,
+    @Nullable String message,
+    @NotNull Mailer mailer) {
+
+  // Try to extract email address
+  if (client == null) return;
+  PersonalInfo info = client.personalInfo();
+  if (info == null) return;
+  String email = info.email();
+
+  if (email == null || message == null) return;
+
+  mailer.sendMessage(email, message);
 }
 ```
 
+</div>
+
+<div style={{flex: '0 0 48%'}}>
+
+**Kotlin**
 ```kotlin
 class Client(val personalInfo: PersonalInfo?)
 class PersonalInfo(val email: String?)
 interface Mailer {
-    fun sendMessage(email: String, message: String)
+  fun sendMessage(email: String, message: String)
 }
 
 fun sendMessageToClient(
-        client: Client?, message: String?, mailer: Mailer
+    client: Client?,
+    message: String?,
+    mailer: Mailer
 ) {
-    TODO()
-}
-```
-https://play.kotlinlang.org/koans/Introduction/Nullable%20types/Task.kt
-</div>
-</Slide>
+  // Extract email address or set to null
+  val email = TODO()
 
-
-<Slide>
-
-## `when`: Kotlin's Switch Expression
-
-<div style={{display: 'flex', gap: '2em', alignItems: 'flex-start', marginTop: '0.5em', fontSize: '0.85em'}}>
-
-<div style={{flex: '0 0 30%'}}>
-
-**Java (pre-14)**
-```java
-String describe(int n) {
-  String result;
-  switch (n) {
-    case 0:
-      result = "zero";
-      break;
-    case 1:
-    case 2:
-      result = "small";
-      break;
-    default:
-      result = "other";
+  // Can't send if there is no email or message
+  if (email == null || message == null) {
+    return
   }
-  return (n < 0 ? "negative " : "")
-    + result;
+
+  mailer.sendMessage(email, message)
 }
-```
-
-</div>
-
-<div className="fragment" style={{flex: '0 0 30%'}}>
-
-**Java (14+, 2020)**
-```java
-String describe(int n) {
-  String result = switch (n) {
-    case 0 -> "zero";
-    case 1, 2 -> "small";
-    default -> "other";
-  };
-  return (n < 0 ? "negative " : "")
-    + result;
-}
-```
-
-```java
-String describe(int n) {
-  return (n < 0 ? "negative " : "")
-    + switch (n) {
-      case 0 -> "zero";
-      case 1, 2 -> "small";
-      default -> "other";
-    };
-}
-```
-
-</div>
-
-<div className="fragment" style={{flex: '0 0 33%'}}>
-
-**Kotlin (2016)**
-```kotlin
-fun describe(n: Int): String {
-  val result = when (n) {
-    0 -> "zero"
-    1, 2 -> "small"
-    else -> "other"
-  }
-  return (if (n < 0) "negative " else "")
-    + result
-}
-```
-
-```kotlin
-fun describe(n: Int) =
-  (if (n < 0) "negative " else "") +
-  when (n) {
-    0 -> "zero"
-    1, 2 -> "small"
-    else -> "other"
-  }
 ```
 
 </div>
 
 </div>
 
-</Slide>
-
-
-
-<Slide>
-
-## L5: Before Records: 30 Lines for "I Want x and y"
-
-<div style={{fontSize: '0.75em'}}>
-
-```java
-public final class Point {           // final = can't extend
-    private final int x;             // final = immutable
-    private final int y;
-
-    public Point(int x, int y) { this.x = x; this.y = y; }
-
-    public int x() { return x; }     // accessors
-    public int y() { return y; }
-
-    @Override public boolean equals(@Nullable Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof Point other)) return false;
-        return x == other.x && y == other.y;
-    }
-
-    @Override public int hashCode() { return Objects.hash(x, y); }
-
-    @Override public String toString() { return "Point[x=" + x + ", y=" + y + "]"; }
-}
-```
-
-</div>
-
-<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#e74c3c'}}>
-  All of this just to say: "I have an immutable point with x and y."
-</p>
-
-<aside className="notes">
-
-→ We showed you a better way of doing this...
-</aside>
+https://pl.kotl.in/toXWp7eW9
 
 </Slide>
 
 <Slide>
 
-## L5: Records (Java 16, 2021): Data Classes Without Boilerplate
+### Transformation
 
-<p style={{fontSize: '0.9em'}}>
-  A <strong>record</strong> is all 30 lines in one:
-</p>
+<div style={{display: 'flex', gap: '2em', alignItems: 'flex-start', marginTop: '0.5em', fontSize: '0.8em'}}>
 
-```java
-public record Point(int x, int y) {}
-
-<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
-  You get automatically:
-</p>
-
-<ul style={{fontSize: '0.8em'}}>
-  <li>Constructor: <code>new Point(1, 2)</code></li>
-  <li>Accessors: <code>point.x()</code>, <code>point.y()</code></li>
-  <li>Correct <code>equals</code>, <code>hashCode</code>, <code>toString</code></li>
-  <li><strong>Immutability</strong>: all fields are <code>final</code>, class is <code>final</code></li>
-</ul>
-
-<aside className="notes">
-Kotlin was introduced in 2011. Kotlin 1.0 came out in 2016.
-→ Kotlin had it sooner -- and better.
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Kotlin Data Classes
-
-```kotlin
-data class BankAccount(private val accountNumber: String, var balance: BigDecimal)
-```
-
-Kotlin data classes **predate** Java records and are more powerful.
-
-| | Java Record | Kotlin Data Class |
-|---|---|---|
-| Mutability | Always `final` (immutable) | `val` (immutable) or `var` (mutable) |
-| Field Visibility | Always `private` | Configurable (`private`, `public`, etc.) |
-| Accessor Visibility | Always `public` | n/a |
-
-
-<aside className="notes">
-
-</aside>
-
-</Slide>
-
-<Slide>
-
-## A Mob Class
-
-<div style={{display: 'flex', gap: '2em', alignItems: 'flex-start', marginTop: '0.5em'}}>
-
-<div style={{flex: '0 0 40%'}}>
+<div style={{flex: '0 0 48%'}}>
 
 **Java**
-```java
-public class Mob {
-  public enum Behavior {
-    Passive, Neutral, Hostile, Boss
-  }
-  public enum Status {
-    Healthy, Injured, Dead
-  }
+```jav
+void sendMessageToClient(
+    @Nullable Client client,
+    @Nullable String message,
+    @NotNull Mailer mailer) {
 
-  private final String type;
-  private final int maxHearts;
-  private final Behavior behavior;
-  private int hearts;
+  // Try to extract email address
+  if (client == null) return;
+  PersonalInfo info = client.personalInfo();
+  if (info == null) return;
+  String email = info.email();
 
-  public Mob(String type, int maxHearts,
-             Behavior behavior) {
-    this.type = type;
-    this.maxHearts = maxHearts;
-    this.behavior = behavior;
-    this.hearts = maxHearts;
-  }
+  if (email == null || message == null) return;
 
-  public String getType() { return type; }
-  public int getMaxHearts() { return maxHearts; }
-  public Behavior getBehavior() { return behavior; }
-  public int getHearts() { return hearts; }
-
-  public Status getStatus() {
-    if (hearts == maxHearts) return Status.Healthy;
-    if (hearts == 0) return Status.Dead;
-    return Status.Injured;
-  }
-
-  @Override
-  public String toString() { return type; }
+  mailer.sendMessage(email, message);
 }
 ```
 
 </div>
 
-<div style={{flex: '0 0 55%'}}>
+<div className="fragment" style={{flex: '0 0 48%'}}>
 
 **Kotlin**
 ```kotlin
-class Mob(val type: String, val maxHearts: Int, val behavior: Behavior) {
-  enum class Behavior {
-    Passive, Neutral, Hostile, Boss
+fun sendMessageToClient(
+    client: Client?,
+    message: String?,
+    mailer: Mailer
+) {
+  val email = client?.personalInfo?.email
+  if (email == null || message == null) {
+    return
   }
-  enum class Status {
-    Healthy, Injured, Dead
-  }
-
-  override fun toString() = type
-
-  var hearts = maxHearts
-    private set
-
-  val status: Status
-    get() = when (hearts) {
-      maxHearts -> Status.Healthy
-      0 -> Status.Dead
-      else -> Status.Injured
-    }
-
-  fun main() {
-    val zombie = Mob("zombie", 20, Mob.Behavior.Hostile)
-    println("$zombie has ${zombie.hearts} hearts and is ${zombie.status}.")
-    println(zombie.takeDamage(2, 5))
-    println("$zombie has ${zombie.hearts} hearts and is ${zombie.status}.")
-  }
+  mailer.sendMessage(email, message)
 }
 ```
-https://pl.kotl.in/PcAVCiIIx
 
 </div>
 
@@ -931,32 +771,127 @@ Do together.
 
 <Slide>
 
-## Practice Using Smart Cast in When (if time)
+## The Elvis Operator `?:`
+
+The Elvis operator returns a default value when the left side is `null`:
 
 ```kotlin
-// Describe a value using "when"
-// Expected output:
-//   42 is an Int
-//   hello is a String with 5 characters
-//   3.14 is a Double
-//   true is something else
+val name: String? = null
+println(name ?: "Unknown")  // Unknown
 
-fun describe(value: Any): String =
-    when (value) {
-        TODO()
-    }
+val length = name?.length ?: 0  // 0
+```
 
-fun main() {
-    println(describe(42))
-    println(describe("hello"))
-    println(describe(3.14))
-    println(describe(true))
+This replaces the common null-check pattern:
+
+```kotlin
+// Without Elvis
+val display = if (name != null) name else "Unknown"
+
+// With Elvis
+val display = name ?: "Unknown"
+```
+
+</Slide>
+
+<Slide>
+
+## Why "the Elvis Operator"?
+
+<Img src="/img/lectures/web/l36-elvis-operator.png" />
+
+
+</Slide>
+
+<Slide>
+
+## Elvis Operator: Example
+
+<div style={{display: 'flex', gap: '2em', alignItems: 'flex-start', marginTop: '0.5em'}}>
+
+<div style={{flex: '0 0 48%'}}>
+
+**Java**
+```java
+static int add3(int a, Integer b, Integer c) {
+  return a
+    + (b != null ? b : 0)
+    + (c != null ? c : 0);
 }
 ```
 
-https://pl.kotl.in/7idyhIvkJ
+</div>
+
+<div style={{flex: '0 0 48%'}}>
+
+**Kotlin**
+```kotlin
+fun add3(a: Int, b: Int?, c: Int?): Int {
+  var result = a
+  if (b != null) {
+    result = result + b
+  } else {
+    result = result + 0
+  }
+  if (c != null) {
+    result = result + c
+  } else {
+    result = result + 0
+  }
+  return result
+}
+```
+
+</div>
+
+</div>
+
+https://pl.kotl.in/GpeGlDC96
 
 </Slide>
+
+<Slide>
+
+### Transformation
+
+<div style={{display: 'flex', gap: '2em', alignItems: 'flex-start', marginTop: '0.5em'}}>
+
+<div style={{flex: '0 0 48%'}}>
+
+**Before**
+```kotlin
+fun add3(a: Int, b: Int?, c: Int?): Int {
+  var result = a
+  if (b != null) {
+    result = result + b
+  } else {
+    result = result + 0
+  }
+  if (c != null) {
+    result = result + c
+  } else {
+    result = result + 0
+  }
+  return result
+}
+```
+
+</div>
+
+<div className="fragment" style={{flex: '0 0 48%'}}>
+
+**After**
+```kotlin
+fun add3(a: Int, b: Int?, c: Int?) =
+    a + (b ?: 0) + (c ?: 0)
+```
+
+</div>
+
+</div>
+
+</Slide>
+
 
 <Slide>
 
