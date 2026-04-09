@@ -730,7 +730,7 @@ fun eval(expr: Expr): Int =
         when (expr) {
             is Num -> TODO()
             is Sum -> TODO()
-        }
+        } a + (b ?: 0) + (c ?: 0)
 
 interface Expr
 class Num(val value: Int) : TODO()
@@ -798,7 +798,9 @@ val display = name ?: "Unknown"
 
 ## Why "the Elvis Operator"?
 
-<Img src="/img/lectures/web/l36-elvis-operator.png" />
+<Img src="/img/lectures/web/l36-elvis-operator.png"
+  alt="Graphic showing that a rotated '?:' looks like Elvis Presley's hair and dyes"
+ />
 
 
 </Slide>
