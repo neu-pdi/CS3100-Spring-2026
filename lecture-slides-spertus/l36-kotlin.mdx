@@ -52,7 +52,6 @@ address Java pain points, such as:
   <li>Conditional expressions</li>
   <ul>
   <li> `if` expressions</li>
-  <li> `when` expressions</li>
   <li> `switch` expressions</li>
   </ul>
 </ul>
@@ -554,6 +553,7 @@ println(user?.address?.city)  // prints null if any part is null
 
 </Slide>
 
+
 <Slide>
 
 ## Kotlin Koan: Nullable Types
@@ -591,6 +591,97 @@ fun sendMessageToClient(
 https://play.kotlinlang.org/koans/Introduction/Nullable%20types/Task.kt
 </div>
 </Slide>
+
+
+<Slide>
+
+## `when`: Kotlin's Switch Expression
+
+<div style={{display: 'flex', gap: '2em', alignItems: 'flex-start', marginTop: '0.5em', fontSize: '0.85em'}}>
+
+<div style={{flex: '0 0 30%'}}>
+
+**Java (pre-14)**
+```java
+String describe(int n) {
+  String result;
+  switch (n) {
+    case 0:
+      result = "zero";
+      break;
+    case 1:
+    case 2:
+      result = "small";
+      break;
+    default:
+      result = "other";
+  }
+  return (n < 0 ? "negative " : "")
+    + result;
+}
+```
+
+</div>
+
+<div className="fragment" style={{flex: '0 0 30%'}}>
+
+**Java (14+, 2020)**
+```java
+String describe(int n) {
+  String result = switch (n) {
+    case 0 -> "zero";
+    case 1, 2 -> "small";
+    default -> "other";
+  };
+  return (n < 0 ? "negative " : "")
+    + result;
+}
+```
+
+```java
+String describe(int n) {
+  return (n < 0 ? "negative " : "")
+    + switch (n) {
+      case 0 -> "zero";
+      case 1, 2 -> "small";
+      default -> "other";
+    };
+}
+```
+
+</div>
+
+<div className="fragment" style={{flex: '0 0 33%'}}>
+
+**Kotlin (2016)**
+```kotlin
+fun describe(n: Int): String {
+  val result = when (n) {
+    0 -> "zero"
+    1, 2 -> "small"
+    else -> "other"
+  }
+  return (if (n < 0) "negative " else "")
+    + result
+}
+```
+
+```kotlin
+fun describe(n: Int) =
+  (if (n < 0) "negative " else "") +
+  when (n) {
+    0 -> "zero"
+    1, 2 -> "small"
+    else -> "other"
+  }
+```
+
+</div>
+
+</div>
+
+</Slide>
+
 
 
 <Slide>
@@ -885,6 +976,35 @@ Do together.
 
 <Slide>
 
+## Practice Using Smart Cast in When (if time)
+
+```kotlin
+// Describe a value using "when"
+// Expected output:
+//   42 is an Int
+//   hello is a String with 5 characters
+//   3.14 is a Double
+//   true is something else
+
+fun describe(value: Any): String =
+    when (value) {
+        TODO()
+    }
+
+fun main() {
+    println(describe(42))
+    println(describe("hello"))
+    println(describe(3.14))
+    println(describe(true))
+}
+```
+
+https://pl.kotl.in/7idyhIvkJ
+
+</Slide>
+
+<Slide>
+
 ## Extension Functions
 
 <div style={{ fontSize: '.8em' }}>
@@ -921,6 +1041,44 @@ https://pl.kotl.in/RWcXCXM3p
 <aside className="notes">
 
 </aside>
+
+</Slide>
+
+<Slide>
+
+## Poll: Which Kotlin feature excites you most?
+
+<PollSlide
+  username="espertus"
+  choices={[
+    "Null safety (no more NullPointerExceptions)",
+    "Default and named arguments (no more overloads)",
+    "Data classes (no more boilerplate)",
+    "Extension functions (add methods to existing classes)",
+    "Smart casts (no more explicit casting)",
+    "String templates (no more concatenation)",
+    "Conditional expressions (if/when)",
+    "I don't like any of them"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+## Poll: How do you feel about Java?
+
+<PollSlide username="espertus" />
+
+</Slide>
+
+<Slide>
+
+## Bonus Slide
+
+<Img src="/img/lectures/web/l36-all-hail-kotlin.jpg"
+ alt="Futurama hypnotoad with caption 'ALL HAIL KOTLIN'"
+ />
 
 </Slide>
 
