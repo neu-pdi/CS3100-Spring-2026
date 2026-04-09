@@ -18,6 +18,124 @@ import CodeBlock from '@theme/CodeBlock';
 
 <RevealJS transition="slide">
 
+{/* ============================================ */}
+{/* TITLE + LOs */}
+{/* ============================================ */}
+
+<Slide>
+
+# CS 3100: Program Design and Implementation II
+
+## Lecture 36: Kotlin: A Better Java
+
+<p style={{marginTop: '2em', fontSize: '0.8em', color: '#666'}}>
+  &copy;2026 Ellen Spertus, CC-BY-SA
+</p>
+
+</Slide>
+
+
+<Slide>
+
+## Learning Objectives
+
+<p style={{fontSize: '0.85em', textAlign: 'left'}}>
+After this lecture, you will be able to explain how these Kotlin features
+address Java pain points, such as:
+</p>
+
+<ul style={{fontSize: '0.75em', textAlign: 'left'}}>
+  <li>Nullable types</li>
+  <li>Named and default arguments</li>
+  <li>Top-level functions</li>
+  <li>Type inference</li>
+  <li>Conditional expressions</li>
+  <ul>
+  <li> `if` expressions</li>
+  <li> `when` expressions</li>
+  <li> `switch` expressions</li>
+  </ul>
+</ul>
+
+<aside className="notes">
+→ First, I'd like to answer some questions about grades.
+</aside>
+
+</Slide>
+
+
+<Slide>
+
+## Semester Grades: Labs
+
+<div style={{ fontSize: '.8em' }}>
+
+| Grade | Total Points | Individual Assignments | Group Assignments | Exams | Labs | Participation |
+|---|---|---|---|---|---|---|
+| A | ≥900 | ≥240 (80%) | ≥160 (80%) | ≥280 (70%) | ≥11 completed | ≥40 (80%) |
+| B | ≥800 | ≥210 (70%) | ≥140 (70%) | ≥220 (55%) | ≥9 completed | ≥25 (50%) |
+| C | ≥700 | ≥180 (60%) | ≥120 (60%) | ≥200 (50%) | ≥7 completed | — |
+| D | ≥600 | — | — | — | — | — |
+| F | &lt;600 or fails to meet above minimums | | | | | |
+
+There are 14 labs; each is worth 5 points, with the total capped at 50 points (allowing you to miss a few without penalty).
+
+<div className='fragment'>
+For example, if you attend 10 labs, you get 50 points and can earn a B (possibly a B+).
+</div>
+
+</div>
+
+<aside className="notes">
+I'm awaiting clarification on the Qualtrics participation credit.
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Semester Grades: Attendance/Participation
+
+<div style={{ fontSize: '.8em', display: 'flex', gap: '2em', alignItems: 'flex-start' }}>
+
+<div>
+
+| Missed Polls | Participation Points |
+|---|---|
+| 0–6 | 50 (full credit) |
+| 7–11 | 42 |
+| 12–17 | 32 |
+| 18–23 | 20 |
+| 24–29 | 10 |
+| 30+ | 0 |
+
+</div>
+
+<div>
+
+**Participation Grading:** You may miss up to 6 classes (or participating in 6 days'
+activities) with no penalty. Beyond 6 absences, your participation score decreases
+on a non-linear scale—missing a few extra classes has minimal impact, but missing many has a larger effect.
+
+This scale is designed so that missing up to half the semester's lectures (17 classes)
+still qualifies you for a B in participation. However, students who attend regularly
+perform significantly better on exams, and missing all 50 participation points
+means you must score higher elsewhere to reach your target grade.
+
+</div>
+
+</div>
+If you received a 0 for attendance on a day you think you participated, check
+your PollEV account, which lists all your responses. Send me a screenshot showing
+if you completed at least 50% of surveys.
+
+
+<aside className="notes">
+Wellness Days are within these six.
+</aside>
+
+</Slide>
+
 <Slide>
 
 ## Poll: What's your least favorite thing about Java?
@@ -206,6 +324,9 @@ public class Recipe {
 ```
 </div>
 
+<aside className="notes">
+→ This can also happen with methods...
+</aside>
 
 </Slide>
 
@@ -362,7 +483,7 @@ https://play.kotlinlang.org/koans/Introduction/Default%20arguments/Task.kt
 
 ## Nullable Types
 
-In Java, any reference can be `null` — the compiler won't stop you:
+In Java, any reference can be `null`:
 
 ```java
 String name = null;
@@ -478,7 +599,7 @@ public final class Point {           // final = can't extend
 
 <aside className="notes">
 
-→ **Transition:** Records compress all of this...
+→ We showed you a better way of doing this...
 </aside>
 
 </Slide>
@@ -611,14 +732,165 @@ class Mob(val type: String, val maxHearts: Int, val behavior: Behavior) {
   fun main() {
     val zombie = Mob("zombie", 20, Mob.Behavior.Hostile)
     println("$zombie has ${zombie.hearts} hearts and is ${zombie.status}.")
+    println(zombie.takeDamage(2, 5))
+    println("$zombie has ${zombie.hearts} hearts and is ${zombie.status}.")
   }
 }
 ```
-https://pl.kotl.in/BbQ6lxOeg
+https://pl.kotl.in/PcAVCiIIx
 
 </div>
 
 </div>
+
+</Slide>
+
+<Slide>
+
+## Kotlin Koan: Smart Casts
+
+<div style={{display: 'flex', gap: '2em', alignItems: 'flex-start', marginTop: '0.5em'}}>
+
+<div style={{flex: '0 0 55%'}}>
+
+```kotlin
+interface Expr
+class Num(val value: Int) : Expr
+class Sum(val left: Expr, val right: Expr) : Expr
+
+fun eval(expr: Expr): Int =
+    when (expr) {
+        is Num -> TODO()
+        is Sum -> TODO()
+        else -> throw IllegalArgumentException(
+            "Unknown expression")
+    }
+```
+
+</div>
+
+<div style={{flex: '0 0 40%'}}>
+
+```mermaid
+classDiagram
+    class Expr {
+        <<interface>>
+    }
+    class Num {
+        +value: Int
+    }
+    class Sum {
+        +left: Expr
+        +right: Expr
+    }
+    Expr <|.. Num
+    Expr <|.. Sum
+    style Expr fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+```
+
+</div>
+
+https://play.kotlinlang.org/koans/Classes/Smart%20casts/Task.kt
+
+</div>
+
+<aside className="notes">
+Do together.
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Kotlin Koan: Sealed Classes
+
+<div style={{display: 'flex', gap: '2em', alignItems: 'flex-start', marginTop: '0.5em'}}>
+
+<div style={{flex: '0 0 55%'}}>
+
+```kotlin
+fun eval(expr: Expr): Int =
+        when (expr) {
+            is Num -> TODO()
+            is Sum -> TODO()
+        }
+
+interface Expr
+class Num(val value: Int) : TODO()
+class Sum(val left: Expr, val right: Expr) : TODO()
+```
+
+</div>
+
+<div style={{flex: '0 0 40%'}}>
+
+```mermaid
+classDiagram
+    class Expr {
+        <<interface>>
+    }
+    class Num {
+        +value: Int
+    }
+    class Sum {
+        +left: Expr
+        +right: Expr
+    }
+    Expr <|.. Num
+    Expr <|.. Sum
+    style Expr fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+```
+
+</div>
+
+https://play.kotlinlang.org/koans/Classes/Smart%20casts/Task.kt
+
+</div>
+
+<aside className="notes">
+Do together.
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Extension Functions
+
+<div style={{ fontSize: '.8em' }}>
+Can you add a new method to an existing class *whose source code you don't have*?
+
+<div className='fragment'>
+Not in Java, but in Kotlin...
+</div>
+
+```kotlin
+fun String.truncate(maxLength: Int): String {
+    return if (this.length <= maxLength) this else take(maxLength - 3) + "..."
+}
+
+// Hint: Use the String method reversed()
+fun String.isPalindrome(): Boolean = TODO()
+
+fun main() {
+    val shortUsername = "KotlinFan42"
+    val longUsername = "JetBrainsLoverForever"
+
+    println("Short username: ${shortUsername.truncate(15)}")
+    println("Long username:  ${longUsername.truncate(15)}")
+
+    // println("wow".isPalindrome()) // true
+    // println("woo".isPalindrome()) // false
+}
+```
+
+https://pl.kotl.in/RWcXCXM3p
+
+</div>
+
+<aside className="notes">
+
+</aside>
 
 </Slide>
 
