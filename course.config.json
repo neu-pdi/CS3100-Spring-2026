@@ -774,6 +774,25 @@
       ],
       "topics": [
         "Safety and Reliability"
+      ],
+      "sections": [
+        "03",
+        "04",
+        "05",
+        "06"
+      ]
+    },
+    {
+      "lectureId": "l35-java-puzzlers",
+      "dates": [
+        "2026-04-08"
+      ],
+      "topics": [
+        "Java Puzzlers"
+      ],
+      "sections": [
+        "01",
+        "02"
       ]
     },
     {
