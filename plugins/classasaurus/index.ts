@@ -94,50 +94,31 @@ sidebar: false
         // Generate lecture table of contents
         courseMarkdown += `# Lectures and associated learning objectives\n\n`;
         
-        // Get all lecture files and sort them
-        const lectureFiles: Array<{ id: string; path: string; content: string }> = [];
-        
+        // Only include lecture files that are explicitly listed in the course config.
+        const lectureFiles: Array<{ id: string; content: string }> = [];
+
         if (fs.existsSync(lectureNotesDir)) {
-            const files = fs.readdirSync(lectureNotesDir);
-            for (const file of files) {
-                if (file.endsWith('.md') || file.endsWith('.mdx')) {
-                    const lectureId = file.replace(/\.(md|mdx)$/, '');
-                    // Skip l0-summary and index.md
-                    if (lectureId.startsWith('l0') || lectureId === 'index') continue;
-                    
-                    const filePath = path.join(lectureNotesDir, file);
-                    const content = fs.readFileSync(filePath, 'utf-8');
-                    
-                    // Extract title from frontmatter or first heading
-                    let title = lectureId;
-                    const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
-                    if (frontmatterMatch) {
-                        const frontmatter = frontmatterMatch[1];
-                        const titleMatch = frontmatter.match(/^title:\s*(.+)$/m);
-                        if (titleMatch) {
-                            title = titleMatch[1].trim().replace(/^["']|["']$/g, '');
-                        }
-                    } else {
-                        // Try to get from first heading
-                        const headingMatch = content.match(/^#\s+(.+)$/m);
-                        if (headingMatch) {
-                            title = headingMatch[1].trim();
-                        }
-                    }
-                    
-                    lectureFiles.push({
-                        id: lectureId,
-                        path: filePath,
-                        content,
-                    });
+            for (const lecture of config.lectures) {
+                const lectureId = lecture.lectureId;
+                const mdPath = path.join(lectureNotesDir, `${lectureId}.md`);
+                const mdxPath = path.join(lectureNotesDir, `${lectureId}.mdx`);
+
+                let filePath: string | null = null;
+                if (fs.existsSync(mdPath)) {
+                    filePath = mdPath;
+                } else if (fs.existsSync(mdxPath)) {
+                    filePath = mdxPath;
                 }
+
+                if (!filePath) {
+                    console.warn(`⚠️ Lecture file not found for configured lectureId: ${lectureId}`);
+                    continue;
+                }
+
+                const content = fs.readFileSync(filePath, 'utf-8');
+                lectureFiles.push({ id: lectureId, content });
             }
         }
-        
-        // Sort lectures by ID (handling numeric sorting)
-        lectureFiles.sort((a, b) => {
-            return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
-        });
         
         // Create a map of lecture IDs to dates
         const lectureDateMap = new Map<string, string[]>();

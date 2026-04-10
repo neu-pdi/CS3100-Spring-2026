@@ -94,14 +94,14 @@ Choose **2-3 features** from the buffet below. **3-person teams** follow the sam
 
 For **each feature from the buffet**, your team must submit a Process Portfolio demonstrating thoughtful development. This is the primary grading artifact.
 
-### 1. Design Rationale (10% of feature grade)
+### 1. Design Rationale (12% of feature grade)
 
 Document (1/2 page):
 - Why did you choose this feature?
 - What user need does it address? (Reference a persona from GA0)
 - What alternatives did you consider?
 
-### 2. Design Artifacts (25% of feature grade)
+### 2. Design Artifacts (28% of feature grade)
 
 Show your design evolution:
 - **Version 1:** Initial wireframe/mockup
@@ -110,25 +110,28 @@ Show your design evolution:
 
 Photos of whiteboard sketches are fine. The goal is showing *iteration*, not polish.
 
-### 3. Implementation Journal (20% of feature grade)
+### 3. Implementation Journal (22% of feature grade)
 
 Document your implementation process:
 - **Git history:** Show incremental progress (not one giant commit at the end)
 - **PR history:** Link to PRs with meaningful review comments
 - **Decision log:** At least one documented technical decision with alternatives considered
 
-### 4. Testing & Quality (20% of feature grade)
+### 4. Testing & Quality (25% of feature grade)
 
 - Unit tests for the feature
 - Brief accessibility check: Does it support keyboard navigation?
 - Known limitations documented
 
-### 5. Demo & Reflection (25% of feature grade)
+### 5. Feature Summary (12% of feature grade)
 
-- **Demo video:** 1-2 minute screen recording showing the feature working (upload to YouTube/Vimeo as unlisted, or commit an MP4 to the repo; link from DEMO.md)
-- **What worked well?** What aspects of your process were effective?
-- **What would you do differently?** Specific, actionable lessons learned
+- **Screenshots:** 2-3 screenshots showing the feature in action
 - **Integration notes:** How does this feature connect to the rest of the app?
+- **Status:** What's complete, what's in progress, what's known to be broken?
+
+:::tip Demo & Reflection
+Your full demo video and project reflections are part of the [Final Project Report](/assignments/cyb13-final-report), due April 20 — a few extra days after the GA2 implementation deadline to finalize these documentation tasks.
+:::
 
 ## Grading Philosophy
 
@@ -153,11 +156,11 @@ Each feature is scored out of 40 points. If your team implements 2–3 features,
 
 | Component | Points | Excellent | Satisfactory | Needs Improvement |
 |-----------|--------|-----------|--------------|-------------------|
-| **Design Rationale** | 4 | Clear user need, thoughtful alternatives considered | User need stated | Generic or missing rationale |
-| **Design Artifacts** | 10 | 3+ versions with clearly documented evolution | 2 versions shown | Single design, no iteration |
-| **Implementation Journal** | 8 | Regular commits, quality PRs, decisions documented | Some commits, basic PRs | Large commits, no discussion |
-| **Testing & Quality** | 8 | Comprehensive tests; known limitations documented | Basic tests present | Minimal or no testing |
-| **Demo & Reflection** | 10 | Insightful reflection with specific lessons; demo shows working feature *or* thoroughly documents what was attempted for incomplete/broken features | Generic reflection; demo present | Superficial reflection; no demo |
+| **Design Rationale** | 5 | Clear user need, thoughtful alternatives considered | User need stated | Generic or missing rationale |
+| **Design Artifacts** | 11 | 3+ versions with clearly documented evolution | 2 versions shown | Single design, no iteration |
+| **Implementation Journal** | 9 | Regular commits, quality PRs, decisions documented | Some commits, basic PRs | Large commits, no discussion |
+| **Testing & Quality** | 10 | Comprehensive tests; known limitations documented | Basic tests present | Minimal or no testing |
+| **Feature Summary** | 5 | Clear screenshots, integration well-explained, honest status assessment | Screenshots or status present | No summary provided |
 | **Total** | **40** | | | |
 
 ### Individual Contribution (10 points)
@@ -189,7 +192,7 @@ All deliverables should be merged to `main` following the [Git Workflow for Team
       v2-wireframe.png
       design-evolution.md
     IMPLEMENTATION_JOURNAL.md
-    DEMO.md (with link to video)
+    FEATURE_SUMMARY.md
   /feature-name-2/
     ...
 ```
@@ -197,8 +200,7 @@ All deliverables should be merged to `main` following the [Git Workflow for Team
 ### Checklist
 
 - [ ] 2-3 features selected from the buffet
-- [ ] Process portfolio complete for each feature
-- [ ] Demo videos recorded and linked
+- [ ] Process portfolio complete for each feature (including feature summary with screenshots)
 - [ ] Weekly collaboration surveys up to date (due each Monday via Pawtograder)
 
 ## Reflection Questions for Team Discussion

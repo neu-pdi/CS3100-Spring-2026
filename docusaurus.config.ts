@@ -4,9 +4,31 @@ import type * as Preset from '@docusaurus/preset-classic';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import path from 'path';
+import fs from 'fs';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 const baseUrl = process.env.BASE_URL || '/cs3100-public-resources/';
+const courseConfigPath = path.resolve(__dirname, 'course.config.json');
+type CourseConfigLite = { lectures?: { lectureId: string }[] };
+
+function getLectureNotesIncludePatterns(): string[] {
+  const defaultPatterns = ['index.md', 'index.mdx', 'l0*.md', 'l0*.mdx'];
+
+  try {
+    const configRaw = fs.readFileSync(courseConfigPath, 'utf-8');
+    const courseConfig = JSON.parse(configRaw) as CourseConfigLite;
+    const lectureIds = (courseConfig.lectures || []).map((l) => l.lectureId).filter(Boolean);
+
+    const lecturePatterns = lectureIds.flatMap((id) => [`${id}.md`, `${id}.mdx`]);
+    return [...defaultPatterns, ...lecturePatterns];
+  } catch (error) {
+    console.warn('Failed to load course.config.json for lecture note include patterns. Falling back to defaults.');
+    return defaultPatterns;
+  }
+}
+
+const lectureNotesIncludePatterns = getLectureNotesIncludePatterns();
+
 const config: Config = {
   // Client modules that run on every page load
   clientModules: [
@@ -141,6 +163,7 @@ const config: Config = {
         docs: {
           path: 'lecture-notes',
           routeBasePath: 'lecture-notes',
+          include: lectureNotesIncludePatterns,
           sidebarPath: './sidebars.ts',
           editUrl: 'https://github.com/neu-pdi/cs3100-public-resources/edit/main/',
           remarkPlugins: [remarkMath],

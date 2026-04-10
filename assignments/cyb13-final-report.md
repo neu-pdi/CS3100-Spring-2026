@@ -15,8 +15,8 @@ The final report is worth **50 points** and serves as the capstone submission fo
 
 **Due:** Monday, April 20, 2026 at 11:59 PM Boston Time
 
-:::note Start Early
-The final report is something you should work on **throughout the group project**, not just in the last few days. Architecture decisions, team reflections, and "Our Feature" design work happen during GA1 and GA2 — capture them as you go. The Apr 20 deadline gives you a few extra days after the GA2 checkpoint (Apr 16) to finalize and polish, but this is not meant to be written from scratch in that window.
+:::note A Few Extra Days for Documentation
+The final report is something you should work on **throughout the group project**, not just in the last few days. Architecture decisions, team reflections, and "Our Feature" design work happen during GA1 and GA2 — capture them as you go. The Apr 20 deadline gives you a few extra days after the GA2 implementation deadline (Apr 16) to finalize documentation, record your demo video, and write reflections. This is intentional — we want you focused on design, implementation, and testing during GA2, with breathing room afterward for the demo and reflection. But don't leave the entire report for those last four days.
 :::
 
 ## Deliverables
@@ -47,6 +47,7 @@ Present 2-3 key architectural decisions your team made:
 - How you handled async operations and UI updates
 - How your team's UI terminology and naming conventions evolved during development
 - A refactoring that improved code quality
+- How your Feature Buffet selections integrate with the core application
 
 #### "Our Feature" Design Concept (1 page)
 
