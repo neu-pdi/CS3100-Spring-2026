@@ -802,6 +802,25 @@
       ],
       "topics": [
         "Sustainability"
+      ],
+      "sections": [
+        "03",
+        "04",
+        "05",
+        "06"
+      ]
+    },
+    {
+      "lectureId": "l36-kotlin",
+      "dates": [
+        "2026-04-09"
+      ],
+      "topics": [
+        "Kotlin: A Better Java"
+      ],
+      "sections": [
+        "01",
+        "02"
       ]
     },
     {
