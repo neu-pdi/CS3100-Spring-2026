@@ -24,7 +24,7 @@ MapReduce, described in the [2004 paper by Jeffrey Dean and Sanjay Ghemawat](htt
 
 **Map:** Takes a key-value pair and emits zero or more intermediate key-value pairs.
 
-```
+```text
 map(homeId, telemetryData) →
     emit("high-energy", {homeId, dailyKWh})
     emit("normal", {homeId, dailyKWh})
@@ -34,7 +34,7 @@ For SceneItAll: the map function reads one home's telemetry, computes its daily 
 
 **Reduce:** Takes an intermediate key and all values associated with it, and combines them into a final result.
 
-```
+```text
 reduce("high-energy", [{home1, 45kWh}, {home2, 52kWh}, ...]) →
     emit("high-energy", {count: 12400, avgKWh: 48.3, recommendations: [...]})
 ```
@@ -146,7 +146,7 @@ MapReduce assumes machines will fail. With thousands of workers, the probability
 
 **Map worker failure:** The master reassigns the failed worker's map tasks to another worker. The new worker re-reads the input chunk from GFS (which stores it on multiple chunkservers) and re-executes the map function. Because the map function is pure, re-execution produces the same output. This is idempotency by design.
 
-**Reduce worker failure:** Similar — the master reassigns the reduce task. The new reducer re-reads intermediate data (which map workers wrote to their local disks, replicated by the framework) and re-executes the reduce function.
+**Reduce worker failure:** Similar — the master reassigns the reduce task. Intermediate map output is stored on each map worker's local disk (the framework does not replicate it for redundancy). The new reducer reads the partition files it needs from those workers over the network; if a map worker's intermediate files are unavailable, the master reassigns and re-executes the corresponding map tasks to regenerate them before running the reduce. The reduce function is then re-executed on that input—safe because it is deterministic.
 
 :::note Recall
 In [L33 (Event-Driven Architecture)](/lecture-notes/l33-event-architecture), we discussed idempotent operations: applying an operation multiple times produces the same result as applying it once. MapReduce's retry strategy depends on this — re-executing a map or reduce task is safe because the functions are deterministic and side-effect-free. In [L20 (Networks)](/lecture-notes/l20-networks), we discussed retry with exponential backoff as a resilience pattern. MapReduce applies the same principle at the task level: if a task fails, retry it on a different machine.

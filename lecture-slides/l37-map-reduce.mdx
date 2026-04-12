@@ -118,7 +118,7 @@ In 2003-2004, Google published two papers that changed how the industry processe
 
 **Google File System (GFS, 2003)**
 
-Stores data across thousands of machines. A **NameNode** manages metadata (which machines hold which chunks). **DataNodes** store the actual data.
+Stores data across thousands of machines. A **NameNode** (GFS **master**) manages metadata (which machines hold which chunks). **DataNodes** (GFS **chunkservers**) store the actual data.
 
 *Solved the storage problem.*
 
@@ -145,7 +145,7 @@ Today we use these systems as a lens to see **every concept from the semester** 
 <aside className="notes">
 **Set the stage before diving into requirements.** Students need to know what the two systems are and what role each plays before they can appreciate the requirements that shaped them.
 
-**Terminology note:** The original Google papers and Hadoop used "master" and "slave" terminology. HDFS (the open-source implementation) has since renamed these to **NameNode** (metadata coordinator) and **DataNode** (storage worker). We'll use NameNode/DataNode for GFS components and **coordinator/worker** for MapReduce components throughout this lecture.
+**Terminology note:** The GFS paper names the metadata service the **master** and the chunk-storing workers **chunkservers**—matching [lecture-notes/l37-map-reduce](/lecture-notes/l37-map-reduce). **NameNode** and **DataNode** are the usual HDFS names for those same roles: **NameNode** is the analog of the **master**, and each **DataNode** is a **chunkserver**. These slides use the HDFS labels for familiarity; map them to master/chunkserver when you read the GFS paper or the notes. For MapReduce we use **coordinator/worker** throughout this lecture.
 
 **The "lens" framing** is the key pedagogical move: this is NOT a distributed systems lecture. Students will not implement MapReduce. The goal is to see how design concepts they already know appear at scale. The museum hallway from the cover image is the metaphor — every painting (lecture) converges into this one system.
 
