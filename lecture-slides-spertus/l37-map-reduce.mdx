@@ -428,6 +428,197 @@ A single layer with holes is not necessarily dangerous on its own. The problem i
 </Slide>
 
 {/* ============================================ */}
+{/* SUSTAINABILITY */}
+{/* ============================================ */}
+
+
+<Slide>
+## Sustainability
+
+  <Img
+    src="/img/lectures/web/l36.png"
+    prompt="Concept: 'Sustainability' (Program Design and Implementation 2). Pixel art educational illustration, 16:9 aspect ratio. Timeline/progression scene LEFT to RIGHT. LEFT: a small pixel art seedling sprouting from a circuit board, just a few green leaves, a single tiny user standing beside it. CENTER: the seedling has grown into a thriving pixel art tree with many branches, colorful leaves in teals and greens, diverse pixel art people gathered around it — some on laptops, some on phones, some in wheelchairs or using other accessibility devices, warm amber sunlight. RIGHT: the same large tree, but now the underground roots are visible, revealing an intricate network of interconnected glowing teal circuits, pipelines, and data streams beneath the surface — showing the hidden infrastructure that sustains everything above. A few roots glow orange/red where they are strained or fraying. Banner text: 'L36: Sustainability'. Bottom tagline: 'The Integral of Programming Over Time.' Bottom text: 'CS 3100: Program Design and Implementation 2'. Color palette: teals and greens for growth and health, warm oranges and ambers for sunlight and early stages, red accents on strained roots. 8-bit lo-fi pixel art style, clean outlines, retro game aesthetic."
+    alt="Pixel art timeline: LEFT a small seedling on a circuit board, CENTER a thriving tree with diverse people around it, RIGHT the same tree with underground roots visible as glowing interconnected circuits — some roots fraying in orange/red. Tagline: The Integral of Programming Over Time."
+  />
+  </Slide>
+
+
+<Slide>
+
+## Learning Objectives
+
+<p style={{fontSize: '0.85em', textAlign: 'left'}}>
+After this lecture, you will be able to:
+</p>
+
+<ol style={{fontSize: '0.75em', textAlign: 'left'}}>
+  <li>Define software sustainability as a meta-quality attribute</li>
+  <li>Apply the four dimensions of sustainability to evaluate design trade-offs</li>
+  <li>Recognize how efficiency gains can increase total resource consumption</li>
+  <li>Evaluate who benefits and who bears risk in design trade-offs</li>
+</ol>
+
+</Slide>
+
+
+<Slide>
+
+## From Safety to Sustainability: Generalizing "Who Profits, Who Bears Risk?"
+
+<div style={{fontSize: '0.8em'}}>
+
+In L35, we saw Boeing sell sensor redundancy as an **optional upgrade**. Budget airlines saved money. Passengers bore the risk — without knowing it.
+
+That distributional question — **who benefits, who pays, over what time horizon** — is the core question of sustainability.
+
+</div>
+
+<div style={{fontSize: '0.8em', backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.8em', borderRadius: '8px', marginTop: '0.8em'}}>
+
+**L1 callback:** "Software engineering is the integral of programming over time." Every lecture since has been about what that integral measures. Today we name it.
+
+</div>
+
+<aside className="notes">
+**Bridge from L35:** Tuesday we ended with "who profits from a design decision, and who bears the risk?" — applied to safety-critical systems. Today we generalize: that question applies to every design decision, not just safety decisions.
+
+**L1 callback:** In L1, we defined SE as "the integral of programming over time." That definition has been the through-line. Readability (L5) is readable over time. Coupling (L7) is changeable over time. Testing (L15) is correct over time. Performance (L34) is fast over time. Safety (L35) is safe over time. Today: sustainability is the name for what that integral computes.
+
+> **Transition:** So what exactly is sustainability?
+</aside>
+
+</Slide>
+
+
+<Slide>
+
+## SceneItAll's Success Disaster
+
+<div style={{fontSize: '0.78em'}}>
+
+SceneItAll launches. 50 beta homes. Everything works. Fast, reliable, safe. Great reviews.
+
+</div>
+
+<div className="fragment" style={{fontSize: '0.72em', marginTop: '0.5em'}}>
+
+| What went right | What happened next |
+|----------------|-------------------|
+| Fast firmware updates | Team pushes 10x more often; total traffic doubles |
+| Reliable occupancy sensing | Insurance companies want the data; users never consented |
+| Accessible on modern phones | 100,000 homes; users with screen readers can't configure scenes |
+| Free cloud tier covers costs | Growth past the free tier; locked into vendor pricing |
+| Small team ships fast | Original devs leave; no one understands the Zigbee adapter code |
+
+</div>
+
+<p className="fragment" style={{fontSize: '0.85em', color: '#9370DB', marginTop: '0.5em'}}>
+Nothing <strong>broke.</strong> The system <strong>succeeded</strong> — and the success created problems the original design never anticipated.
+</p>
+
+<aside className="notes">
+**This is the "success disaster" slide.** Every row in this table is something that went RIGHT — and then created a new problem at scale. Students should feel the tension: good engineering decisions that become sustainability liabilities over time.
+
+**Walk through 2-3 rows:** The firmware update row connects to Jevons' paradox (coming later). The occupancy row connects to social sustainability. The accessibility row connects to L28 — the system works for its original users but excludes new ones.
+
+**Key insight:** L35 asked "what happens when this fails?" This lecture asks the harder question: "what happens when this succeeds?"
+
+> **Transition:** Let's name what's happening here...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Sustainability: What Happens When This Succeeds?
+
+<div style={{fontSize: '0.8em'}}>
+
+**Definition (Lago et al.):** "Preservation of long-term beneficial use of software, and its appropriate evolution, in a context that continuously changes."
+
+</div>
+
+<div className="fragment" style={{fontSize: '0.78em', marginTop: '0.8em', backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+**The key word is "beneficial."** SceneItAll's occupancy data *is* useful — for the homeowner. It's *harmful* — for the homeowner whose data is sold. Same feature, different stakeholders, different time horizon.
+
+</div>
+
+<div className="fragment" style={{fontSize: '0.78em', marginTop: '0.8em'}}>
+
+Sustainability is not another quality attribute to add to the list. It is the **meta-quality attribute** — it asks whether all the other quality attributes (performance, safety, accessibility, changeability) **hold up over time, and for whom.**
+
+</div>
+
+<div className="fragment" style={{fontSize: '0.72em', marginTop: '0.5em', backgroundColor: 'rgba(50,205,50,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+Lago distinguishes two directions: **sustainable software** (inward — is the artifact itself maintainable, efficient, evolvable?) and **software for sustainability** (outward — does the software support sustainable processes in the world?). Both matter.
+
+</div>
+
+<aside className="notes">
+**Lago et al. (2024)** formalized this in a comprehensive ACM Computing Surveys paper. The key contribution: sustainability is not one dimension. It has four dimensions that interact and sometimes conflict (next slides).
+
+**Inward vs outward:** "Sustainable software" is about the artifact — can we maintain it, is it energy-efficient, does it resist software rot? "Software for sustainability" is about what the software enables — does Pawtograder make education more accessible? Do SceneItAll's energy-saving scenes actually reduce household energy use? A system can be inwardly sustainable (clean code, low coupling) but outwardly unsustainable (enables behaviors that harm people or the environment).
+
+**The "beneficial" insight:** A system can be technically excellent and socially harmful. It can be economically viable and environmentally destructive. "Beneficial" forces you to ask: beneficial to whom?
+
+**Connect to L4/L9:** Specification debt (L4) — ambiguous specs create a "hidden decision factory" where choices compound. Requirements cost escalation (L9) — fixing a requirements error costs 1x during gathering, 100x after deployment. Both are sustainability stories.
+
+> **Transition:** Safety and sustainability look similar. What's the difference?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Safety vs. Sustainability: Two Different Questions
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.75em'}}>
+
+<div style={{backgroundColor: 'rgba(200,74,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+**Safety (L35)**
+
+"What happens when this **fails?**"
+
+- Therac-25 race condition
+- Boeing single sensor
+- CrowdStrike boot loop
+
+Focus: **failure modes.** Who gets hurt when things go wrong?
+
+</div>
+
+<div style={{backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.8em', borderRadius: '8px'}} className="fragment">
+
+**Sustainability (today)**
+
+"What happens when this **succeeds** — at scale, over years, across stakeholders you haven't met?"
+
+- SceneItAll occupancy data sold
+- Pawtograder narrows curriculum
+- LLM subsidy reshapes labor market
+
+Focus: **success modes.** Who bears the cost when things go right?
+
+</div>
+
+</div>
+
+<aside className="notes">
+**The distinction is subtle but important.** Safety is about failure — when the system breaks, who gets hurt? Sustainability is about success — when the system works exactly as designed and scales, what unintended consequences emerge?
+
+**Both use the same distributional question** from L35: who profits, who bears risk? But safety analyzes this in the failure case, and sustainability analyzes it in the success case.
+
+**The examples on the right are all "success disasters":** SceneItAll's occupancy sensing works perfectly — that's the problem. Pawtograder's auto-grading scales beautifully — that's the problem. LLM pricing drops — that's the problem. Each success creates new stakeholders and new risks.
+
+> **Transition:** You've actually been building sustainability mechanisms all semester...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
 {/* LEARNING OBJECTIVES */}
 {/* ============================================ */}
 
