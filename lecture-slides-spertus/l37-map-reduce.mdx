@@ -112,7 +112,6 @@ import PollSlide from '@site/src/components/PollSlide';
 
 </Slide>
 
-
 <Slide>
 
 ## Learning Objectives
@@ -189,7 +188,6 @@ Big-O is about what happens for large inputs.
 
 </Slide>
 
-
 <Slide>
 
 ## Flame Graphs Show Where Time Goes
@@ -245,6 +243,187 @@ Optimizing one can worsen another: <strong>caching reduces latency but increases
 <aside className="notes">
 </aside>
 
+</Slide>
+
+{/* ============================================ */}
+{/* SAFETY AND RELIABILITY */}
+{/* ============================================ */}
+
+
+<Slide>
+  <Img
+    src="/img/lectures/web/l35.png"
+    prompt="Concept: 'Safety and Reliability' (Program Design and Implementation 2). Pixel art educational illustration, 16:9 aspect ratio. Scene: five vertical slices of Swiss cheese arranged in a row from left to right, viewed from the side. On the LEFT side, three cheese slices have their holes aligned — a bright red beam of light passes cleanly through all three aligned holes, emerging on the far side as a danger symbol. On the RIGHT side, two more cheese slices are offset so their holes do NOT align — a green glow shows that no light can pass through. Each cheese slice has a small label: 'Tests', 'Reviews', 'Rollout', 'Override', 'Monitoring'. The left group of slices with aligned holes looks ominous, slightly darker tones. The right group looks stable and safe with cool teal outlines. A small pixel art character on the far right gives a thumbs-up at the blocked light. Banner text: 'L35: Safety and Reliability'. Bottom tagline: 'Every Layer Has Holes.' Bottom text: 'CS 3100: Program Design and Implementation 2'. Color palette: warm reds and oranges for the danger beam, cool teals and blues for the safe side. 8-bit lo-fi pixel art style, clean outlines, retro game aesthetic."
+    alt="Pixel art: five Swiss cheese slices as defense layers. Left side has holes aligned with a red danger beam passing through. Right side has offset holes blocking all light. Labels on slices: Tests, Reviews, Rollout, Override, Monitoring. Tagline: Every Layer Has Holes."
+  />
+
+</Slide>
+
+
+<Slide>
+
+## Learning Objectives
+
+<p style={{fontSize: '0.85em', textAlign: 'left'}}>
+After this lecture, you will be able to:
+</p>
+
+<ol style={{fontSize: '0.75em', textAlign: 'left'}}>
+  <li>Distinguish safety from reliability</li>
+  <li>Apply the Swiss cheese model to analyze layered defenses</li>
+  <li>~~Analyze blast radius and fail-safe design~~</li>
+  <li>~~Recognize prior course concepts as safety mechanisms~~</li>
+  <li>~~Evaluate safety trade-offs against cost, complexity, and performance, and explain why professional judgment is currently the primary safety mechanism in most software~~</li>
+</ol>
+
+<aside className="notes">
+</aside>
+
+</Slide>
+
+
+<Slide>
+
+## Reliable, Available, and Safe Are Three Different Things
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.8em', fontSize: '0.7em'}}>
+
+<div style={{backgroundColor: 'rgba(100,149,237,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+**Reliable**
+
+Does what it's supposed to do, consistently.
+
+*Measure:* error rates, MTBF
+
+*SceneItAll:* activates scenes correctly 99.99% of the time
+
+</div>
+
+<div style={{backgroundColor: 'rgba(50,205,50,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+**Available**
+
+Accessible when users need it.
+
+*Measure:* "nines" — 99.9% = 8.7 hrs downtime/yr
+
+*GitHub:* multiple major outages Feb–Mar 2026 (auth DB overload, Actions failover failures)
+
+</div>
+
+<div style={{backgroundColor: 'rgba(200,74,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+**Safe**
+
+Avoids harm, **even when it fails.**
+
+*Measure:* incident severity — did anyone get hurt?
+
+*Key:* a property of the **failure mode**, not the happy path
+
+</div>
+
+</div>
+
+<div className='fragment' style={{fontSize: '0.8em', marginTop: '1em'}}>
+- **Reliable and unsafe:** A medical device delivers correct doses 99.99% of the time — but its failure mode is lethal. Reliable? Extremely. Safe? Not if one failure kills a patient.
+</div>
+<div className='fragment' style={{fontSize: '0.8em', marginTop: '1em'}}>
+- **Safe but unreliable:** Hub crashes frequently but preserves device state.
+</div>
+
+<aside className="notes">
+**The critical insight is the medical device example.** Students' intuition is that reliable = safe. Keep it generic here — the Therac-25 case study comes later and will hit harder if students haven't already heard the punchline. For now, just establish the principle: reliability measures how often something works, safety measures what happens when it doesn't.
+
+**GitHub availability (Feb–Mar 2026):** Three major outages — Feb 2, Feb 9, Mar 5. Root causes: a tenfold spike in read traffic from client apps overloaded the auth database (a cache TTL reduced from 12 to 2 hours made it worse), and Actions failover exposed latent Redis config issues. GitHub is now migrating to Azure (12.5% → 50% by July) and decomposing the monolith. Classic architectural coupling: localized failures cascaded across services.
+
+**The hub example:** If SceneItAll's hub crashes every day but always preserves device state, keeps doors locked, and keeps lights on, it's unreliable but relatively safe. Annoying, but not dangerous.
+
+> **Transition:** If safety isn't a feature, where does it come from?
+</aside>
+
+</Slide>
+
+<Slide>
+## Poll: How does the cost of fixing safety issues grow?
+
+As a product moves from design, through implementation, launch, and widespread use,
+how does the cost of addressing safety issues grow?
+
+<PollSlide username='espertus'
+  choices={["It stays about the same", "It increases linearly", "It increases exponentially"]}
+/>
+
+<div className='fragment'>
+An atomic firmware write on day one is moderate effort. After a bricking incident, it's a migration <em>plus</em> legal costs, customer replacements, and reputational damage.
+</div>
+
+</Slide>
+
+
+<Slide>
+
+## The Swiss Cheese Model: Harm Requires Aligned Holes
+
+<Img
+  src="/img/lectures/web/l35-swiss-cheese.png"
+  prompt="Clean educational diagram, 16:9 aspect ratio. The Swiss cheese model of accident causation. Four vertical slices of cheese arranged in a row from left to right on a white background, viewed from a slight angle so their depth is visible. Each slice is a different pastel color (yellow, orange, light green, light blue) and has 2-3 irregular holes of different sizes. On the left, a red arrow labeled 'Hazard' enters the first slice. In the TOP row, the holes in all four slices happen to align in a straight line, and the red arrow passes through all of them, emerging on the right as a red danger symbol with text 'HARM - holes aligned'. In the BOTTOM row (shown below or offset), the same four slices are arranged with holes that do NOT align, and a green arrow is blocked partway through, with text 'SAFE - holes offset'. Each slice has a small label at the bottom: 'Contracts (L4)', 'Testing (L15)', 'Architecture (L16)', 'Monitoring (L20)'. Clean educational diagram style, not pixel art."
+  alt="Swiss cheese model: four defense layers as cheese slices. Top: holes align and a hazard arrow passes through to cause harm. Bottom: holes don't align and the hazard is blocked. Labels: Contracts, Testing, Architecture, Monitoring."
+  style={{maxHeight: '480px'}}
+/>
+
+<p style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+A single layer with holes is not necessarily dangerous on its own. The problem is when someone <strong>removes a layer entirely</strong>, or when holes grow larger without anyone noticing.
+</p>
+
+</Slide>
+
+<Slide>
+## Poll: What would it take to convince you that software is bug-free?
+
+<PollSlide username='espertus'
+  choices={["100% coverage (branch and line) by tests", "expert human code review", "AI review", "all of the above", "none of the above"]}
+/>
+
+</Slide>
+
+
+<Slide>
+
+## Three Disasters, One Pattern: Removing Layers Is Removing Safety
+
+<div style={{fontSize: '0.6em'}}>
+
+| Aspect | Therac-25 | Boeing 737 MAX | CrowdStrike Falcon |
+|--------|-----------|----------------|-------------------|
+| **What was replaced?** | Hardware interlocks | Airframe redesign + pilot training | Manual security review |
+| **Replaced with?** | Software safety checks | MCAS software automation | Automated content update pipeline |
+| **Why?** | Cheaper, lighter | Cheaper, faster certification | Speed — security threats need rapid response |
+| **Layer removed?** | Hardware interlock layer | Sensor redundancy + training | Staged rollout for content updates |
+| **Critical flaw?** | Race conditions | Single point of failure | No rollback path when kernel crashes |
+| **Consequences?** | People received lethal radiation | Planes crashed | 8.5M machines soft-bricked |
+
+</div>
+
+<div style={{fontSize: '0.8em', marginTop: '0.8em'}}>
+
+**Three questions to ask** when replacing hardware/human judgment with software:
+1. What failure modes does **software introduce** that the original didn't have?
+2. Is there **redundancy?** What happens when the single sensor/input fails?
+3. Can **humans override** the automation when it's wrong?
+
+</div>
+
+<aside className="notes">
+**This is the synthesis slide.** The three case studies span 40 years (1985-2024) and three different domains (medical devices, aviation, cybersecurity). The pattern is identical: replace a safety mechanism (hardware, human judgment, manual process) with software because it's cheaper/faster, and remove the layer without adding a compensating defense.
+
+**The three questions** are the practical takeaway. When students encounter a design decision that replaces a safety mechanism with software, they should ask these questions. Boeing fails all three: MCAS introduced single-point-of-failure behavior the airframe didn't have, there was no redundancy on the basic configuration, and pilots couldn't override because they didn't know the system existed.
+
+**Distributional preview:** This pattern reveals a distributional question: Boeing sold redundancy as an optional upgrade — cost savings to airlines, risk to passengers. L36 will formalize this: "who profits from a design decision, and who bears the risk?"
+
+> **Transition:** Now let's talk about how much damage a failure can cause...
+</aside>
 
 </Slide>
 
