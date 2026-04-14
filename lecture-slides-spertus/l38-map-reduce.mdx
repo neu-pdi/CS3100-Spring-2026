@@ -7,6 +7,7 @@ image: /img/lectures/web/l37.png
 import RevealJS, { Slide } from '@site/src/components/RevealJS';
 import Img from '@site/src/components/Img';
 import PollSlide from '@site/src/components/PollSlide';
+import QuoteSlide from '@site/src/components/QuoteSlide';
 
 <RevealJS transition="slide">
 
@@ -60,6 +61,7 @@ After this lecture, you will be able to:
 </p>
 
 <ol style={{fontSize: '0.75em', textAlign: 'left'}}>
+  <li><em>Give examples of paradigm shifts</em></li>
   <li>Describe the MapReduce programming model and GFS at the level needed to analyze their design decisions</li>
   <li>Analyze MapReduce and GFS architectural decisions using quality attributes from the course</li>
   <li>Identify how MapReduce and GFS apply patterns learned throughout the semester</li>
@@ -67,6 +69,198 @@ After this lecture, you will be able to:
 </ol>
 
 </Slide>
+
+<Slide>
+
+## Reminder: We Want Your Feedback
+
+<div style={{ fontSize: '.8em' }}>
+* Complete TRACE if you haven't
+   * [AM](https://go.blueja.io/wAkVcAoleESCE1i83zREXg): 11/36 (30%)
+   * [PM](https://go.blueja.io/JZT6GlIzeUCbbKvkFq6p0w): 22/38 (57%)
+* Qualtrics survey will be part of assignment
+* Make yourself eligible for recommendations
+
+TRACE is anonymous, and I won't see results until after grades are in.
+
+You can make changes through April 26.
+
+<Img src="/img/lectures/poll-ev/qr-pollev-espertus.png" alt="QR code linking to the PollEV survey for espertus" />
+
+</div>
+
+<aside className="notes">
+I am hurt that students do not complete TRACE when I give them time.
+It affects how I think about NU students.
+All of you are nominally polite to me, but I feel disrespected.
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Paradigm Shifts
+
+<div style={{ fontSize: '.8em' }}>
+
+<div className='fragment'>
+A **paradigm** is a way of viewing the world.
+</div>
+
+<div className='fragment'>
+A **paradigm shift** is a change of worldview.
+
+<Img src='/img/lectures/web/l38-copernican-revolution.gif'
+  alt="Animation showing planets rotating around sun (left) and planets rotatiang around Earth (right)"
+/>
+
+
+<p style={{fontSize: '0.6em', color: 'gray'}}>
+  "Apparent retrograde motion" by{' '}
+  <a href="https://en.wikipedia.org/wiki/User:Cleonis">Cleonis</a>,
+  <a href="https://commons.wikimedia.org/wiki/File:Apparent_retrograde_motion.gif">Wikimedia Commons</a>,
+  <a href="https://creativecommons.org/licenses/by-sa/2.5/">CC BY-SA 2.5</a>
+</p>
+</div>
+
+</div>
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## A Paradigm Shift in Information Retrieval (1990s)
+
+<div style={{ fontSize: '.75em' }}>
+
+<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginTop: '1rem' }}>
+
+<div>
+
+**Pre-Web Era (Cathedral)**
+
+<ul>
+  <li className="fragment" data-fragment-index="1">Curated, centrally-controlled collections</li>
+  <li className="fragment" data-fragment-index="2">Thousands of documents with controlled growth</li>
+  <li className="fragment" data-fragment-index="3">Content signals trustworthy — no incentive to game them</li>
+</ul>
+
+</div>
+
+<div>
+
+**Web Era (Bazaar)**
+
+<ul>
+  <li className="fragment" data-fragment-index="1">Decentralized, chaotic — anyone can publish</li>
+  <li className="fragment" data-fragment-index="2">Billions of documents with uncontrolled growth</li>
+  <li className="fragment" data-fragment-index="3">Content signals easily gamed (keyword stuffing)</li>
+</ul>
+
+</div>
+
+</div>
+<div className="fragment" data-fragment-index="5">
+Traditional information retrieval algorithms relied on keywords and metadata to find the best matches in flat text collections.
+</div>
+<div className="fragment" data-fragment-index="5">
+That didn't work for web search. *What did?*
+</div>
+</div>
+
+</Slide>
+
+<Slide>
+
+## PageRank Algorithm
+
+<Img src='/img/lectures/web/l38-pagerank.png'
+  width={800}
+  alt="Colored graph of interconnected nodes with different numeric values"
+/>
+
+<div style={{ fontSize: '0.6em' }}>
+
+<a href="https://commons.wikimedia.org/wiki/File:PageRanks-Example.svg">en:User:345Kai, User:Stannered</a>, Public domain, via Wikimedia Commons
+</div>
+<aside className="notes">
+I won't go into detail, because this class isn't about IR, but it's good to see examples of paradigm shifts.
+→ Let's continue to set the scene...
+</aside>
+
+</Slide>
+
+<Slide>
+## Moore's Law
+  <Img
+    src="/img/lectures/web/l38-Moore's_Law_Transistor_Count_1970-2020.png"
+    width={1000}
+    alt="Log-linear graph showing the number of transistors on microchips doubling every two years from 1971 to 2020"
+  />
+
+<div style={{ fontSize: '.5em' }}>
+Max Roser, Hannah Ritchie, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0), via [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Moore%27s_Law_Transistor_Count_1970-2020.png)
+</div>
+<aside className="notes">
+That implies that computers become 1000x as powerful every 20 years or so.
+
+Does that mean that software runs really fast?
+</aside>
+</Slide>
+
+
+<Slide>
+
+## Wirth's Law
+
+<QuoteSlide
+  quote="Software gets slower more rapidly than hardware gets faster."
+  author="Niklaus Wirth"
+  />
+
+<aside className="notes">
+This has been observed by other people and is also called Page's Law.
+</aside>
+
+</Slide>
+
+
+<Slide>
+
+## Setting the Scene (Early 2000s)
+
+<div style={{fontSize: '0.65em'}}>
+
+In 2003, Google was crawling *billions* of web pages.
+</div>
+
+<div className="fragment" style={{fontSize: '0.65em', marginTop: '0.5em'}}>
+
+| | Per web page | Total crawl (billions of pages) |
+|--|-------------|-------------------------------|
+| **Raw data** | ~100 KB | **Hundreds of TB** |
+| **Words to index** | ~500 unique | **Trillions of index entries** |
+| **Links to follow** | ~50 outbound | **Hundreds of billions of edges** |
+
+</div>
+
+<div className="fragment" style={{fontSize: '0.65em'}}>
+Servers had ~2 TB of storage and had ~1/1000th the power of today's computers.
+
+*How could they store and process all of that information?*
+</div>
+
+
+<aside className="notes">
+</aside>
+
+</Slide>
+
+
+
 
 {/* ============================================ */}
 {/* ARC 1: THE PROBLEM + PROGRAMMING MODEL (~12 min) */}
@@ -157,122 +351,165 @@ These three requirements — throughput, fault tolerance, scalability — shaped
 - **Throughput:** Hundreds of TB is the scale we'll establish on the next slide. A single machine reading at ~500 MB/s would take days — Google needed results in hours.
 - **Fault tolerance:** With 1000+ machines, the probability of at least one failing during a multi-hour job is nearly 100%. Failure is not an exception — it's the normal operating environment. This is the constraint that forces pure functions and re-execution.
 - **Scalability:** The web keeps growing. If doubling the crawl size requires rewriting the system, that's unsustainable (L36). The architecture must scale by adding machines, not changing code.
-
-**The question to plant:** "As we go through each design decision, I'll ask: which of these three requirements drove it?" This gives students an analytical lens for the rest of the lecture.
-
-**L19 connection:** "There's no universally best architecture — only architectures that are better or worse fits for particular constraints and priorities." These three requirements ARE the constraints that shaped MapReduce.
-
-> **Transition:** Let's see where these requirements come from — starting with the data...
 </aside>
 
 </Slide>
 
 <Slide>
 
-## Google's Data Problem Started with Storage
+## Programming Paradigms
 
-<div style={{fontSize: '0.75em'}}>
+<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', fontSize: '0.75em', marginTop: '1rem' }}>
 
-By 2003, Google had crawled **billions of web pages.** Each page: ~100KB of HTML, metadata, and outbound links.
+<div style={{ backgroundColor: 'rgba(200,74,74,0.15)', padding: '0.8em', borderRadius: '8px', color: 'black' }}>
 
-</div>
+**Object-Oriented Programming**
 
-<div className="fragment" style={{fontSize: '0.65em', marginTop: '0.5em'}}>
-
-| | Per web page | Total crawl (billions of pages) |
-|--|-------------|-------------------------------|
-| **Raw data** | ~100 KB | **Hundreds of TB** |
-| **Words to index** | ~500 unique | **Trillions of index entries** |
-| **Links to follow** | ~50 outbound | **Hundreds of billions of edges** |
+<div style={{ minHeight: '3em', display: 'flex', gap: '0.5em' }}><span>•</span><span>Organize code around *objects* that bundle state and behavior</span></div>
+<div style={{ minHeight: '3em', display: 'flex', gap: '0.5em' }}><span>•</span><span>State changes over time via method calls</span></div>
+<div style={{ minHeight: '2.7em', display: 'flex', gap: '0.5em' }}><span>•</span><span>Model the world as interacting entities</span></div>
 
 </div>
 
-<div className="fragment" style={{fontSize: '0.75em', marginTop: '0.5em', backgroundColor: 'rgba(200,74,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+<div style={{ backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.8em', borderRadius: '8px', color: 'black' }}>
 
-**Hundreds of TB don't fit on one machine.** A large server in 2003 had ~2 TB of disk. You need **hundreds of machines just to store the raw crawl** — and the web keeps growing.
+**Functional Programming**
+
+<div style={{ minHeight: '3em', display: 'flex', gap: '0.5em' }}><span>•</span><span>Organize code around *functions* that transform data</span></div>
+<div style={{ minHeight: '3em', display: 'flex', gap: '0.5em' }}><span>•</span><span>Avoid mutable state — same input always gives same output</span></div>
+<div style={{ minHeight: '2.7em', display: 'flex', gap: '0.5em' }}><span>•</span><span>Model the world as data flowing through pipelines</span></div>
+
+</div>
 
 </div>
 
-<div className="fragment" style={{fontSize: '0.72em', marginTop: '0.5em'}}>
-
-And Google doesn't just store it — they need to **process all of it** to build the products people use: web search requires an inverted index, relevant ranking requires PageRank, and the crawl itself must be kept current as the web changes.
-
-</div>
+<p className="fragment" style={{ fontSize: '0.7em' }}>Which is best? <em>It depends.</em><br/><br/>
+Have both in your toolkit.</p>
 
 <aside className="notes">
-**Bridge from L36:** Last lecture we closed with sustainability — "the integral of programming over time." Today we take every concept from the semester and apply it to one real system: Google's MapReduce and the Google File System. This is not a distributed systems lecture. Students will not implement MapReduce. The goal is to use it as a lens for the entire course.
 
-**Start with storage, not computation.** Students often think "big data" means "slow computation." But the first problem is simpler: where do you put it? A single machine can't even hold the data, let alone process it.
-
-**Walk through the math.** Billions of pages × ~100KB each = hundreds of TB. A 2003 server had maybe 2 TB of disk. Let students feel the scale building from per-page (familiar) to total crawl (staggering). The trillions-of-index-entries number should land hard.
-
-**The numbers are approximate but realistic.** The exact size of Google's 2003 crawl is not public. The point is the order of magnitude — the conclusion (doesn't fit on one machine) holds even if numbers are 2-3x off. The GFS paper describes clusters with "hundreds of terabytes across hundreds of machines."
-
-**If a student asks "why not just keep the latest crawl?":** You can't — you need the full crawl to build the index, and the web keeps changing, so you're continuously re-crawling and re-processing. The steady-state data volume only grows as the web grows.
-
-> **Transition:** So storage is the first problem. But what do you actually want to DO with all this data?
 </aside>
 
 </Slide>
 
 <Slide>
 
-## Then It's a Computation Problem
+## The Map and Reduce Higher-Order Functions
 
-<div style={{fontSize: '0.75em'}}>
+<Img src='/img/lectures/web/l38-mapreduce-sandwiches.webp'
+  width={800}
+  alt="Diagram showing bread and vegetables on the left, going through Map to become chopped, then reduced to become a sandwich"
+/>
 
-Google needs to build an **inverted index** (which pages contain each word — this IS Google Search), compute **PageRank** (how pages link to each other — this is what makes results relevant), and process **web server logs** (billions of requests per day). That means **reading and processing hundreds of TB regularly.**
+<div style={{ fontSize: '0.75em' }}>
+`map` applies a function to every element in a list
 
+`reduce` combines a list into a single item
 </div>
-
-<div className="fragment" style={{fontSize: '0.75em', marginTop: '0.8em', backgroundColor: 'rgba(200,74,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
-
-**The math:** One machine reads from disk at ~500 MB/s. Reading hundreds of TB takes **days** — for an index that needs to stay current as the web changes.
-
-</div>
-
-<div className="fragment" style={{fontSize: '0.75em', marginTop: '0.5em'}}>
-
-Hundreds of machines reading in parallel: **hours.** That's feasible — but now you have two new problems:
-
-</div>
-
-<div className="fragment" style={{fontSize: '0.72em', marginTop: '0.5em'}}>
-
-1. **Coordination:** How do you split the work, route results, and combine them?
-2. **Failure:** If one machine crashes mid-computation (and at 100+ machines, something *will* crash), what happens to its work?
-
-</div>
-
-<div className="fragment" style={{fontSize: '0.75em', marginTop: '0.5em', backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.8em', borderRadius: '8px'}}>
-
-Google's answer: build a **file system** that stores data across thousands of machines (GFS), and a **programming model** that distributes computation automatically (MapReduce).
-
-</div>
-
 <aside className="notes">
-**The two-slide setup:** Slide 1 established that storage is the first problem — the data doesn't fit on one machine. This slide establishes that computation is the second problem — you can't process it fast enough on one machine either.
-
-**The "days" number is the hook.** Hundreds of TB ÷ 500 MB/s = hundreds of thousands of seconds = days. Students can estimate this in their heads. The gap between "days" and "need a current index" makes the problem visceral.
-
-**Quality scenario (L18 format):** If you want to formalize this on the board:
-- **Source:** Search infrastructure team
-- **Stimulus:** Rebuild inverted index from latest crawl
-- **Environment:** Hundreds of TB of crawled pages, commodity hardware (machines fail regularly)
-- **Artifact:** Data processing pipeline
-- **Response:** Produce inverted index mapping every word to every page containing it
-- **Measure:** Completes in hours, not days; tolerates machine failures without restarting
-
-This is exactly the quality scenario template from L18 — and these constraints shape the architecture.
-
-**Name the three products:** Inverted index = Google Search (look up which pages contain a word). PageRank = what makes results relevant (analyze the link graph). Web server logs = understand traffic patterns. All three require reading the full dataset.
-
-**Name the architectural style:** This is **batch processing** — all input is processed in one large batch on a fixed schedule, rather than stream processing (events processed as they arrive). Batch processing trades latency for throughput and simplicity.
-
-> **Transition:** Before we look at the solutions, let's understand what kind of data access this workload actually needs...
+What's functional about this?
+There's no external state. Each operation is independent
 </aside>
 
 </Slide>
+
+<Slide>
+
+## Counting Words on the Web with MapReduce
+
+<Img src='/img/lectures/web/l38-mapreduce-hazelcast.png'
+  width={1000}
+  alt='Image showing use of MapReduce to generate a count of words in documents'
+/>
+
+<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10rem', fontSize: '0.5em' }}>
+
+<div>
+```
+map(key:String, document:String):Void ->
+    for each w:word in document:
+        emit(w, 1)
+```
+
+</div>
+
+<div>
+```
+reduce(word:String, counts:List[Int]):Int ->
+    return sum(counts)
+```
+</div>
+</div>
+<div style={{ fontSize: '0.5em', marginTop: '-2em' }}>
+Source: https://docs.hazelcast.org/docs/3.2/manual/html/mapreduce-essentials.html
+</div>
+
+
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Sandwich MapReduce with Shuffle
+
+<Img src='/img/lectures/web/l38-mapreduce-shuffle-sandwiches.jpeg'
+  width={1000}
+  alt="Diagram with bread and vegetables at left going through map (chop),
+  shuffle (group), and reduce (assemble into sandwich) states"
+/>
+
+<div style={{ fontSize: '0.5em' }}>
+https://web.stanford.edu/class/cs110/summer-2021/lecture-notes/lecture-17/
+</div>
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Building an Index with MapReduce
+
+<Img src='/img/lectures/web/l38-mapreduce-index.jpeg'
+  width={1000}
+  alt='Image showing use of MapReduce to build an index'
+/>
+
+<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10rem', fontSize: '0.5em' }}>
+
+<div>
+```
+map(url:String, document:String):Void ->
+    for each w:word in document:
+        emit(w, url)
+```
+
+</div>
+
+<div>
+```
+reduce(word:String, urls:List[String]):String ->
+    return urls.join(prefix=word, separator=' ')
+```
+</div>
+</div>
+<div style={{ fontSize: '0.5em' }}>
+https://web.stanford.edu/class/cs110/summer-2021/lecture-notes/lecture-17/
+</div>
+
+
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+
+
 
 <Slide>
 
