@@ -170,7 +170,7 @@ TA meeting observations and weekly collaboration surveys can adjust an individua
 
 ## End-of-Semester Course Survey (submitted separately)
 
-Each team member completes the **end-of-semester course survey** via Qualtrics. **This is a mandatory gate: your individual and team grades for this assignment will not be released until the survey is submitted.**
+Each team member completes the **end-of-semester course survey** via Qualtrics. **This is a mandatory gate: your individual grade for this assignment will not be released until the survey is submitted.** This applies only to you — a teammate's missing survey does not delay your grade.
 
 You will receive the survey link via email. The survey covers your experience with the course overall, AI tools, the group project, and feedback on new course content. It takes approximately 10–12 minutes.
 
@@ -189,5 +189,5 @@ Merge to `main` (team deliverables — automatically submitted to Pawtograder):
 
 Submit via Qualtrics (individual, link sent by email):
 
-5. **End-of-Semester Course Survey** (due Thursday, April 23)
+5. **End-of-Semester Course Survey** 
 
