@@ -509,132 +509,81 @@ https://web.stanford.edu/class/cs110/summer-2021/lecture-notes/lecture-17/
 </Slide>
 
 
-
-
 <Slide>
 
-## MapReduce Hides Distributed Complexity Behind Two Functions
+## Poll: What does this calculate?
 
-<div style={{fontSize: '0.78em'}}>
+<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10rem', fontSize: '0.5em' }}>
 
-Google built MapReduce for web indexing — but the programming model is **general.** Any data processing task with the same requirements (massive data, parallel processing, fault tolerance) can use the same two functions. SceneItAll's analytics pipeline has exactly those requirements:
+<div>
+<Img src='/img/lectures/web/l38-social-network.png'
+  width={800}
+  prompt="Create a simple graph representing a social network with cartoonish faces and names on each node. Lines should connect some nodes. There should be no other text or imagery."
+  alt="Graph showing 8 names and faces connected by edges"
+/>
+</div>
+<div>
 
+<p style={{ textAlign: 'center', marginTop: '1em' }}>
+<Img src="/img/lectures/poll-ev/qr-pollev-espertus.png" alt="QR code linking to the PollEV survey for espertus" />
+Text espertus to 22333 if the
+URL isn't working for you.
+  <a href="https://www.pollev.com/espertus">https://pollev.com/espertus</a>
+</p>
+</div>
 </div>
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.7em', marginTop: '0.5em'}}>
+<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10rem', fontSize: '0.7em' }}>
 
-<div style={{backgroundColor: 'rgba(78,205,196,0.15)', padding: '0.8em', borderRadius: '8px'}}>
-
-**Map:** Takes a key-value pair, emits zero or more intermediate pairs.
-
+<div>
 ```
-map(homeId, telemetryData) →
-  emit("high-energy", {homeId, 45kWh})
-  emit("normal", {homeId, 12kWh})
+// map over edges
+map(p1:Person, p2:Person):Void ->
+    emit(p1, p2)
 ```
 
-One home's telemetry in, classification out.
-
+```
+reduce(p: Person, persons:List[Person]):Int ->
+    return persons.length
+```
 </div>
 
-<div style={{backgroundColor: 'rgba(255,107,107,0.15)', padding: '0.8em', borderRadius: '8px'}}>
-
-**Reduce:** Takes a key + all its values, combines into final result.
-
-```
-reduce("high-energy", [
-  {home1, 45kWh}, {home2, 52kWh}, ...
-]) →
-  emit("high-energy",
-    {count: 12400, avgKWh: 48.3})
-```
-
-All high-energy homes in, aggregate out.
-
+<div>
+A. How many connections each person has<br/>
+B. How many nodes are in the graph<br/>
+C. How many edges are in the graph<br/>
+D. None of the above
 </div>
-
-</div>
-
-<div className="fragment" style={{fontSize: '0.78em', marginTop: '0.5em', backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.8em', borderRadius: '8px'}}>
-
-Between map and reduce, the framework performs a **shuffle** — groups intermediate values by key and routes them to the appropriate reducer. The programmer writes only map and reduce; the framework handles **everything else.**
-
 </div>
 
 <aside className="notes">
-**The pivot to SceneItAll is deliberate.** We told Google's story to motivate WHY MapReduce exists. Now we use SceneItAll to show the model is GENERAL — the same two-function abstraction works for any data processing task with the same requirements (large data, parallel processing, fault tolerance). The map function processes one home; the reduce function aggregates across homes. The shuffle is the framework's job — the programmer never sees it.
 
-**Name the architectural style:** This is a **pipelined architecture** (L19) — data flows through sequential stages: input → map → shuffle → reduce → output. Same pattern as Pawtograder's grading pipeline (submission → build → test → parse → grade → feedback), but at data-center scale.
-
-**Name the information hiding:** The "everything else" that the framework handles — distribution, parallelism, fault tolerance, data routing — is **information hiding (L6)** at system scale. The programmer depends on the interface (write two functions), not the implementation (thousands of machines, network failures, replication). Thousands of Google engineers wrote MapReduce jobs without understanding any of the distributed infrastructure.
-
-> **Transition:** What does the execution look like under the hood?
 </aside>
 
 </Slide>
 
 <Slide>
 
-## Step 1: Split the Input, Run Map in Parallel
+## MapReduce: How It Works
 
 <div style={{fontSize: '0.55em'}}>
 
 ```mermaid
 graph LR
-    INPUT["Input Data<br/>all of SceneItAll's<br/>device logs"] --> SPLIT["Split into<br/>16-64MB chunks"]
+    INPUT["Input Data"] --> SPLIT["Split into<br/>16-64MB chunks"]
     SPLIT --> W1["Worker 1<br/>MAP"]
     SPLIT --> W2["Worker 2<br/>MAP"]
     SPLIT --> W3["Worker 3<br/>MAP"]
-    W1 --> I1["intermediate<br/>key-value pairs"]
-    W2 --> I2["intermediate<br/>key-value pairs"]
-    W3 --> I3["intermediate<br/>key-value pairs"]
-
-    style INPUT fill:#D6EAF8,color:#1a1a1a
-    style SPLIT fill:#D6EAF8,color:#1a1a1a
-    style W1 fill:#4ECDC4,color:white
-    style W2 fill:#4ECDC4,color:white
-    style W3 fill:#4ECDC4,color:white
-    style I1 fill:#FDEBD0,color:#1a1a1a
-    style I2 fill:#FDEBD0,color:#1a1a1a
-    style I3 fill:#FDEBD0,color:#1a1a1a
-```
-
-</div>
-
-<div style={{fontSize: '0.75em', marginTop: '0.5em'}}>
-
-Input is split into chunks. Each chunk is assigned to a **map worker** running your `map()` function. Workers run in parallel on different machines — they don't communicate with each other.
-
-</div>
-
-<aside className="notes">
-**Start simple.** The input is one big dataset — all of SceneItAll's device logs. The framework splits it into chunks (16-64MB each) and assigns each chunk to a map worker. Each worker runs the same map function on its chunk and emits intermediate key-value pairs.
-
-**Key point:** The map workers are completely independent. They don't talk to each other. This is why it scales — add more workers, process more chunks in parallel. This is the same thread pool pattern from L31, but across machines instead of threads.
-
-**Don't rush to the next slide.** Make sure students understand this phase before adding shuffle and reduce.
-
-> **Transition:** Now we have thousands of intermediate key-value pairs scattered across all the map workers. How do we get them to the right reduce worker?
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Step 2: Shuffle Groups by Key, Reduce Aggregates
-
-<div style={{fontSize: '0.55em'}}>
-
-```mermaid
-graph LR
-    W1["Worker 1<br/>MAP"] --> SHUFFLE["Shuffle<br/>(group by key)"]
-    W2["Worker 2<br/>MAP"] --> SHUFFLE
-    W3["Worker 3<br/>MAP"] --> SHUFFLE
-    SHUFFLE --> R1["Worker 4<br/>REDUCE"]
-    SHUFFLE --> R2["Worker 5<br/>REDUCE"]
+    W1 -->|"(key1, val1)"| SHUFFLE["Shuffle<br/>(group by key)"]
+    W2 -->|"(key1, val2)"| SHUFFLE
+    W3 -->|"(key2, val3)"| SHUFFLE
+    SHUFFLE --> |"(key1, [val1, val2])"|R1["Worker 4<br/>REDUCE"]
+    SHUFFLE --> |"(key2, [val3])"|R2["Worker 5<br/>REDUCE"]
     R1 --> OUTPUT["Output<br/>(GFS)"]
     R2 --> OUTPUT
 
+    style INPUT fill:#D6EAF8,color:#1a1a1a
+    style SPLIT fill:#D6EAF8,color:#1a1a1a
     style W1 fill:#4ECDC4,color:white
     style W2 fill:#4ECDC4,color:white
     style W3 fill:#4ECDC4,color:white
@@ -646,27 +595,31 @@ graph LR
 
 </div>
 
-<div style={{fontSize: '0.75em', marginTop: '0.5em'}}>
-
-The **shuffle** collects all intermediate pairs with the same key and routes them to the same reduce worker. Then each **reduce worker** runs your `reduce()` function on all values for its assigned keys.
-
+<div style={{fontSize: '0.8em', marginTop: '1.5em'}}>
+1. Input is split into chunks, sent to different machines.
+2. Map workers process data, producing (key, value) pairs.
+3. Shufflers send data with the same key to reduce workers.
+4. Reduce workers write the output to GFS.
 </div>
 
 <aside className="notes">
-**The shuffle is the framework's job, not yours.** This is the expensive part — moving data across the network so all values for a given key end up on the same machine. The programmer doesn't write shuffle code. The framework handles it.
+**Start simple.** The input is one big dataset — all of SceneItAll's device logs. The framework splits it into chunks (16-64MB each) and assigns each chunk to a map worker. Each worker runs the same map function on its chunk and emits intermediate key-value pairs.
+
+**Key point:** The map workers are completely independent. They don't talk to each other. This is why it scales — add more workers, process more chunks in parallel.
+
+**The shuffle is the framework's job, not yours.** This is the expensive part — moving data across the network so all values for a given key end up on the same machine.
 
 **Example:** If the map phase emitted `("living-room", 1)` from Worker 1 and `("living-room", 1)` from Worker 3, the shuffle ensures both arrive at the same reduce worker. That reduce worker then sums them: `("living-room", 2)`.
-
-**Reduce workers are also independent.** Each handles a different set of keys. Like map workers, they don't communicate with each other.
 
 > **Transition:** But who orchestrates all of this? Who assigns tasks, tracks failures, restarts crashed workers?
 </aside>
 
 </Slide>
 
+
 <Slide>
 
-## Step 3: A Coordinator Orchestrates Everything
+## What Happens Behind the Scenes
 
 <div style={{fontSize: '0.55em'}}>
 
@@ -706,7 +659,7 @@ graph LR
 
 <div style={{fontSize: '0.72em', marginTop: '0.3em'}}>
 
-The **coordinator** does NOT process data. It assigns tasks, monitors workers, and restarts failed ones. Workers that crash mid-task have their chunk reassigned to another worker — transparent to the programmer.
+The **coordinator** assigns tasks, monitors workers, and restarts failed ones — transparent to the programmer.
 
 </div>
 
@@ -729,9 +682,7 @@ The **coordinator** does NOT process data. It assigns tasks, monitors workers, a
 ## Your Laptop's File System Was Designed for a Different Workload
 
 <div style={{fontSize: '0.68em'}}>
-
-Every file system you've used assumes: small files, random reads and writes, open-edit-save workflows, 4KB blocks. These are great for editing documents and compiling code. Google's workload is the opposite:
-
+Most file systems are designed for open-edit-save workflows, of mostly small files.
 </div>
 
 <div className="fragment" style={{fontSize: '0.6em', marginTop: '0.5em'}}>
@@ -743,12 +694,6 @@ Every file system you've used assumes: small files, random reads and writes, ope
 | Open, edit, save, close | Write once, read many times, never modify |
 | Permissions, directories, timestamps | Irrelevant at batch scale |
 | 4KB blocks | Wasteful — 50GB file = 13 million blocks of bookkeeping |
-
-</div>
-
-<div className="fragment" style={{fontSize: '0.75em', marginTop: '0.5em', backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.8em', borderRadius: '8px'}}>
-
-**L9 → L6:** Different requirements demand different abstractions. A file system designed for editing 50KB documents is the wrong tool for scanning 50GB logs. Google built GFS with **64MB chunks** instead of 4KB blocks — 16,000x fewer allocations. The simplification IS the performance gain.
 
 </div>
 
@@ -776,8 +721,7 @@ Every file system you've used assumes: small files, random reads and writes, ope
 
 <div style={{fontSize: '0.78em'}}>
 
-GFS uses **64MB chunks** instead of your laptop's 4KB blocks — that's **16,000x bigger.** Why? Every chunk has fixed costs that don't scale with chunk size:
-
+Why does GFS use larger chunks?
 </div>
 
 <div style={{fontSize: '0.62em', marginTop: '0.5em'}}>
@@ -790,17 +734,7 @@ GFS uses **64MB chunks** instead of your laptop's 4KB blocks — that's **16,000
 
 </div>
 
-<div className="fragment" style={{fontSize: '0.75em', marginTop: '0.5em', backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.8em', borderRadius: '8px'}}>
-
-**L34 (Batching):** Same principle — amortize fixed costs across more work. Batching database queries avoids per-query overhead. Batching I/O into 64MB chunks avoids per-block metadata, replication, and round-trip overhead. **When fixed costs dominate, make the units bigger.**
-
-</div>
-
-<div className="fragment" style={{fontSize: '0.75em', marginTop: '0.5em', backgroundColor: 'rgba(100,149,237,0.15)', padding: '0.8em', borderRadius: '8px'}}>
-
-**L34 (Locality):** MapReduce also moves **computation to data** — the coordinator assigns map tasks to workers **on the same machine** as the data chunk. Local disk reads (microseconds) vs. network reads (milliseconds). Batching and locality together minimize network transfer.
-
-</div>
+<p className="fragment" style={{fontSize: '0.75em'}}>We've seen this before: Batching and Locality (L34)</p>
 
 <aside className="notes">
 **This is L34's batching pattern at infrastructure scale.** In L34 we showed that batching database queries (N+1 → 1 query with JOIN) and batching network calls (N API calls → 1 batch endpoint) amortize fixed per-invocation costs. GFS applies the same principle to storage.
@@ -849,14 +783,6 @@ graph TD
 
 </div>
 
-<div style={{fontSize: '0.72em', marginTop: '0.3em'}}>
-
-- **Single NameNode:** Maintains metadata — which chunks belong to which file, where each chunk is stored. Does **not** store file data.
-- **Many DataNodes:** Store the actual data. Files divided into 64MB chunks, each replicated across **3 DataNodes.**
-- **Clients:** Contact the NameNode for metadata, then communicate **directly** with DataNodes for data.
-
-</div>
-
 <div className="fragment" style={{fontSize: '0.75em', backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.8em', borderRadius: '8px', marginTop: '0.3em'}}>
 
 Together, MapReduce + GFS = programmers write simple sequential functions, and the framework distributes execution across thousands of machines, handles failures, and manages storage transparently.
@@ -877,75 +803,11 @@ Together, MapReduce + GFS = programmers write simple sequential functions, and t
 {/* ARC 2: DESIGN DECISIONS (~15 min) */}
 {/* ============================================ */}
 
-<Slide>
-
-## A Single NameNode Trades Simplicity for a Dangerous Single Point of Failure
-
-<div style={{fontSize: '0.78em'}}>
-
-GFS uses a **single NameNode** for all metadata operations. Every client contacts the NameNode to learn which DataNodes hold the data it needs.
-
-</div>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.7em', marginTop: '0.5em'}}>
-
-<div style={{backgroundColor: 'rgba(50,205,50,0.15)', padding: '0.8em', borderRadius: '8px'}}>
-
-**Benefits:**
-- **Simplicity:** No distributed consensus, no conflicting views
-- **Functional cohesion (L7):** All metadata logic in one place — one responsibility
-- **Global optimization:** NameNode makes optimal placement decisions
-
-</div>
-
-<div style={{backgroundColor: 'rgba(200,74,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
-
-**Costs:**
-- **High coupling (L7):** Every client depends on the NameNode — stamp coupling via metadata types
-- **Single point of failure (L35):** NameNode down = entire file system unavailable
-- **Blast radius (L35):** NameNode failure affects **every** client and **every** DataNode
-
-</div>
-
-</div>
-
-<div className="fragment" style={{fontSize: '0.75em', marginTop: '0.5em', backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.8em', borderRadius: '8px'}}>
-
-**Mitigation — separation of concerns (L6, L19):** The NameNode handles one concern (metadata: "where is the data?"), DataNodes handle another (I/O: "give me the data"). Clients ask the NameNode for metadata, then read **directly** from DataNodes. The NameNode stays out of the data path.
-
-</div>
-
-<aside className="notes">
-**L7 callback:** In L7 we defined coupling as how much one module is affected by changes in another. The GFS master has high coupling to every client — if the master is slow, everything is slow. But it also has high cohesion — all metadata logic in one place, which is functionally cohesive.
-
-**The mitigation is elegant:** By keeping the master out of the data path, GFS limits the master's load to metadata lookups (small, fast) while chunkservers handle the heavy lifting (large data transfers). This is information hiding at the system level — the master hides the mapping from files to chunks, and clients never need to know the physical layout of data.
-
-**Foreshadowing:** This single-master decision eventually drove Google to replace GFS with Colossus, which distributes metadata. We'll cover that in Arc 4.
-
-> **Transition:** With thousands of machines, failures are guaranteed. How does MapReduce handle them?
-</aside>
-
-</Slide>
 
 <Slide>
 
 ## Pure Functions Make Re-Execution Safe — and Fault Tolerance Trivial
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.7em'}}>
-
-<div style={{backgroundColor: 'rgba(78,205,196,0.15)', padding: '0.8em', borderRadius: '8px'}}>
-
-**The design decision:** Map functions are **pure** (L5) — same input → same output, no side effects. Workers have **zero coupling** (L7) — no shared mutable state (L31). Each map task has **functional cohesion** — one responsibility: process this chunk.
-
-</div>
-
-<div style={{backgroundColor: 'rgba(200,74,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
-
-**The consequence:** With thousands of workers, failures are **nearly certain.** But purity makes recovery trivial — re-execute the failed task on another machine. Same input, same output, guaranteed.
-
-</div>
-
-</div>
 
 <div style={{fontSize: '0.7em', marginTop: '0.5em'}}>
 
@@ -954,12 +816,6 @@ GFS uses a **single NameNode** for all metadata operations. Every client contact
 | **Map worker dies** | Coordinator pings periodically | Reassign task to another worker | Pure function (L5) → re-execution produces same output |
 | **Reduce worker dies** | Coordinator pings periodically | Reassign reduce task | Idempotent (L33) → re-execution is safe |
 | **DataNode dies** | NameNode detects missing heartbeat | Read from surviving replica (2 of 3 remain) | Redundancy (L35) → no single point of failure for data |
-
-</div>
-
-<div className="fragment" style={{fontSize: '0.75em', marginTop: '0.5em', backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.8em', borderRadius: '8px'}}>
-
-**L20 (Networks) + L33 (Event Architecture):** Retry with exponential backoff is a resilience pattern. MapReduce applies it at the task level — if a task fails, retry on a different machine. This is safe because map functions are **idempotent** (L33): executing the same function on the same input produces the same output, whether executed once or a hundred times.
 
 </div>
 
@@ -977,133 +833,9 @@ GFS uses a **single NameNode** for all metadata operations. Every client contact
 
 </Slide>
 
-<Slide>
-
-## Swiss Cheese Analysis: A Chunkserver Fails Mid-Write
-
-<div style={{fontSize: '0.78em'}}>
-
-A MapReduce worker is writing results to a GFS file. One of three DataNodes crashes during the write.
-
-</div>
-
-<div style={{fontSize: '0.62em', marginTop: '0.5em'}}>
-
-| Layer | Defense | Hole? |
-|-------|---------|-------|
-| <span className="fragment">**Chunk replication**</span> | <span className="fragment">Data written to 3 DataNodes; 2 survive</span> | <span className="fragment">Catches single-server failure</span> |
-| <span className="fragment">**Write protocol**</span> | <span className="fragment">Primary replica forwards to secondaries; ack only when all confirm</span> | <span className="fragment">Primary detects secondary failure</span> |
-| <span className="fragment">**NameNode re-replication**</span> | <span className="fragment">NameNode detects under-replicated chunk, schedules new copy</span> | <span className="fragment">Restores redundancy, but not instant</span> |
-| <span className="fragment">**Client retry**</span> | <span className="fragment">If write fails, client retries with new replicas</span> | <span className="fragment">Catches transient network failures</span> |
-| <span className="fragment">**Append semantics**</span> | <span className="fragment">GFS guarantees at-least-once append</span> | <span className="fragment">Retried append may produce a **duplicate record**</span> |
-
-</div>
-
-<div className="fragment" style={{fontSize: '0.68em', marginTop: '0.3em'}}>
-
-The bottom layer reveals the trade-off: **at-least-once delivery means duplicates.** For the search index, a duplicate page entry is harmless — the reducer deduplicates. For ad click billing, a duplicate charge means overcharging an advertiser. **Blast radius of inconsistency determines the consistency model (L33).**
-
-</div>
-
-<aside className="notes">
-**L35 callback:** This is exactly the Swiss cheese model from L35. Each layer has a defense and a hole. The system is safe as long as the holes don't align — and here they mostly don't.
-
-**Walk through progressively.** Each row appears on click. Build the tension — the first four layers seem solid. Then the fifth layer reveals the trade-off: at-least-once semantics means consumers must handle duplicates. This connects directly to L33's idempotency discussion.
-
-**The ad billing contrast:** The same system that tolerates duplicate search index entries would be dangerous for ad click billing. Students studied this trade-off in L33 — this is the concrete application at GFS scale. Don't linger here; one sentence is enough because they already know the concept.
-
-**Which requirement does this serve?** Fault tolerance. The system sacrifices strong consistency to gain the ability to retry without coordination overhead.
-
-> **Transition:** Let's step back and see blast radius across different failure types...
-</aside>
-
-</Slide>
-
-{/* ============================================ */}
-{/* ARC 3: BLAST RADIUS (~10 min) */}
-{/* ============================================ */}
-
-
-<Slide>
-
-## Blast Radius Varies by Orders of Magnitude Depending on What Fails
-
-<table style={{fontSize: '0.58em', tableLayout: 'fixed', width: '100%'}}>
-<colgroup>
-<col style={{width: '20%'}} />
-<col style={{width: '22%'}} />
-<col style={{width: '30%'}} />
-<col style={{width: '28%'}} />
-</colgroup>
-<thead>
-<tr><th>Failure</th><th>Blast Radius</th><th>Mitigation</th><th>Course Concept</th></tr>
-</thead>
-<tbody>
-<tr className="fragment"><td>One map worker dies</td><td>One task delayed</td><td>Coordinator reassigns to another worker</td><td>L35: redundancy limits blast radius</td></tr>
-<tr className="fragment"><td>One DataNode dies</td><td>Data temporarily under-replicated</td><td>3x replication; NameNode schedules re-replication</td><td>L35: Swiss cheese model</td></tr>
-<tr className="fragment"><td>Network partition isolates a rack</td><td>Workers unreachable; tasks reassigned</td><td>Stale outputs discarded; tasks re-executed</td><td>L20: network is not reliable</td></tr>
-</tbody>
-<tbody className="fragment">
-<tr style={{backgroundColor: 'rgba(200,74,74,0.1)'}}><td><strong>MapReduce coordinator dies</strong></td><td><strong>Entire job fails</strong></td><td>Job restarted from scratch (original); later versions: checkpointing</td><td>L35: single point of failure</td></tr>
-<tr style={{backgroundColor: 'rgba(200,74,74,0.1)'}}><td><strong>NameNode dies</strong></td><td><strong>Entire file system unavailable</strong></td><td>Shadow NameNodes for read-only; state checkpointed</td><td>L35: blast radius determines layers needed</td></tr>
-</tbody>
-</table>
-
-<p className="fragment" style={{fontSize: '0.78em', color: '#e06c75', marginTop: '0.5em'}}>
-Worker failure costs **minutes.** Coordinator/NameNode failure costs the **entire job** or **entire file system.** This blast radius difference drove Google to eventually distribute the metadata role.
-</p>
-
-<aside className="notes">
-**L35 callback:** "Blast radius determines how many Swiss cheese layers you need." Workers have small blast radius (one task), so one layer of defense (re-execution) suffices. The master has enormous blast radius (entire job or file system), so it needs more layers: checkpointing, shadow copies, and eventually, architectural redesign.
-
-**The red rows are the teaching moment.** The centralization that makes the system simple (single master = no consensus, no conflicting views) also creates the largest blast radius. This is the fundamental trade-off of centralization — and it's the same coupling analysis from L7.
-
-**Foreshadowing:** This blast radius problem is why Google built Colossus (distributed metadata) to replace GFS. We'll cover that in Arc 4.
-
-> **Transition:** Let's look at the requirements that drove these decisions...
-</aside>
-
-</Slide>
-
-
 {/* ============================================ */}
 {/* ARC 4: SUSTAINABILITY + WHAT CAME AFTER (~10 min) */}
 {/* ============================================ */}
-
-<Slide>
-
-## MapReduce Scores Well on Technical and Economic Sustainability — But the Full Picture Is Mixed
-
-<table style={{fontSize: '0.62em', tableLayout: 'fixed', width: '100%'}}>
-<colgroup>
-<col style={{width: '18%'}} />
-<col style={{width: '52%'}} />
-<col style={{width: '30%'}} />
-</colgroup>
-<thead>
-<tr><th>Dimension</th><th>Assessment</th><th>Key Tension</th></tr>
-</thead>
-<tbody>
-<tr><td><strong>Technical</strong></td><td>High — simple model, pure functions, small user code, framework handles complexity</td><td>Batch-only model could not evolve to support interactive queries</td></tr>
-<tr className="fragment"><td><strong>Economic</strong></td><td>High — commodity hardware instead of expensive fault-tolerant servers; framework absorbs failures so you don't pay for reliable machines</td><td>Internally: Google lock-in. Open source (Hadoop) mitigated this for everyone else</td></tr>
-<tr className="fragment"><td><strong>Environmental</strong></td><td>Mixed — locality reduces network energy, but enabled processing at unprecedented scale</td><td>Total resource consumption exploded</td></tr>
-<tr className="fragment"><td><strong>Social</strong></td><td>Mixed — democratized data processing within Google, but enabled mass-scale data collection</td><td>Web index contains data about everyone</td></tr>
-</tbody>
-</table>
-
-<p className="fragment" style={{fontSize: '0.78em', color: '#9370DB', marginTop: '0.5em'}}>
-Same four-dimensional analysis from L36. Same pattern: no decision optimizes all four.
-</p>
-
-<aside className="notes">
-**L36 callback:** Apply the same four-dimensional framework from Tuesday. Technical sustainability is high — the simple programming model meant thousands of engineers could write jobs without distributed systems expertise. Economic sustainability was high initially but decreased as the batch-only model couldn't serve new workloads. Environmental and social are mixed.
-
-**The social dimension is important:** MapReduce processed the web index — data about everyone, often collected without explicit consent. The same technology that "democratized data processing" enabled surveillance at scale. This is the same distributional question from L36: who benefits, who bears the cost?
-
-> **Transition:** The environmental dimension has a familiar twist...
-</aside>
-
-</Slide>
 
 <Slide>
 
@@ -1145,35 +877,6 @@ MapReduce made it cheap: **write two functions, submit a job, get results.**
 
 <Slide>
 
-## The People Making Design Decisions Are Not Always the Ones Bearing the Consequences
-
-<div style={{fontSize: '0.62em'}}>
-
-| Decision | Who benefits | Who bears the cost |
-|----------|-------------|-------------------|
-| <span className="fragment">Simple programming model</span> | <span className="fragment">Thousands of Google engineers</span> | <span className="fragment">Infrastructure team maintaining massive clusters</span> |
-| <span className="fragment">Commodity hardware (cheap, unreliable)</span> | <span className="fragment">Google's budget (lower capital cost)</span> | <span className="fragment">Environment (more machines, more energy, more e-waste)</span> |
-| <span className="fragment">Process the entire web index</span> | <span className="fragment">Google's search quality, ad targeting</span> | <span className="fragment">Everyone whose data is in the index (often without consent)</span> |
-| <span className="fragment">Batch-only model (high throughput, high latency)</span> | <span className="fragment">Large-scale analytics workloads</span> | <span className="fragment">Teams needing real-time queries (forced to build separate systems)</span> |
-
-</div>
-
-<p className="fragment" style={{fontSize: '0.78em', color: '#9370DB', marginTop: '0.5em'}}>
-Same distributional analysis from L35 and L36: the people making the design decision are not always the people bearing the consequences.
-</p>
-
-<aside className="notes">
-**L35/L36 callback:** This is the "who profits, who bears risk?" question from L35 (Boeing selling sensor redundancy as optional) and L36 (Pawtograder's unlimited submissions). The same framework applies to infrastructure design decisions.
-
-**The third row is the most important for discussion:** Processing the web index benefits Google's search quality and ad targeting. The cost is borne by everyone whose data is in the index — often without explicit consent. This is the same indirect safety concern from L35, applied to data processing at scale.
-
-> **Transition:** MapReduce's limitations eventually drove Google to build successors...
-</aside>
-
-</Slide>
-
-<Slide>
-
 ## MapReduce's Strengths Became Its Limitations as Context Changed
 
 <div style={{fontSize: '0.78em'}}>
@@ -1189,12 +892,6 @@ MapReduce's limitations drove Google to build successors:
 | **Batch-only** — cannot serve interactive queries | **Dremel** (interactive SQL) → BigQuery | Users needed answers in seconds, not hours |
 | **Two-function model** — too restrictive for iterative algorithms | Systems supporting **iterative computation** (ML requires multiple passes over data) | Machine learning became a dominant workload |
 | **GFS single NameNode** — metadata bottleneck at scale | **Colossus** — distributes metadata across multiple servers | File system grew beyond one NameNode's capacity |
-
-</div>
-
-<div className="fragment" style={{fontSize: '0.75em', marginTop: '0.5em', backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.8em', borderRadius: '8px'}}>
-
-**L36 (Sustainability):** The same design decisions that enable initial success can become obstacles as context changes. MapReduce's simplicity was its greatest strength (massive adoption) and its greatest weakness (could not evolve for new workloads). Low coupling and information hiding (L6, L7) delayed this reckoning — many jobs migrated to successors without rewriting their map and reduce functions.
 
 </div>
 
@@ -1230,10 +927,6 @@ Google published the MapReduce (2004) and GFS (2003) **papers** — but kept the
 
 </div>
 
-<p className="fragment" style={{fontSize: '0.85em', color: '#9370DB', marginTop: '0.5em'}}>
-The design outlived the implementation. That's sustainability.
-</p>
-
 <aside className="notes">
 **L23 callback:** In L23 (Open Source) we discussed how "infrastructure code gravitates toward open source." MapReduce is the textbook case. Google kept the implementation but published the ideas. The open source community built Hadoop, and an entire ecosystem grew around it.
 
@@ -1252,161 +945,15 @@ The design outlived the implementation. That's sustainability.
 
 <Slide>
 
-## Architecture Emerges from Constraints
+# Bonus Slide
 
-<div style={{fontSize: '0.75em'}}>
-
-We've analyzed MapReduce's design decisions one by one — pure functions, single NameNode, replication, re-execution, locality, sustainability. From L18: *"Architecture is the shape that emerges when you apply your constraints."* Every decision traces back to four constraints:
-
-</div>
-
-<div style={{fontSize: '0.6em', marginTop: '0.5em'}}>
-
-| Constraint | Implication | Decisions it shaped |
-|-----------|-------------|---------------------|
-| Commodity hardware **fails constantly** | Re-execution must be safe | Pure functions, idempotent retry, 3x replication |
-| Data is **too big to move** across the network | Move computation to data | Locality optimization, 64MB chunks, NameNode metadata |
-| Network bandwidth is **scarce and shared** | Minimize data transfer | Batching (64MB), shuffle as the only cross-network phase |
-| Jobs run for **hours** on **thousands of machines** | Detect and recover from failures automatically | Coordinator heartbeats, task reassignment, checkpointing |
-
-</div>
-
-<div className="fragment" style={{fontSize: '0.75em', marginTop: '0.5em', backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.8em', borderRadius: '8px'}}>
-
-These constraints shaped two architectural styles: a **pipelined architecture** (L19) for the data flow (input → map → shuffle → reduce → output) and a **coordinator/worker** style for orchestration. Stateless workers + pipelined stages = **linear scalability** — add more machines, get proportionally more throughput, no code changes.
-
-</div>
-
-<aside className="notes">
-**This slide is the synthesis moment.** Students have now seen every individual design decision, the blast radius analysis, the sustainability trade-offs, and the evolution of the system. Now they see that every decision traces back to the same four constraints. The third column ("Decisions it shaped") ties the abstract constraints to the specific decisions students analyzed over the past 20+ minutes.
-
-**This is the L18 payoff.** In L18 we taught "just enough architecture" — decide what's hard to change, defer what's cheap to change. MapReduce's hard-to-change decisions are the programming model (two pure functions), the master/worker coordination, and the pipelined data flow. Everything else — number of workers, chunk size, replication factor — is configurable.
-
-**Pipelined architecture (L19):** Students saw this with Pawtograder's grading pipeline (submission → build → test → parse → grade → feedback). MapReduce is the same pattern: input → map → shuffle → reduce → output. Data flows through sequential stages; each stage transforms input to output.
-
-**Testability consequence:** Because the pipeline's domain logic (map/reduce functions) is separated from infrastructure (distribution, fault tolerance), you can test map and reduce on your laptop with a small file. This is L16's testability principle — separate what you want to test from the infrastructure around it.
-
-> **Transition:** Now let's see every semester concept in this one system...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Every Semester Concept Is Visible in One System
-
-<div style={{fontSize: '0.55em'}}>
-
-| Semester Concept | Where It Appears in MapReduce/GFS |
-|-----------------|-----------------------------------|
-| Information hiding (L6) | Framework hides distributed complexity behind two functions |
-| Coupling and cohesion (L7) | Single NameNode: functional cohesion, high coupling — explicit trade-off |
-| Requirements (L9) | Designed for sequential reads, commodity hardware, non-expert programmers |
-| Testability (L16) | Test map/reduce locally with small files — domain logic separated from infrastructure |
-| Architecture (L19, L20) | Pipelined architecture; distributed because no single machine could hold the data |
-| Concurrency (L31) | Pure map functions eliminate shared mutable state — no locks needed |
-| Event-driven patterns (L33) | Idempotent re-execution, eventual consistency, at-least-once delivery |
-| Performance (L34) | Locality optimization, batching, pooling workers |
-| Safety and reliability (L35) | Swiss cheese layers: replication, re-execution, checkpointing; blast radius analysis |
-| Sustainability (L36) | Jevons' paradox; who benefits vs. who bears cost; technical sustainability through simple APIs |
-
-</div>
-
-<p style={{fontSize: '0.78em', color: '#9370DB', marginTop: '0.3em'}}>
-The concepts are not separate tools — they are **overlapping lenses** that illuminate different aspects of the same design.
-</p>
-
-<aside className="notes">
-**This is the capstone table.** Let this slide breathe. Students should see the full table and feel the coherence — every lecture was preparation for reading a system like this.
-
-**The closing insight:** A well-designed system is one where the lenses align: information hiding supports testability, which supports sustainability. A poorly-designed system is one where the lenses conflict: performance optimizations that increase coupling, which undermines changeability, which erodes sustainability.
-
-**L1 callback:** "Software engineering is the integral of programming over time." MapReduce and GFS embody every term in that integral.
-
-> **Transition:** Let's check your understanding...
-</aside>
-
-</Slide>
-
-{/* ============================================ */}
-{/* COMPREHENSION CHECK + LOOKING AHEAD */}
-{/* ============================================ */}
-
-<Slide>
-
-## Comprehension Check
-
-<p style={{fontSize: '0.85em'}}>
-Open Poll Everywhere and answer the three questions.
-</p>
-
-<aside className="notes">
-**Poll Q1:** A programmer writes a MapReduce job, and it runs on 1,000 machines. The programmer's code never mentions machines, network calls, or failure handling. Which course concept BEST explains why?
-- A. Low coupling (L7) — the map and reduce functions are loosely coupled
-- B. **Information hiding (L6) — the framework hides all distributed infrastructure behind a two-function interface** [CORRECT]
-- C. Pure functions (L5) — side-effect-free code doesn't need to know about machines
-- D. Pipelined architecture (L19) — the stages are independent
-
-*Teaching point: All four answers describe real properties of MapReduce, but the BEST explanation is information hiding. The programmer depends on the interface (write map and reduce), not the implementation (thousands of machines, network shuffles, failure recovery). Thousands of Google engineers used MapReduce without understanding any of the distributed infrastructure. This is L6 at system scale.*
-
-**Poll Q2:** GFS uses a single NameNode to manage all file metadata. If the NameNode crashes, the entire file system is unavailable. Why did Google accept this single point of failure?
-- A. They didn't realize it was a risk — it was a design oversight
-- B. Replicating the NameNode would have violated information hiding
-- C. **A single NameNode is simpler to build correctly, and the blast radius was an acceptable trade-off given how rarely it fails** [CORRECT]
-- D. The NameNode can't crash because it doesn't store actual file data
-
-*Teaching point: This is a deliberate architectural trade-off, not an oversight. A single NameNode is much simpler to keep consistent — and simplicity itself is a safety mechanism (fewer things to go wrong). Google decided the blast radius (temporary metadata unavailability, no data loss) was acceptable compared to the complexity of replication. Every architecture involves trade-offs; the goal is to make them conscious.*
-
-**Poll Q3:** A MapReduce map worker crashes halfway through processing its chunk. The coordinator reassigns the chunk to a new worker. Why does this recovery work correctly?
-- A. The coordinator saved a checkpoint of the worker's progress
-- B. GFS replicated the worker's partial output to other machines
-- C. **The map function is pure — rerunning it on the same input produces the same output, so no state was lost** [CORRECT]
-- D. The shuffle stage buffers intermediate results and replays them
-
-*Teaching point: Pure functions make fault tolerance almost trivial. Because map has no side effects and no shared state, you can re-execute any failed task by giving the same input to a different worker. Nothing to checkpoint, no state to recover, no partial results to reconcile. L5's pure functions provide L35's fault tolerance — the design decision that eliminates race conditions also makes crash recovery a one-line operation.*
-
-> **Transition:** Let's look ahead...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Looking Ahead
-
-<div style={{fontSize: '0.85em'}}>
-
-**L38 (Wednesday): The Future of Programming** — where does software engineering go from here? How do the tools and principles from this semester apply to what comes next?
-
-**L39 (Thursday): Review** — exam preparation.
-
-</div>
-
-<div style={{fontSize: '0.8em', marginTop: '1em', backgroundColor: 'rgba(200,74,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
-
-**GA2: Feature Buffet due Thursday April 16.** Process over product — a well-documented partial feature scores higher than a complete feature with no documentation.
-
-</div>
-
-<div style={{fontSize: '0.8em', marginTop: '0.8em', backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.8em', borderRadius: '8px'}}>
-
-**Want to go deeper?** The original papers are readable:
-- Dean and Ghemawat, "MapReduce: Simplified Data Processing on Large Clusters" (2004)
-- Ghemawat, Gobioff, and Leung, "The Google File System" (2003)
-
-Follow-up courses: CS 4730 (Distributed Systems), CS 6620 (Cloud Computing)
-
-</div>
-
-<aside className="notes">
-**L38 preview:** Wednesday is the final content lecture. Where is software engineering heading? How do the tools and principles from this semester apply to what comes next?
-
-**GA2 reminder:** Feature Buffet is due next Thursday, April 16. Emphasize process over product — a well-documented partial feature with design evolution, meaningful PRs, and thoughtful reflection scores higher than a complete feature with no documentation.
-
-**Paper recommendations:** Both papers are well-written and accessible. Students have the background to understand all of the MapReduce paper after today's lecture. For GFS, focus on Sections 2 (Design Overview) and 5 (Fault Tolerance).
-
-> Questions?
-</aside>
+<Img src='/img/lectures/web/l38-map-filter-reduce-emojis.png'
+  alt="Graphic with header: 'map, filter, and reduce explained with emoji'.
+  map([cow, potato, chicken, corn], cook) => [hamburger, fries, drumstick, popcorn]
+  filter([hamburger, fries, drumstick, popcorn], isVegetarian) => [fries, popcorn]
+  reduce([hamburger, fries, drumstick, popcorn], eat) => poop
+  "
+/>
 
 </Slide>
 
