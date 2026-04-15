@@ -62,10 +62,12 @@ After this lecture, you will be able to:
 
 <ol style={{fontSize: '0.75em', textAlign: 'left'}}>
   <li><em>Give examples of paradigm shifts</em></li>
+  <li><em>Give examples of programming paradigms</em></li>
   <li>Describe the MapReduce programming model and GFS at the level needed to analyze their design decisions</li>
   <li>Analyze MapReduce and GFS architectural decisions using quality attributes from the course</li>
   <li>Identify how MapReduce and GFS apply patterns learned throughout the semester</li>
-  <li>Evaluate sustainability and trade-off dimensions of MapReduce and GFS</li>
+  <li>~~Evaluate sustainability and trade-off dimensions of MapReduce and GFS~~</li>
+  <li>Describe how hasty actions can cause lasting debugGenerateImage={.}</li>
 </ol>
 
 </Slide>
@@ -927,19 +929,128 @@ Google published the MapReduce (2004) and GFS (2003) **papers** — but kept the
 
 </div>
 
+</Slide>
+
+<Slide>
+## The Inventors of MapReduce
+
+<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10rem' }}>
+<div>
+<Img src='/img/lectures/web/l38-wired.png'
+  alt="Wired Magazine stotry 'If Xerox PARC Invented the PC, Google Invited the Internet` by Cade Metz, 08.08.12.
+  Photo shows two smiling men with caption 'Jeff Dean and Sanjay Ghemawat, two of the most important software engineers
+  of the Internet age -- and two of the most underappreciated.'"
+/>
+</div>
+
+<div style={{ fontSize: '0.8em' }}>
+"DEC was one of the first companies to build a successful web search engine — AltaVista,
+which came out of the Western Research Lab — and at least in the beginning, the entire
+thing ran on a single DEC machine. But Google eclipsed AltaVista in large part because
+it turned this model on its head. Rather than using big, beefy machines to run its
+search engine, it broke its software into pieces and spread them across an army
+of small, cheap machines. This is the fundamental idea behind GFS, MapReduce, and BigTable
+ — and so many other Google technologies that would overturn the status quo."
+
+</div>
+</div>
+</Slide>
+
+<Slide>
+## Jeff Dean Facts
+
+<div style={{ fontSize: '.8em' }}>
+<div className='fragment'>
+* The rate at which Jeff Dean produces code jumped by a factor of 40  in late 2000 when he upgraded his keyboard to USB 2.0.
+</div>
+<div className='fragment'>
+* Jeff Dean once failed a Turing test when he correctly identified the 203rd Fibonacci number in less than a second.
+</div>
+<div className='fragment'>
+* Google search went down for a few hours in 2002, and Jeff Dean started handling queries by hand. Search Quality doubled.
+</div>
+<div className='fragment'>
+* Jeff Dean's infinite loops run in 5 seconds.
+</div>
+</div>
+
+<br/>
+<br/>
+<div style={{ fontSize: '.7em' }}>
+http://www.quora.com/Jeff-Dean/What-are-all-the-Jeff-Dean-facts
+</div>
+
+</Slide>
+
+<Slide>
+## Jeff Dean (2020)
+
+<Img src='/img/lectures/web/l38-jeff-dean2020.png'
+  width={700}
+  alt="Screenshot of online article by Mark Bergen, Dina Bass, and Shelly Banjo dated December 3, 2020.
+  Google Scientist's Abrupt Exit Exposes Rift in Prominent AI Unit
+  * Timnit Gebru departed after management criticism of an email
+  * AI unit leader Dean accused of retaliation, chided by staffers
+  Photograph of Jeff Dean in front of Google logo"
+/>
+
+<div style={{ fontSize: '0.5em' }}>
+https://bloomberg.com/news/articles/2020-12-04/google-scientist-s-abrupt-exit-exposes-rift-in-prominent-ai-unit
+</div>
+</Slide>
+
+<Slide>
+## Reputations
+
+<QuoteSlide
+  quote="It takes 20 years to build a reputation and five minutes to ruin it. If you think about that, you'll do things differently."
+  author="Warren Buffett"
+  imageSrc="/img/lectures/web/l38-warren-buffett.jpg"
+  imageAlt="Photo of old man in suit, Warren Buffett"
+  credit="CC-BY 2.0 Marco Verch"
+/>
+
+</Slide>
+
+<Slide>
+
+<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginTop: '1rem' }}>
+
+<div>
+<Img src='/img/lectures/web/l38-timnit-gebru.png'
+  alt=
+"Washington Post headline: 'Google hired Timnit Gebru to be an outspoken critic of unethical AI. Then she was fired for it.' Photo of Timnit Gebru speaking at TechCrunch Disrupt SF 2018."
+/>
+</div>
+<div>
+<Img src='/img/lectures/web/l38-stochastic-parrots.png'
+  alt=
+"First page of the 2021 FAccT paper 'On the Dangers of Stochastic Parrots: Can Language Models Be Too Big?' by Emily M. Bender, Timnit Gebru, Angelina McMillan-Major, and Shmargaret Shmitchell."/>
+</div>
+</div>
+
 <aside className="notes">
-**L23 callback:** In L23 (Open Source) we discussed how "infrastructure code gravitates toward open source." MapReduce is the textbook case. Google kept the implementation but published the ideas. The open source community built Hadoop, and an entire ecosystem grew around it.
-
-**Why this matters:** Google has since replaced MapReduce internally with systems like Flume and Cloud Dataflow. But the *programming model* — map, shuffle, reduce — lives on in Spark, Flink, and every cloud provider's data processing service. The information hiding and low coupling that made MapReduce's API simple (L6, L7) is exactly what made it reimplementable. A tightly-coupled, implementation-specific API could not have been cloned from a paper.
-
-**Borg → Kubernetes:** The same pattern repeated with Google's cluster management system Borg. Google published the Borg paper (2015), and Kubernetes was built as an open source reimplementation. Today K8s powers container orchestration at every major cloud provider. Again: proprietary ideas → open source implementation → industry standard. Clean abstractions (pods, services, deployments) enabled reimplementation, just as map/reduce did.
-
-**Pawtograder parallel:** Pawtograder follows the same model — GPL, open source, any institution can adopt and extend it. The design (hexagonal architecture, GitHub Actions integration) is documented; the implementation is open. If we stop maintaining it, someone else can fork it.
-
-**Jevons' note:** Hadoop and K8s democratized infrastructure. Total global compute has grown enormously as a result. Every cluster is a Jevons' paradox instance — per-job cost dropped, total jobs exploded.
-
-> **Transition:** We've seen the evolution and impact. Let's zoom out — why did every decision take this shape?
+More than half a million downloads
 </aside>
+</Slide>
+
+<Slide>
+## Lessons
+
+<div style={{ fontSize: '.8em' }}>
+<div className='fragment'>
+* Keep an eye out for paradigm shifts. Don't solve today's problems with yesterday's tools.
+</div>
+<div className='fragment'>
+* Software architecture comes out of requirements.
+</div>
+<div className='fragment'>
+* "Luck is what happens when preparation meets opportunity." — Seneca
+</div>
+<div className='fragment'>
+* Act in accordance with your values.
+</div>
+</div>
 
 </Slide>
 
@@ -948,6 +1059,7 @@ Google published the MapReduce (2004) and GFS (2003) **papers** — but kept the
 # Bonus Slide
 
 <Img src='/img/lectures/web/l38-map-filter-reduce-emojis.png'
+  width={900}
   alt="Graphic with header: 'map, filter, and reduce explained with emoji'.
   map([cow, potato, chicken, corn], cook) => [hamburger, fries, drumstick, popcorn]
   filter([hamburger, fries, drumstick, popcorn], isVegetarian) => [fries, popcorn]
