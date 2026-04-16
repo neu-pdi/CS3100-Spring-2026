@@ -34,19 +34,30 @@ import QuizSlide from '@site/src/components/QuizSlide';
 
 ## Poll: How much of the practice final did you do?
 
-<PollSlide choices=
+<PollSlide username="espertus" choices=
   {["None yet", "I've skimmed it", "A few problems", "Many problems", "All problems"]}
 />
 </Slide>
 
 <Slide>
 
-## Poll: How hard do you think it is?
+## Poll: How prepared do you feel for the multiple-choice questions?
 
-<PollSlide image="/img/lectures/poll-ev/pollev-smiles.png"
+<PollSlide username="espertus" image="/img/lectures/poll-ev/pollev-smiles.png"
 />
 <p>
-Click below the faces if you haven't tried it yet.
+Click below the faces if you haven't tried them yet.
+</p>
+</Slide>
+
+
+<Slide>
+## Poll: How prepared do you feel about the case studies?
+
+<PollSlide username="espertus" image="/img/lectures/poll-ev/pollev-smiles.png"
+/>
+<p>
+Click below the faces if you haven't tried them yet.
 </p>
 </Slide>
 
@@ -1414,16 +1425,34 @@ Answer is C. `LocalDateTime.now()` is a fast, non-UI operation with no side effe
 * Debugging
 * Test doubles (spies, mocks, stubs)
 * Testability and dependency injection
-* Design patterns (static factory methods and builders (EJ 1-2), facade)
+* Design patterns (static factory methods and builders (EJ 1-2), facade, observer)
 * Creating service boundaries
 * Architectures (hexagonal, monolithic, microservices, serverless)
-* Teams (HRT)
+* Teams (HRT, accountability)
 * Open source (supply chain risk, different licenses)
 * Usability (stakeholders, accessibility, Nielsen's heuristics)
 * User-centered design
 * Concurrency (Lab 13)
 
 </div>
+
+</Slide>
+
+
+<Slide>
+## Announcement: STEM Lunch and Panel
+
+<Img src='/img/lectures/web/l39-stem-panel.png'
+  width={600}
+  alt="Event: Making STEM Accessible
+Date: Friday, April 17
+Time: 11:00 AM – 12:15 PM
+Location: Cyclone Rec Room (In the student union, across the tea shop)
+Hosted by: ASNUO & Khoury College of Computer Sciences
+
+The event is an informal panel designed to explore pathways into STEM and computer science, with a particular focus on supporting women and students from non-traditional CS backgrounds. The format will include light discussion questions and open conversation with attendees. Lunch from Ike's Sandwiches will be provided."
+/>
+
 
 </Slide>
 
@@ -1437,9 +1466,20 @@ Answer is C. `LocalDateTime.now()` is a fast, non-UI operation with no side effe
 * Software architecture/design is full of trade-offs
 * Use but verify AI; you are responsible for code you submit
 * Finding and fixing problems gets more expensive over time
-
-
 </div>
+
+</Slide>
+
+<Slide>
+
+## Poll: Would you come to office hours tomorrow?
+
+I could go over grades and answer questions about material.
+
+<PollSlide username="espertus" image="/img/lectures/web/l39-office-hour-poll.png"
+/>
+
+Click on the left edge if you would not go.
 
 </Slide>
 
@@ -1452,5 +1492,6 @@ Answer is C. `LocalDateTime.now()` is a fast, non-UI operation with no side effe
   alt="TODO"
 />
 </Slide>
+
 
 </RevealJS>
