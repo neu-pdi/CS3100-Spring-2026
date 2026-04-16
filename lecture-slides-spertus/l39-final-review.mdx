@@ -105,13 +105,13 @@ classDiagram
 <div className='fragment' style={{ fontSize: '.8em' }}>
 Which version of `turnOn()` is called?
 
-A. DimmableLight\'s turnOn(), because the cast changes the runtime type of light to DimmableLight
+A. DimmableLight's turnOn(), because the cast changes the runtime type of light to DimmableLight
 
-B. Light\'s turnOn(), because Light is the declared type of light and static dispatch resolves to it
+B. Light's turnOn(), because Light is the declared type of light and static dispatch resolves to it
 
 C. A compilation error occurs because you cannot cast a Light reference to a DimmableLight subtype
 
-D. TunableWhiteLight\'s turnOn(), because dynamic dispatch resolves calls using the object\'s runtime type
+D. TunableWhiteLight's turnOn(), because dynamic dispatch resolves calls using the object's runtime type
 
 
 <div className='fragment' style={{backgroundColor: '#fde8e8', borderRadius: '6px', padding: '0.5em 1em'}}>
@@ -633,7 +633,7 @@ Review [L16: Designing for Testability](https://neu-pdi.github.io/cs3100-public-
 <div style={{ fontSize: '.8em' }}>
 A team adopts a modular monolith where the Submissions module and Grading module communicate only through each module's public API, never querying each other's tables directly. What is the primary benefit compared to an unstructured monolith?
 
-A. It eliminates network latency between modules and allows each module\'s schema to evolve independently<br/>
+A. It eliminates network latency between modules and allows each module's schema to evolve independently<br/>
 B. It guarantees independent deployment cycles so each module can be released on its own schedule<br/>
 C. It preserves clean boundaries that make it easier to extract a module into a separate service later<br/>
 D. It prevents any single bug from crashing the entire application by running modules in separate processes
