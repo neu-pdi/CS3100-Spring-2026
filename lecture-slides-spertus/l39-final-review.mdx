@@ -12,7 +12,7 @@ import QuizSlide from '@site/src/components/QuizSlide';
 <style>
 {`
   .reveal {
-    font-size: 40px;
+    font-size: 32px;
   }
 `}
 </style>
@@ -52,144 +52,535 @@ Click below the faces if you haven't tried it yet.
 
 <Slide>
 
-## Question 1: Dynamic Dispatch
+## Question 1
 
-<QuizSlide
-  question='The SceneItAll IoT hierarchy has TunableWhiteLight extending DimmableLight, which extends Light. Consider:
+The SceneItAll IoT hierarchy from lecture is:
 
+```
+IoTDevice              <<interface>>
+└── BaseIoTDevice      <<abstract>>
+    ├── Fan
+    └── Light          <<abstract>>
+        ├── SwitchedLight
+        └── DimmableLight
+            └── TunableWhiteLight
+```
+
+Consider this code:
+
+```java
 Light light = new TunableWhiteLight("living-room", 2700, 100);
 ((DimmableLight) light).turnOn();
+```
 
-TunableWhiteLight overrides turnOn(). Which version of turnOn() is called?'
-  answers={[
-    'DimmableLight\'s turnOn(), because the cast changes the runtime type of light to DimmableLight',
-    'Light\'s turnOn(), because Light is the declared type of light and static dispatch resolves to it',
-    'A compilation error occurs because you cannot cast a Light reference to a DimmableLight subtype',
-    'TunableWhiteLight\'s turnOn(), because dynamic dispatch resolves calls using the object\'s runtime type']}/>
+`TunableWhiteLight` overrides `turnOn()`. Which version of `turnOn()` is called?
+
+
+</Slide>
+
+<Slide>
+### Draw a Picture Before Viewing Choices
+
+<div style={{display: 'flex', gap: '2em', justifyContent: 'center'}}>
+  <div>
+```mermaid
+classDiagram
+    class Light {
+        <<abstract>>
+        turnOn()*
+    }
+    class DimmableLight {
+        <<abstract>>
+        turnOn()*
+    }
+    class TunableWhiteLight {
+        turnOn()
+    }
+
+    Light <|-- DimmableLight
+    DimmableLight <|-- TunableWhiteLight
+```
+</div>
+
+<div className='fragment' style={{ fontSize: '.8em' }}>
+Which version of `turnOn()` is called?
+
+A. DimmableLight\'s turnOn(), because the cast changes the runtime type of light to DimmableLight
+
+B. Light\'s turnOn(), because Light is the declared type of light and static dispatch resolves to it
+
+C. A compilation error occurs because you cannot cast a Light reference to a DimmableLight subtype
+
+D. TunableWhiteLight\'s turnOn(), because dynamic dispatch resolves calls using the object\'s runtime type
+
+
+<div className='fragment' style={{backgroundColor: '#fde8e8', borderRadius: '6px', padding: '0.5em 1em'}}>
+Java uses *dynamic dispatch*, so the dynamic (run-time) type is used.
+</div>
+
+</div>
+
+</div>
+```java
+Light light = new TunableWhiteLight("living-room", 2700, 100);
+((DimmableLight) light).turnOn();
+```
+
+<div className='fragment'>
+Answer is D. Review Lab 6.5 if needed.
+</div>
+
 </Slide>
 
 <Slide>
 
-## Question 2: Static vs. Instance Context
+## Question 2
 
-<QuizSlide
-  question='What is wrong with this code?
-
+```java
 public class Example {
     int x = 10;
 
     public static void printX() {
         System.out.println(x);
     }
-}'
-  answers={[
-    'x should be public for a static method to access it',
-    'Static methods cannot reference instance variables directly',
-    'println cannot print an int',
-    'x must be declared final before a static method can use it']}/>
+}
+```
+
+<div className='fragment' style={{ fontSize: '.8em' }}>
+
+What is wrong with this code?
+
+A. `x` should be `public` for a static method to access it
+
+B. Static methods cannot reference instance variables directly
+
+C. `println` cannot print an `int`
+
+D. `x` must be declared `final` before a static method can use it
+
+<div className='fragment' style={{backgroundColor: '#fde8e8', borderRadius: '6px', padding: '0.5em 1em'}}>
+
+`x` is an *instance variable*. It belongs to instances of `Example`.
+
+`printX()` is `static`, so it has no `this` reference and cannot access instance variable `x`.
+
+</div>
+
+<div className='fragment'>
+Answer is B. Review Lab 6.5 if needed.
+</div>
+
+</div>
+
+</Slide>
+<Slide>
+
+## Question 3
+
+Two versions of SceneItAll store controlled devices differently:
+
+- **Version A:** `List<Device>` — membership tested with a for-each loop
+- **Version B:** `HashSet<Device>` — membership tested with `contains()`
+
+What is the Big-O performance of each?
+
+<div className='fragment' >
+
+A. Both are O(n)
+
+B. Version A is O(n) and Version B is O(1)
+
+C. Version A is O(n) and Version B is O(log n)
+
+D. Both are O(1) because Java's JIT compiler optimizes small-collection lookups to run in constant time regardless of data structure
+
+<div className='fragment' style={{backgroundColor: '#fde8e8', borderRadius: '6px', padding: '0.5em 1em'}}>
+
+A for-each scan is O(n); `HashSet.contains()` uses hashing to find the element in O(1) time.
+
+</div>
+
+</div>
+
+<div className='fragment'>
+Answer is B. See [L37 Performance: Big-O in SceneItAll](https://neu-pdi.github.io/cs3100-public-resources/lecture-slides-spertus/l37-recent-topics#/7) for complexities you should know.
+</div>
+
+</Slide>
+
+<Slide>
+### Hashtables
+
+<Img src='/img/lectures/web/l39-hashtable.jpg'
+  width={900}
+  alt='TODO'
+/>
+
+<div className='fragment'>
+(But use `HashMap`, not `Hashtable`.)
+</div>
 </Slide>
 
 <Slide>
 
-## Question 3: Big-O Performance
+## Question 4
+<div style={{ fontSize: '.8em' }}>
 
-<QuizSlide
-  question='Two versions of SceneItAll store controlled devices differently. Version A uses a List<Device> and tests membership with a for-each loop. Version B uses a HashSet<Device> and tests membership with contains(). What is the Big-O performance of each?'
-  answers={[
-    'Both are O(n)',
-    'Version A is O(n) and Version B is O(1)',
-    'Version A is O(n) and Version B is O(log n)',
-    'Both are O(1) because Java\'s JIT compiler optimizes small-collection lookups to run in constant time regardless of data structure']}/>
-</Slide>
+In a `@NullMarked` package, a developer writes the following method:
 
-<Slide>
-
-## Question 4: @NullMarked
-
-<QuizSlide
-  question='In a @NullMarked package, a developer writes:
-
+```java
 public String formatIngredient(@Nullable String prefix, String name) {
-    if (prefix == null) { return name; }
+    if (prefix == null) {
+        return name;
+    }
     return prefix + " " + name;
 }
+```
+Which statement about this signature is correct?
+<div className='fragment'>
 
-Which statement about this signature is correct?'
-  answers={[
-    'name is assumed non-null because the package is @NullMarked; passing null for name would produce a compile-time warning or error',
-    'The @Nullable annotation on prefix is redundant because all parameters are nullable by default in Java',
-    '@Nullable on prefix means the nullness checker will throw a NullPointerException automatically if null is passed',
-    'Both prefix and name are treated as nullable because @Nullable anywhere in a method signature marks all parameters as nullable']}/>
+A. `name` is assumed non-null because the package is `@NullMarked`; passing `null` for `name` would produce a compile-time warning or error
+
+B. The `@Nullable` annotation on `prefix` is redundant because all parameters are nullable by default in Java
+
+C. `@Nullable` on `prefix` means the nullness checker will throw a `NullPointerException` automatically if `null` is passed
+
+D. Both `prefix` and `name` are treated as nullable because `@Nullable` anywhere in a method signature marks all parameters as nullable
+
+</div>
+<div className='fragment' style={{backgroundColor: '#fde8e8', borderRadius: '6px', padding: '0.5em 1em'}}>
+As the name `@NullMarked` suggests, any types that can have null values are marked `@Nullable`. Answer is A.
+</div>
+
+</div>
 </Slide>
 
 <Slide>
 
-## Question 5: Specifications and Chunking
+## Question 5
 
-<QuizSlide
-  question='Why can you use HashMap in your programs without reading its 2000-line implementation?'
-  answers={[
-    'The Java compiler inlines HashMap\'s implementation at compile time, so you never need to read it',
-    'HashMap\'s specification tells you exactly what each method does, letting you treat it as a single mental chunk without understanding its internals',
-    'HashMap\'s implementation is hidden using private fields, so the compiler prevents you from accessing it',
-    'You don\'t need to read HashMap because you know it implements the Map interface and all Map implementations behave identically']}/>
+
+Why can you use HashMap in your programs without reading its 2000-line implementation?
+<div style={{ fontSize: '.8em' }}>
+A. The Java compiler inlines HashMap's implementation at compile time, so you never need to read it
+
+B. HashMap's specification tells you exactly what each method does, letting you treat it as a single mental chunk without understanding its internals
+
+C. HashMap's implementation is hidden using private fields, so the compiler prevents you from accessing it
+
+D. You don't need to read HashMap because you know it implements the Map interface and all Map implementations behave identically
+</div>
+<div className='fragment' style={{backgroundColor: '#fde8e8', borderRadius: '6px', padding: '0.5em 1em'}}>
+We can read specifications instead of source code. Answer B is correct.
+</div>
+
+<div className='fragment'>
+🦨 Answer D is close to true.
+</div>
+
 </Slide>
 
 <Slide>
 
-## Question 6: Comparator Chaining
+## Question 6
 
-<QuizSlide
-  question='Given a list of DimmableLights sorted with:
+```java
+List lights = new ArrayList<>(List.of(
+    new DimmableLight("bedroom", 80),
+    new DimmableLight("kitchen", 30),
+    new DimmableLight("bedroom", 50)
+));
 
-Comparator.comparing(DimmableLight::getId)
-          .thenComparingInt(DimmableLight::getBrightness)
+lights.sort(Comparator.comparing(DimmableLight::getId)
+                      .thenComparingInt(DimmableLight::getBrightness));
 
-The lights are: bedroom/80, kitchen/30, bedroom/50. Assuming toString() returns "id/brightness", what is printed?'
-  answers={[
-    '[bedroom/50, bedroom/80, kitchen/30] — sorted by id first, then brightness ascending within the same id',
-    '[bedroom/80, bedroom/50, kitchen/30] — sorted by id first, preserving original order within ties',
-    '[kitchen/30, bedroom/50, bedroom/80] — sorted by brightness ascending',
-    '[bedroom/80, kitchen/30, bedroom/50] — original order, unchanged']}/>
+System.out.println(lights);
+```
+
+Assuming `toString()` returns just the id and brightness (e.g., `"bedroom/80"` ), what is
+printed?
+
+<div className='fragment' style={{ fontSize: '.8em' }}>
+
+A. `[bedroom/50, bedroom/80, kitchen/30]` — sorted by id first, then brightness ascending within the same id
+
+B. `[bedroom/80, bedroom/50, kitchen/30]` — sorted by id first, preserving original order within ties
+
+C. `[kitchen/30, bedroom/50, bedroom/80]` — sorted by brightness ascending
+
+D. `[bedroom/80, kitchen/30, bedroom/50]` — original order, unchanged
+
+<div className='fragment' style={{backgroundColor: '#fde8e8', fontSize: '.95em', borderRadius: '6px', padding: '0.3em 0.3em'}}>
+
+`Comparator.comparing()` sorts by [increasing] id first; `thenComparingInt()` breaks ties by [increasing] brightness.
+Answer is A.
+
+</div>
+
+</div>
+
+</Slide>
+<Slide>
+
+## Question 7
+A developer writes this filter:
+
+```java
+devices.stream()
+    .filter(d -> d.isConnected() && d.getBattery() < 20
+                 && !d.getType().equals("wired")
+                 && d.getLastSeen().isBefore(cutoff))
+    .collect(Collectors.toList());
+```
+
+What refactoring would most increase testability?
+
+<div className='fragment' style={{backgroundColor: '#fde8e8', fontSize: '.95em', borderRadius: '6px', padding: '0.3em 0.3em'}}>
+
+Pay close attention to the wording! This is asking about *testability*.
+</div>
+
+<div className='fragment'>
+A. Extracting the lambda body into a named method
+</div>
+
+<div className='fragment' style={{display: 'flex', gap: '2em', justifyContent: 'center'}}>
+  <div>
+```java
+devices.stream()
+    .filter(this::isLowBatteryWireless)
+    .collect(Collectors.toList());
+```
+</div>
+<div>
+```
+boolean isLowBatteryWireless(Device d) {
+    return d.isConnected()
+        && d.getBattery() < 20
+        && !d.getType().equals("wired")
+        && d.getLastSeen().isBefore(cutoff);
+}
+```
+</div>
+</div>
+
+</Slide>
+
+
+<Slide>
+
+### Question 7 Answers
+A developer writes this filter:
+
+```java
+devices.stream()
+    .filter(d -> d.isConnected() && d.getBattery() < 20
+                 && !d.getType().equals("wired")
+                 && d.getLastSeen().isBefore(cutoff))
+    .collect(Collectors.toList());
+```
+
+What refactoring would most increase testability?
+
+<div style={{ fontSize: '.8em' }}>
+
+A. Extracting the lambda body into a named method
+
+B. Replacing `Collectors.toList()` with `Collectors.toUnmodifiableList()` so the result cannot be accidentally mutated by callers
+
+C. Splitting the filter into multiple chained `.filter()` calls, one condition per call
+
+D. Converting the lambda body into an anonymous class
+
+<div className='fragment' style={{backgroundColor: '#fde8e8', borderRadius: '6px', padding: '0.5em 1em'}}>
+
+Complex lambda logic should be extracted into a named method for readability, documentation, and independent testability. Answer is A.
+
+</div>
+
+</div>
+
 </Slide>
 
 <Slide>
 
-## Question 7: Lambda Refactoring
+## Question 8
 
-<QuizSlide
-  question='A developer writes a stream filter with four conditions chained together (isConnected(), battery < 20, type not "wired", lastSeen before cutoff). What is the best refactoring, and why?'
-  answers={[
-    'Extract the lambda body into a named method — complex logic benefits from a name and can be documented and tested independently',
-    'Leave it as a lambda — inline lambdas keep the logic close to where it\'s used, which helps readers follow the flow without jumping to another method',
-    'Split the filter into multiple chained .filter() calls, one condition per call — this will be the most readable option',
-    'Convert it to an anonymous class for superior testability']}/>
+A developer writes `LoggingList`, a subclass of `ArrayList` that counts how many elements have been added:
+
+<div style={{display: 'flex', gap: '2em', justifyContent: 'center'}}>
+  <div>
+```java
+public class LoggingList<E> extends ArrayList<E> {
+  private int addCount = 0;
+
+  @Override
+  public boolean add(E e) {
+    addCount++;
+    return super.add(e);
+  }
+
+  @Override
+  public boolean addAll(Collection<? extends E> c) {
+    addCount += c.size();
+    return super.addAll(c);
+  }
+
+  /**
+   * Gets the count of items added to this list
+   * (whether or not they are subsequently removed).
+   *
+   * @return the number of items added to the list
+   */
+  public int getAddCount() { return addCount; }
+}
+```
+  </div>
+  <div className='fragment'>
+Both of these JUnit tests pass:
+
+```java
+@Test
+void countsTwoDirectAdds() {
+  LoggingList<String> list = new LoggingList<>();
+  list.add("A");
+  list.add("B");
+  assertEquals(2, list.getAddCount());
+}
+
+@Test
+void countsAddAll() {
+  LoggingList<String> list = new LoggingList<>();
+  list.addAll(Arrays.asList("A", "B", "C"));
+  assertEquals(3, list.getAddCount());
+}
+```
+  </div>
+</div>
+<div className='fragment'>
+What is the problem with `LoggingList`?
+</div>
 </Slide>
 
 <Slide>
 
-## Question 8: Fragile Base Class
+### Question 8 Answers
+<div style={{ fontSize: '.8em' }}>
 
-<QuizSlide
-  question='LoggingList extends ArrayList and overrides both add() and addAll() to track addCount. Both tests (adding two elements directly; using addAll with three elements) pass. What is the problem with LoggingList?'
-  answers={[
-    'addCount should be static so it is shared across all LoggingList instances',
-    'The class might no longer satisfy its specification if the implementation of ArrayList changes',
-    'Overriding both add() and addAll() violates the Interface Segregation Principle because the two methods should be in separate interfaces',
-    'The class violates the Liskov Substitution Principle because LoggingList cannot be used anywhere an ArrayList is expected']}/>
+A developer writes `LoggingList`, a subclass of `ArrayList` that counts how many elements have been added:
+
+```java
+public class LoggingList<E> extends ArrayList<E> {
+  private int addCount = 0;
+
+  @Override
+  public boolean add(E e) { .. }
+
+  @Override
+  public boolean addAll(Collection<? extends E> c) { .. }
+
+  public int getAddCount() { return addCount; }
+}
+```
+What is the problem with `LoggingList`?
+
+A. `addCount` should be `static` so it is shared across all `LoggingList` instances<br/>
+B. The class might no longer satisfy its specification if the implementation of `ArrayList` changes<br/>
+C. Overriding both `add()` and `addAll()` violates the Interface Segregation Principle because the two methods should be in separate interfaces<br/>
+D. The class violates the Liskov Substitution Principle because `LoggingList` cannot be used anywhere an `ArrayList` is expected<br/>
+
+<div className='fragment' style={{backgroundColor: '#fde8e8', borderRadius: '6px', padding: '0.5em 1em'}}>
+Implementation assumes `super.addAll()` does not call `add()`. Answer is B.
+</div>
+
+</div>
+
 </Slide>
 
 <Slide>
 
-## Question 9: Mockito verify
+## Question 9
 
-<QuizSlide
-  question='Consider this Mockito test that mocks a TemperatureSensor and HVACService, stubs readTemperature("livingRoom") to return 65.0, calls adjustToTargetTemperature(72.0, "livingRoom"), then calls verify(mockHVAC).activate("livingRoom"). What does the verify line do?'
-  answers={[
-    'It asserts that activate was called exactly once with "livingRoom" as the argument',
-    'It configures the mock to return a specific value the next time activate is called',
-    'It checks that mockHVAC was originally constructed using "livingRoom" as a parameter',
-    'It registers a callback so that a real HVAC system is contacted if activate is called']}/>
+```java
+@Test
+public void activatesHeatingWhenBelowTarget() {
+    TemperatureSensor mockSensor = mock(TemperatureSensor.class);
+    HVACService mockHVAC = mock(HVACService.class);
+    when(mockSensor.readTemperature("livingRoom")).thenReturn(65.0);
+
+    ThermostatController controller = new ThermostatController(mockSensor, mockHVAC);
+    controller.adjustToTargetTemperature(72.0, "livingRoom");
+
+    verify(mockHVAC).activate("livingRoom");
+}
+```
+
+What does `verify(mockHVAC).activate("livingRoom")` do?
+
+
+</Slide>
+
+
+<Slide>
+
+### Make Sure We Understand Code
+
+```java
+@Test
+// This tests whether the heater is turned on when we want to heat room.
+public void activatesHeatingWhenBelowTarget() {
+  // Create a test double for the TemperatureSensor.
+  TemperatureSensor mockSensor = mock(TemperatureSensor.class);
+
+  // Create a test double for the HVACService.
+  HVACService mockHVAC = mock(HVACService.class);
+
+  // Simulate a living room temperature of 65.0.
+  when(mockSensor.readTemperature("livingRoom")).thenReturn(65.0);
+
+  // Create a real ThermostatController using the doubles.
+  ThermostatController controller = new ThermostatController(mockSensor, mockHVAC);
+
+  // Test what happens when we tell a ThermostatController to increase LR temperature.
+  controller.adjustToTargetTemperature(72.0, "livingRoom");
+  // Make sure the HVACService's activate() method was called with argument "livingRoom".
+  verify(mockHVAC).activate("livingRoom");
+}
+```
+
+What does `verify(mockHVAC).activate("livingRoom")` do?
+
+
+</Slide>
+
+<Slide>
+
+### Question 9 Answers
+
+What does `verify(mockHVAC).activate("livingRoom")` do?
+
+<div style={{ fontSize: '.8em' }}>
+
+A. It asserts that `activate` was called exactly once with `"livingRoom"` as the argument
+
+B. It configures the mock to return a specific value the next time `activate` is called
+
+C. It checks that `mockHVAC` was originally constructed using `"livingRoom"` as a parameter
+
+D. It registers a callback so that a real HVAC system is contacted if `activate` is called
+
+<div className='fragment' style={{backgroundColor: '#fde8e8', borderRadius: '6px', padding: '0.5em 1em'}}>
+
+`verify` asserts the method was called exactly once with the specified argument. Answer is A.
+
+</div>
+
+<div className='fragment'>
+🦨 You shouldn't be expected to remember "exactly once".
+</div>
+
+</div>
+
 </Slide>
 
 <Slide>
