@@ -649,6 +649,6 @@ sidebar: false
 }
 
 // Export types for use in other files
-export type { ClassasaurusPluginOptions, CourseConfig, CourseSchedule } from './types';
+export type { ClassasaurusPluginOptions, CourseConfig, CourseSchedule, ShowcaseGroupEntry } from './types';
 // Export utilities
 export * from './utils';

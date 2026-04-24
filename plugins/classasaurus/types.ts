@@ -317,6 +317,16 @@ export interface CanvasConfig {
 }
 
 /**
+ * Entry for the public project showcase (infographic gallery)
+ */
+export interface ShowcaseGroupEntry {
+  /** Group id; image path is `/img/showcase/group-{id}.png` */
+  id: string;
+  /** Card label; defaults to `Group {id}` when omitted */
+  label?: string;
+}
+
+/**
  * Course configuration
  */
 export interface CourseConfig {
@@ -368,6 +378,9 @@ export interface CourseConfig {
   /** Timezone for the course (e.g., "America/New_York") */
   timezone?: string;
   
+  /** Groups shown on the `/showcase` infographic gallery (optional) */
+  showcaseGroups?: ShowcaseGroupEntry[];
+
   /** Optional course metadata */
   metadata?: {
     department?: string;
