@@ -235,7 +235,12 @@ const config: Config = {
           to: '/staff',
           position: 'left',
           label: 'Staff',
-        }
+        },
+        {
+          to: '/showcase',
+          position: 'left',
+          label: 'Project Gallery',
+        },
       ],
     },
     footer: {
