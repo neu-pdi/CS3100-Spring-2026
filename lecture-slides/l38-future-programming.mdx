@@ -1,0 +1,891 @@
+---
+sidebar_position: 38
+title: "The Future of Programming"
+image: /img/lectures/web/l38.png
+---
+
+import RevealJS, { Slide } from '@site/src/components/RevealJS';
+import Img from '@site/src/components/Img';
+
+<RevealJS transition="slide">
+
+{/* ============================================ */}
+{/* COVER IMAGE */}
+{/* ============================================ */}
+
+<Slide>
+  <Img
+    src="/img/lectures/web/l38.png"
+    prompt="Concept: 'The Future of Programming' (Program Design and Implementation 2). Pixel art educational illustration, 16:9 aspect ratio. Timeline/progression scene LEFT to RIGHT showing the evolution of programming. FAR LEFT: a pixel art programmer feeding punch cards into a large mainframe computer, sepia/amber tones, 1960s vibe. CENTER-LEFT: a programmer at a green-screen terminal typing code, early teal/green tones, 1980s vibe. CENTER: a programmer at a modern IDE with multiple monitors showing colorful syntax-highlighted code, brighter teals and blues, 2010s vibe. CENTER-RIGHT: a programmer sitting beside a glowing AI companion (a friendly robot or holographic assistant), both looking at code on a screen, warm orange and cool teal tones blending, 2025 vibe. FAR RIGHT: a large glowing question mark hovering over an empty desk with a chair, surrounded by swirling particles of teal and purple light — the unknown future. Each era is separated by a subtle vertical dotted line. Banner text: 'L38: The Future of Programming'. Bottom tagline: 'The Hard Part Was Never the Typing.' Bottom text: 'CS 3100: Program Design and Implementation 2'. Color palette: warm ambers and sepias on the left fading to cool teals and purples on the right, with a glowing question mark in purple. 8-bit lo-fi pixel art style, clean outlines, retro game aesthetic."
+    alt="Pixel art timeline LEFT to RIGHT: 1960s programmer with punch cards, 1980s green-screen terminal, 2010s modern IDE, 2025 AI pair programming, and a glowing question mark for the unknown future. Tagline: The Hard Part Was Never the Typing."
+  />
+
+<aside className="notes">
+**Lecture overview:**
+- **Total time:** ~55 minutes
+- **Format:** Discussion-centered. Each arc: PollEverywhere questions → a few content slides → neighbor discussion prompt (3-4 min) → class-level discussion (5-10 min).
+- **Prerequisites:** L36 (Sustainability), L37 (MapReduce), L13 (AI Agents)
+- **Connects to:** L1 (Introduction — Grace Hopper, "automatic programming"), L35 (Safety), L36 (Sustainability)
+
+**Structure (~4 arcs, 55 min):**
+- Arc 1: Essential vs Accidental Complexity (~15 min) — Poll, Brooks framework, invisible productivity gain, neighbor discussion
+- Arc 2: The Evidence on AI-Assisted Development (~15 min) — Poll, METR/MIT studies, quality evidence, DORA multiplier, neighbor discussion
+- Arc 3: Learning Debt, Jobs, and Professional Responsibility (~15 min) — Poll, learning debt as sustainability, entry-level jobs, Parnas, neighbor discussion
+- Arc 4: Durable Skills and the Course Arc (~10 min) — Poll (re-vote), trends, course arc table, closing
+
+**Tone:** This is the final content lecture. Reflective, interactive, forward-looking. **The lecture succeeds when students are talking, not when you are.** Protect discussion time aggressively — skip content slides before cutting discussions.
+
+> **Transition:** Let's start with the learning objectives...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* TITLE SLIDE */}
+{/* ============================================ */}
+
+<Slide>
+
+# CS 3100: Program Design and Implementation II
+
+## Lecture 38: The Future of Programming
+
+<p style={{marginTop: '2em', fontSize: '0.8em', color: '#666'}}>
+  &copy;2026 Jonathan Bell, CC-BY-SA
+</p>
+
+<aside className="notes">
+**Context from previous lectures:**
+- L36: Sustainability — the meta-quality attribute. Jevons' paradox. Who benefits, who bears risk.
+- L37: MapReduce — architecture emerges from constraints. Every semester concept visible in one system.
+- L13: AI agents — 6-step workflow, "noisy amplifier" framing, learning debt, learning tax.
+- L1: Grace Hopper — "automatic programming" and the recurring cycle of skepticism toward new abstractions.
+- Today: Pull all threads together. What does AI actually change? What stays? What does that mean for your career?
+
+> **Transition:** Here's what you'll be able to do after today...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* LEARNING OBJECTIVES */}
+{/* ============================================ */}
+
+<Slide>
+
+## Learning Objectives
+
+<p style={{fontSize: '0.85em', textAlign: 'left'}}>
+After this lecture, you will be able to:
+</p>
+
+<ol style={{fontSize: '0.75em', textAlign: 'left'}}>
+  <li>Analyze what AI coding tools actually change about software engineering — and what they do not</li>
+  <li>Evaluate the real-world evidence on AI-assisted development and identify when AI helps vs. hinders</li>
+  <li>Identify durable skills and concrete next steps for continuous learning</li>
+</ol>
+
+<aside className="notes">
+**Time allocation:**
+- Arc 1 (~15 min): Brooks, essential/accidental, invisible productivity gain
+- Arc 2 (~15 min): Evidence — METR, MIT, quality studies, DORA
+- Arc 3 (~15 min): Learning debt, jobs, Parnas, professional responsibility
+- Arc 4 (~10 min): Re-vote, trends, course arc, closing
+
+**Interactive note:** Each arc follows the pattern: poll → content → neighbor discussion → class discussion. **Protect discussion time.** If a content section runs long, cut slides, not discussions.
+
+> **Transition:** Let's start where we started — L1, Grace Hopper, and the meaning of "automatic programming"...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 1: ESSENTIAL COMPLEXITY (~15 min) */}
+{/* ============================================ */}
+
+<Slide>
+
+## Arc 1: What Does AI Actually Change?
+
+<p style={{fontSize: '1.1em', textAlign: 'center', marginTop: '1.5em'}}>
+Open <strong>Poll Everywhere</strong>.
+</p>
+
+<aside className="notes">
+**3 poll questions to open Arc 1 (~3 min total, 45 sec each):**
+
+---
+
+**Q1: Anchoring — "AI will fundamentally change what it means to be a software engineer within 5 years."**
+
+Strongly Agree — Agree — Unsure — Disagree — Strongly Disagree
+
+*Show the distribution. Don't comment yet.* Say: "Hold your position. We'll ask the same question at the end of the lecture and see if anyone moved."
+
+---
+
+**Q2: "Think about GA1. What was the HARDEST part?"**
+
+- A. Syntax, boilerplate, and setup
+- B. Understanding the spec and figuring out what to build
+- C. Designing how modules fit together
+- D. Debugging integration issues across teammates' code
+- E. Testing — knowing what to test and writing meaningful tests
+
+*This primes the essential/accidental distinction. A is accidental complexity. B-E are essential. Don't label them yet — the next slides will.*
+
+---
+
+**Q3: "What are you doing after this semester?"**
+
+- Co-op/internship
+- More classes
+- Grad school
+- Job search
+- Research
+- Other
+
+*Knowing the room's composition changes how the jobs discussion lands. If most students are heading to co-op, the entry-level question is urgent.*
+
+---
+
+After showing results: "Interesting — let's look at a framework that explains why the hardest parts of GA1 are the parts AI can't solve."
+
+> **Transition:** Every generation says "that's not real programming"...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Every Generation Says "That's Not Real Programming"
+
+<div style={{fontSize: '0.8em'}}>
+
+**L1 callback:** Grace Hopper built one of the first compilers. The response?
+
+> "I kept getting told that I couldn't do that, because a computer could only do arithmetic. They couldn't write programs."
+
+</div>
+
+<div className="fragment" style={{fontSize: '0.72em', marginTop: '0.8em'}}>
+
+| Decade | New abstraction | "That's not real programming" |
+|--------|----------------|-------------------------------|
+| 1950s | Compilers | "Real programmers write machine code" |
+| 1970s | Structured programming | "Real programmers use GOTO" |
+| 1990s | Garbage collection | "Real programmers manage their own memory" |
+| 2010s | Frameworks, low-code | "Real programmers write everything from scratch" |
+| 2020s | AI coding assistants | "Real programmers write their own code" |
+
+</div>
+
+<p className="fragment" style={{fontSize: '0.85em', color: '#9370DB', marginTop: '0.5em'}}>
+The pattern repeats: a tool automates part of the work. The definition of "programming" shifts upward to the work the tool <strong>cannot</strong> do.
+</p>
+
+<aside className="notes">
+**This is the L1 bookend.** Walk through 2-3 rows. The GC row is fun — Java's GC was dismissed as a crutch by C/C++ programmers. Now it's the default.
+
+Each row represents the same cycle: automation → skepticism → acceptance → the definition shifts upward.
+
+**The question for 2026:** Where are we in this cycle? The answer depends on what the "work the tool can't do" turns out to be.
+
+> **Transition:** Fred Brooks predicted this pattern in 1986...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Hard Part Was Never the Typing
+
+<Img
+  src="/img/lectures/web/l38-essential-accidental.webp"
+  prompt={"Clean educational diagram (not pixel art), 16:9 aspect ratio. An iceberg illustration. ABOVE THE WATERLINE (labeled 'Accidental Complexity — what AI removes'): warm orange tones. Floating above the water are labeled items in clean rounded boxes: 'Boilerplate', 'Syntax', 'API Lookups', 'Build Config', 'Routine Tests', 'Code Translation'. A friendly robot arm reaches down from the top corner, sweeping these items away with ease. BELOW THE WATERLINE (labeled 'Essential Complexity — what remains'): cool purple and teal tones, much larger mass. Embedded in the ice underwater are larger, heavier-looking labeled blocks: 'Understanding Requirements', 'Architectural Tradeoffs', 'Edge Case Reasoning', 'Designing for Change', 'Stakeholder Evaluation', 'Professional Responsibility'. These blocks are visibly immovable — no robot arm reaches them. The waterline is labeled 'Brooks Line (1986)'. A small caption at bottom: 'Fred Brooks, No Silver Bullet: the hard part is below the surface.' Clean modern infographic style, not pixel art. Strong visual contrast between the small removable items above and the massive immovable blocks below."}
+  alt="Iceberg diagram: above the waterline (warm orange), small items labeled Boilerplate, Syntax, API Lookups — things AI removes. Below the waterline (cool purple, much larger), heavy blocks labeled Understanding Requirements, Architectural Tradeoffs, Edge Case Reasoning — things that remain. Robot arm sweeps away the top items. Waterline labeled Brooks Line 1986."
+/>
+
+<p style={{fontSize: '0.85em', color: '#9370DB', marginTop: '0.3em'}}>
+Fred Brooks (1986): AI is spectacularly effective <strong>above</strong> the waterline. Everything <strong>below</strong> it is what you are paid for.
+</p>
+
+<aside className="notes">
+**This is THE key framework for the lecture.** The iceberg visual makes the point: the visible part (what AI automates) is small. The submerged mass (what remains) is enormous.
+
+**Connect to Q2 from the poll:** "How many of you picked A (syntax/setup) as the hardest? That's above the waterline. How many picked B-E? That's below. AI is great above. It can't reach below."
+
+**Fred Brooks, "No Silver Bullet" (1986):** Brooks argued that no single technology would deliver a 10x improvement in software productivity within a decade. He wrote this during a period of enormous hype around several technologies that were each being promoted as the breakthrough that would finally solve the "software crisis":
+
+- **Ada** (1983) — the US Department of Defense spent billions developing a single programming language to replace the hundreds used across military projects. It was supposed to eliminate entire categories of bugs through strong typing and built-in concurrency. It helped, but didn't deliver 10x.
+- **Object-oriented programming** — Smalltalk, then C++, then Java. OOP was marketed as a paradigm that would make software naturally modular, reusable, and maintainable. It improved things, but projects still ran over budget and behind schedule.
+- **Expert systems / early AI** — the first AI hype cycle. Rule-based systems were going to automate programming itself. DARPA poured money into the "Fifth Generation" project. The AI winter followed when the promises didn't materialize.
+- **CASE tools** (Computer-Aided Software Engineering) — graphical tools that would let you draw diagrams and auto-generate code. Basically the low-code of the 1980s. Generated terrible code and were largely abandoned.
+- **Formal verification** — mathematically prove your program is correct. Promising in theory, impractical for real systems at the time (though making a comeback now — see the trends slide).
+
+Brooks looked at all of these and said: they each attack **accidental complexity**, and they each work to some degree. But none can deliver 10x because most of the difficulty is **essential**:
+
+- **Accidental complexity** = difficulty from tools and processes — boilerplate, syntax, API lookups, build config, manual memory management. Can be engineered away.
+- **Essential complexity** = the irreducible difficulty of the problem itself — understanding requirements, making architectural tradeoffs, reasoning about edge cases, designing for change. If users need 30 features that interact in complex ways, that complexity is inherent in the problem, not the tools.
+
+Brooks' prediction: tools can only deliver improvements proportional to the fraction of work that is accidental. Since most of the difficulty in software is essential (the problem, not the syntax), no tool can deliver an order-of-magnitude improvement overall. Every technology on that list genuinely improved things — and none delivered 10x. Sound familiar?
+
+**Why *The Mythical Man-Month* (1975) still sells 10,000 copies a year:** At ICSE 2018 — the 40th anniversary of the conference — Brooks explained: "The book is not really about technology. It's really about people. The stage keeps changing, but the script doesn't change much." Communication overhead, conceptual integrity, the "second-system effect," the surgical team — all still relevant because they describe essential complexity in the human dimension.
+
+**Brooks on AI (ICSE 2018):** He acknowledged AI would change software engineering, but restated his prediction: no single technology would deliver 10x in 10 years. "We'll check back in 2028." We're almost there.
+
+**The twist students should feel:** Maybe AI HAS delivered 10x on accidental complexity. But we can't see it — because every time we eliminate one generation's accidental complexity, our expectations expand, bringing more essential complexity, which requires new tooling, which introduces new accidental complexity. The next slide makes this concrete.
+
+> **Transition:** But wait — maybe AI HAS delivered 10x and we can't see it...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Productivity Gain Is Real — It Is Just Invisible
+
+<div style={{fontSize: '0.62em'}}>
+
+| Era | Tools | What "a web app" meant |
+|-----|-------|----------------------|
+| 2000 | Hand-written HTML, CGI scripts | Static pages with a form |
+| 2008 | Rails, Django, jQuery | Dynamic CRUD app with a database |
+| 2015 | React, Docker, microservices | Real-time SPA with mobile support, CI/CD, monitoring |
+| 2020 | Kubernetes, serverless, design systems | Multi-platform, accessible, globally distributed, auto-scaling |
+| 2026 | AI-assisted development | All of the above, plus AI features, built by a smaller team |
+
+</div>
+
+<div className="fragment" style={{fontSize: '0.75em', marginTop: '0.5em'}}>
+
+Each generation's tools made the previous generation's software **trivial to build.** But nobody used the tools to build last generation's software faster — they used them to build *this* generation's software at all.
+
+</div>
+
+<p className="fragment" style={{fontSize: '0.78em', color: '#9370DB', marginTop: '0.5em'}}>
+**L36 (Jevons' paradox):** The 10x gain is real — it is invisible because the baseline keeps moving. 2026 has MORE accidental complexity than 2000, not less.
+</p>
+
+<aside className="notes">
+**This is the mechanism that explains why Brooks keeps being right.** Productivity gains are absorbed by rising expectations.
+
+The GA1 features students built — with AI, JavaFX, GitHub Actions, a team — would have been a senior capstone project 15 years ago. Are they "more productive"? Or doing something fundamentally more ambitious at the same pace?
+
+> **Transition:** Let's map exactly what AI changes and what it doesn't...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## AI Removes the Accidental — The Essential Remains
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.8em', fontSize: '0.68em'}}>
+
+<div style={{backgroundColor: 'rgba(255,165,0,0.12)', padding: '0.8em', borderRadius: '8px'}}>
+
+**AI handles** *(accidental)*
+
+- Boilerplate and syntax
+- API lookups
+- Routine test generation
+- Code translation
+- Pattern application
+- First-draft documentation
+
+</div>
+
+<div style={{backgroundColor: 'rgba(147,112,219,0.12)', padding: '0.8em', borderRadius: '8px'}}>
+
+**You handle** *(essential)*
+
+- Understanding what to build (L9)
+- Designing for change (L7)
+- Edge case reasoning (L15)
+- Architectural tradeoffs (L18)
+- Stakeholder evaluation (L9)
+- Professional responsibility (L35)
+
+</div>
+
+</div>
+
+<p className="fragment" style={{fontSize: '0.85em', color: '#9370DB', marginTop: '0.5em'}}>
+Every lecture this semester focused on the right column. AI makes the left cheaper. <strong>The right is what you are paid for.</strong>
+</p>
+
+<aside className="notes">
+**This is the thesis slide.** The two columns map directly to the iceberg: left = above the waterline, right = below.
+
+Walk through one row: "Routine test generation" vs "Reasoning about edge cases." AI can generate a test with typical inputs. It cannot reason about what invariants should hold or whether the test validates the right behavior. That's L15 and L16.
+
+> **Transition:** Now let's discuss...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 1 DISCUSSION */}
+{/* ============================================ */}
+
+<Slide>
+
+<div style={{backgroundColor: 'rgba(147,112,219,0.15)', padding: '2em', borderRadius: '12px', marginTop: '1em'}}>
+
+<p style={{fontSize: '1.1em', fontWeight: 'bold', color: '#9370DB', marginBottom: '0.8em'}}>
+Discuss with a Neighbor (3-4 minutes)
+</p>
+
+<p style={{fontSize: '0.9em', fontWeight: 'bold'}}>
+Think about your GA1/GA2 experience.
+</p>
+
+1. What parts were **accidental complexity** — boilerplate, setup, syntax — that AI handled or could have handled?
+2. What parts were **essential complexity** — design decisions, debugging integration issues, understanding user needs — that no tool could bypass?
+3. Do you agree with Brooks that the 10x gain is real but invisible? Or is something genuinely different this time?
+
+</div>
+
+<aside className="notes">
+**Give this 3-4 full minutes.** Walk around. Listen for patterns.
+
+**Then class discussion (5-7 min).** Cold-call 3-4 students:
+- "What was one thing that was surprisingly essential — harder than you expected, and AI couldn't help?"
+- Common answers: figuring out how modules should communicate, debugging race conditions in async code, understanding what the user actually needed vs. what the spec said.
+- "Does anyone think the left column is getting bigger, not smaller? That AI is creating new accidental complexity?"
+
+**Bridge to Arc 2:** "So Brooks says AI attacks accidental complexity. But what does the evidence actually show about whether it makes developers faster or slower?"
+
+> **Transition:** Let's look at the evidence...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 2: THE EVIDENCE (~15 min) */}
+{/* ============================================ */}
+
+<Slide>
+
+## Arc 2: Does AI Actually Make Developers Faster?
+
+<p style={{fontSize: '1.1em', textAlign: 'center', marginTop: '1.5em'}}>
+Open <strong>Poll Everywhere</strong>.
+</p>
+
+<aside className="notes">
+**2 poll questions to open Arc 2 (~2 min):**
+
+---
+
+**Q4: "In your experience, AI coding tools make you..."**
+
+- A. Significantly faster
+- B. Somewhat faster
+- C. About the same speed
+- D. Somewhat slower (time spent reviewing/fixing AI output)
+- E. I don't use them enough to say
+
+*Show results. Note the distribution — then say: "Let's see what controlled studies found."*
+
+---
+
+**Q5: "Where on the vibe coding spectrum did you work during GA1?"**
+
+- A. Pure vibe coding — accept AI output if it runs
+- B. Assisted implementation — AI generates, I review and modify
+- C. AI-informed design — I design, AI helps implement
+- D. Manual — no AI, I wrote every line
+- E. A mix depending on the task
+
+*Most will say E or B. This primes the spectrum slide.*
+
+---
+
+> **Transition:** You think you know how AI affects your speed. Here's what controlled experiments found...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Feeling Fast Is Not the Same as Being Fast
+
+<div style={{fontSize: '0.8em'}}>
+
+Multiple controlled studies — they **disagree on speed** but agree on one thing:
+
+</div>
+
+<div style={{fontSize: '0.58em', marginTop: '0.5em'}}>
+
+| Study | Year | N | Speed effect | Perception |
+|-------|------|---|-------------|-----------|
+| [METR RCT](https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/) | 2025 | 16 experienced devs | **19% slower** | Believed 20% faster |
+| [Microsoft "Dear Diary"](https://arxiv.org/abs/2410.18334) | 2025 | 200+ engineers | **No significant change** | 84% reported positive impact |
+| [MIT/MS/Accenture](https://mit-genai.pubpub.org/pub/v5iixksv) | 2025 | 1,974 devs | **+26% PR throughput** | — |
+| [DORA 2025](https://dora.dev/research/2025/dora-report/) | 2025 | Thousands | +21% individual tasks | **Org delivery flat** |
+
+</div>
+
+<div className="fragment" style={{fontSize: '0.75em', marginTop: '0.5em', backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+**The resolution:** Individual speed ≠ organizational throughput. DORA and Faros both found: individuals produce more PRs, but PRs are **154% larger** with **91% longer review times.** The bottleneck shifts from writing to reviewing.
+
+</div>
+
+<aside className="notes">
+**The METR perception gap (39 percentage points) is the headline.** But METR later acknowledged serious selection bias and said they "no longer trust their own methodology" for the effect size.
+
+**The MIT study found the opposite:** +26% PR throughput. Crucially, juniors gained 27-39% while seniors gained only 8-13%. AI helps most when you're unfamiliar — exactly the accidental complexity Brooks describes.
+
+**The DORA insight resolves the contradiction:** Individual speed goes up, but org delivery stays flat because the bottleneck shifts to review. More code, same review capacity = same throughput.
+
+> **Transition:** Speed is mixed. Quality is not...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Quality Evidence Is Less Ambiguous — and Not Good
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.8em', marginTop: '0.5em'}}>
+
+<div style={{display: 'flex', alignItems: 'center', gap: '0.4em', justifyContent: 'center'}}>
+  <div style={{backgroundColor: 'rgba(50,205,50,0.2)', border: '2px solid #4a9', padding: '0.5em 0.8em', borderRadius: '8px', fontWeight: 'bold'}}>Good practices</div>
+  <span style={{fontSize: '1.5em'}}>×</span>
+  <div style={{backgroundColor: 'rgba(100,149,237,0.2)', border: '2px solid #49a', padding: '0.5em 0.8em', borderRadius: '8px', fontWeight: 'bold'}}>AI</div>
+  <span style={{fontSize: '1.5em'}}>=</span>
+  <div style={{backgroundColor: '#4a9', color: 'white', padding: '0.6em 1em', borderRadius: '8px', fontWeight: 'bold', fontSize: '1.1em'}}>Better</div>
+</div>
+
+<div style={{display: 'flex', alignItems: 'center', gap: '0.4em', justifyContent: 'center'}}>
+  <div style={{backgroundColor: 'rgba(200,74,74,0.2)', border: '2px solid #c44', padding: '0.5em 0.8em', borderRadius: '8px', fontWeight: 'bold'}}>Bad practices</div>
+  <span style={{fontSize: '1.5em'}}>×</span>
+  <div style={{backgroundColor: 'rgba(100,149,237,0.2)', border: '2px solid #49a', padding: '0.5em 0.8em', borderRadius: '8px', fontWeight: 'bold'}}>AI</div>
+  <span style={{fontSize: '1.5em'}}>=</span>
+  <div style={{backgroundColor: '#c44', color: 'white', padding: '0.7em 1.1em', borderRadius: '8px', fontWeight: 'bold', fontSize: '1.2em'}}>Faster bad</div>
+</div>
+
+</div>
+
+<p style={{fontSize: '0.7em', textAlign: 'center', marginTop: '0.3em', color: '#666'}}>
+DORA 2025: "AI is a multiplier of existing engineering conditions."
+</p>
+
+<div style={{fontSize: '0.55em', marginTop: '0.3em'}}>
+
+| Study | Key finding |
+|-------|------------|
+| CodeRabbit | **1.7x more issues**, 2.74x more XSS |
+| Uplevel | **+41% bug rate** |
+| GitClear | Code churn **doubled** |
+| Stanford/Boneh | Less secure, **more confident** |
+
+</div>
+
+<div className="fragment" style={{fontSize: '0.75em', backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.6em', borderRadius: '8px', marginTop: '0.3em'}}>
+
+L13's review step is not optional — **it is where quality comes from.**
+
+</div>
+
+<aside className="notes">
+**Speed evidence: mixed. Quality evidence: unambiguous.** Every study finds more defects in AI-assisted code.
+
+**The multiplier equations are the key visual.** Good practices + AI = better. Bad practices + AI = faster bad. This is Brooks validated empirically: AI removes accidental complexity, but if essential complexity is unmanaged, you just produce unmanageable code faster.
+
+**The "Faster bad" block is deliberately larger** than the "Better" block — the asymmetry is the point. Bad practices amplified by AI do more damage than good practices amplified by AI do good.
+
+**The review step from L13's 6-step workflow is not optional — it's where quality comes from.**
+
+> **Transition:** Now let's discuss...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 2 DISCUSSION */}
+{/* ============================================ */}
+
+<Slide>
+
+<div style={{backgroundColor: 'rgba(255,165,0,0.15)', padding: '2em', borderRadius: '12px', marginTop: '1em'}}>
+
+<p style={{fontSize: '1.1em', fontWeight: 'bold', color: '#cc7700', marginBottom: '0.8em'}}>
+Discuss with a Neighbor (3-4 minutes)
+</p>
+
+<p style={{fontSize: '0.9em', fontWeight: 'bold'}}>
+The evidence says AI makes developers feel faster while producing buggier code.
+</p>
+
+1. Have **you** experienced the perception gap? A moment where AI seemed to help but actually cost you time?
+2. DORA says AI is a "multiplier of existing engineering conditions." What does that imply about the value of what you learned in this course?
+3. Where on the **vibe coding spectrum** (pure vibe → assisted → AI-informed → manual) should you be working for different kinds of tasks?
+
+</div>
+
+<aside className="notes">
+**Give 3-4 full minutes.** Then class discussion (5-7 min).
+
+**Discussion prompts for the room:**
+- "Who experienced the perception gap? Tell us about it." (Students will have stories from GA1.)
+- "If DORA is right that AI multiplies existing conditions, what does that say about learning testing, architecture, code review — the things we practiced this semester?"
+- "Where on the vibe coding spectrum should you be for safety-critical code? For a throwaway prototype? For your co-op?"
+
+**Bridge to Arc 3:** "The quality and learning implications lead to a harder question — what does this mean for your career?"
+
+> **Transition:** Let's talk about learning debt, jobs, and professional responsibility...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 3: LEARNING DEBT, JOBS, RESPONSIBILITY (~15 min) */}
+{/* ============================================ */}
+
+<Slide>
+
+## Arc 3: What Does This Mean for Your Career?
+
+<p style={{fontSize: '1.1em', textAlign: 'center', marginTop: '1.5em'}}>
+Open <strong>Poll Everywhere</strong>.
+</p>
+
+<aside className="notes">
+**2 poll questions to open Arc 3 (~2 min):**
+
+---
+
+**Q6: "Did you accumulate learning debt this semester — a concept you relied on AI for that you couldn't explain to your TA?"**
+
+- A. Definitely yes
+- B. Probably some
+- C. Not really
+- D. No — I understood everything I submitted
+
+*Show results. Most will say B. Say: "That's honest. Let's talk about why it matters."*
+
+---
+
+**Q7: Stanford research found a ~20% drop in entry-level software developer employment (ages 22-25) from 2022-2025. Which read do you find more convincing?**
+
+- A. Pessimistic — AI is eliminating the bottom rungs of the career ladder
+- B. Optimistic — every productivity tool in history created more jobs, not fewer
+- C. Both are partially right
+- D. Too early to tell
+
+*Show results. Don't comment — the next slides present both reads.*
+
+---
+
+> **Transition:** Learning debt is a sustainability problem across all four dimensions...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Learning Debt Compounds Across All Four Dimensions
+
+<Img
+  src="/img/lectures/web/l38-learning-debt.webp"
+  prompt={"Clean educational diagram (not pixel art), 16:9 aspect ratio. A wide bridge or platform labeled 'Software Industry' spans across a gap, supported by four pillars, each a different color matching sustainability dimensions. The four pillars are labeled: 'Technical' (blue, cracked), 'Economic' (green, cracked), 'Social' (purple, cracked), 'Environmental' (orange, cracked). Each pillar has cracks running through it, and from each crack, small labels emerge describing the damage: Technical crack: 'Codebases no one understands'. Economic crack: 'Teams absorb hidden costs'. Social crack: 'Who reviews AI output in 5 years?'. Environmental crack: 'Trial-and-error loops waste compute at scale'. On the bridge, diverse small figures represent different roles — developers, users, students, companies — all depending on the same cracking infrastructure. At the base of the pillars, a label reads 'Learning Debt' with small text: 'Gaps in understanding masked by functional code'. The bridge is visibly sagging in the middle. Clean modern infographic style, white background, muted colors on the cracks with bright accent colors on the labels."}
+  alt="A bridge labeled Software Industry supported by four cracked pillars: Technical (codebases no one understands), Economic (teams absorb hidden costs), Social (who reviews AI in 5 years?), Environmental (trial-and-error wastes compute at scale). Diverse figures on the bridge depend on the same cracking infrastructure. Base labeled Learning Debt."
+/>
+
+<p className="fragment" style={{fontSize: '0.85em', color: '#9370DB', marginTop: '0.3em'}}>
+The "learning tax" is not just pedagogy. It is a <strong>sustainability investment.</strong>
+</p>
+
+<aside className="notes">
+**Let the graphic do the work.** The four cracked pillars map to L36's sustainability dimensions. Walk through one or two cracks verbally — don't read them all.
+
+**The social dimension is the most provocative:** if no one in the next generation learns fundamentals because AI handled them, who reviews AI output? Who debugs AI-built systems? It's a generational pipeline problem.
+
+**The environmental dimension is Jevons applied to development itself.** Developers who don't understand performance generate more speculative code, run more trial-and-error loops, consume more compute to arrive at solutions they could have reasoned through.
+
+**Learning debt** (from L13): gaps in understanding masked by functional code. The bridge sags because everyone — developers, users, students, companies — depends on the same cracking infrastructure.
+
+> **Transition:** This leads directly to the jobs question...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Entry-Level Question + Professional Responsibility
+
+<Img
+  src="/img/lectures/web/l38-career-ladder.webp"
+  prompt={"Clean educational diagram (not pixel art), 16:9 aspect ratio. A career ladder illustration. LEFT SIDE: A traditional ladder leaning against a wall, with rungs labeled from bottom to top: 'Bug fixes', 'CRUD endpoints', 'Well-specified features', 'Module ownership', 'Architecture', 'System design'. The bottom 2 rungs (Bug fixes, CRUD endpoints) are fading out, dissolving into pixels or becoming transparent, with a small AI robot icon sitting where they used to be. The 'Well-specified features' rung is still solid but has a faint glow around it. A concerned young developer in casual clothes stands at the base, looking up at the gap. RIGHT SIDE: The same ladder, but the bottom 2 rungs are replaced by a wider teal ramp labeled 'AI-assisted' that leads UP TO the 'Well-specified features' rung, which is still solid and present. The ramp does not skip it. The developer stands ON the Well-specified features rung, confidently looking upward, with a small AI robot beside them as a helper — not replacing them. All rungs from Well-specified features upward are fully intact. Caption below the left ladder: 'The pessimistic read: bottom rungs disappearing'. Caption below the right ladder: 'The optimistic read: AI changes HOW you climb, not WHETHER you climb'. At the very bottom, a quote in purple: 'Regulate critical software, not AI. — David Parnas, ICSE 2025'. Clean modern infographic, white background, warm red accents on left, cool teal on right."}
+  alt="Two career ladders side by side. Left: traditional ladder with bottom 2 rungs (bug fixes, CRUD endpoints) dissolving — developer looks up at the gap. Right: AI-assisted ramp leads up to the Well-specified features rung, which is still solid — developer stands on it with AI helper beside them. All upper rungs intact. Left: pessimistic read. Right: AI changes how you climb, not whether. Quote: Regulate critical software, not AI — Parnas."
+/>
+
+<div className="fragment" style={{fontSize: '0.75em', marginTop: '0.3em'}}>
+
+**Stanford (2025):** ~20% drop in software developer employment ages 22-25. **The question:** are the bottom rungs disappearing, or is the on-ramp changing shape?
+
+</div>
+
+<aside className="notes">
+**Let the image tell the story.** The two ladders present both reads visually. Don't over-explain — ask students which they find more convincing.
+
+**Parnas (L6 — information hiding), ICSE 2025:** "Regulate critical software, not AI." A for loop that denies housing and a neural network that denies housing have the same responsibility. If you use AI to generate code and cannot evaluate the output, you've removed a Swiss cheese layer (L35) without adding a replacement.
+
+**The Swiss cheese connection:** Human code review is a safety layer. Skip it because "the AI wrote it" and you've removed a layer.
+
+> **Transition:** Now let's discuss...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 3 DISCUSSION */}
+{/* ============================================ */}
+
+<Slide>
+
+<div style={{backgroundColor: 'rgba(100,149,237,0.15)', padding: '2em', borderRadius: '12px', marginTop: '0.5em'}}>
+
+<p style={{fontSize: '1.1em', fontWeight: 'bold', color: '#4169E1', marginBottom: '0.8em'}}>
+Discuss with a Neighbor (3-4 minutes)
+</p>
+
+<p style={{fontSize: '0.9em', fontWeight: 'bold'}}>
+Three questions — pick the one that matters most to you:
+</p>
+
+1. **The jobs question:** Which read do you find more convincing — pessimistic or optimistic? What evidence would change your mind? What skills from this course are most relevant to "the roles that remain"?
+2. **The learning debt question:** Did you accumulate learning debt this semester? Is there a concept you relied on AI for that you couldn't explain? What would it take to pay it down?
+3. **The responsibility question:** If your AI-generated code had a bug that affected a real user, who is responsible — you, the AI company, or both?
+
+</div>
+
+<aside className="notes">
+**This is the most important discussion of the lecture. Give it 3-4 full minutes.** Students are anxious about the job market. Don't dismiss either read.
+
+**Then class discussion (5-10 min).** Prompts:
+- "Who picked the jobs question? What's your read?" Push back gently on both sides.
+- To pessimists: "ATMs were supposed to eliminate bank tellers. They made branches cheaper to operate, which increased total branches, which increased teller employment. The roles changed."
+- To optimists: "The historical pattern holds at aggregate timescales. But the transition period can be brutal for individuals. If you graduate in 2026 and the roles don't shift for 5 years, that's cold comfort."
+- "Who picked the responsibility question? Does it matter whether a bug came from AI or from you?"
+
+**Bridge to Arc 4:** "We don't know what programming looks like in 10 years. But we can identify what endures..."
+
+> **Transition:** Let's close out the course...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 4: DURABLE SKILLS + COURSE ARC (~10 min) */}
+{/* ============================================ */}
+
+<Slide>
+
+## Arc 4: What Endures?
+
+<div style={{backgroundColor: 'rgba(255,165,0,0.15)', padding: '1.5em', borderRadius: '12px', marginTop: '0.5em'}}>
+
+<p style={{fontSize: '1em', fontWeight: 'bold', color: '#cc7700', marginBottom: '0.5em'}}>
+Same Question, 40 Minutes Later
+</p>
+
+<p style={{fontSize: '0.95em', fontWeight: 'bold', marginTop: '0.5em'}}>
+"AI will fundamentally change what it means to be a software engineer within 5 years."
+</p>
+
+<p style={{fontSize: '0.85em', marginTop: '0.8em'}}>
+Vote again on Poll Everywhere. **Did your position change?**
+</p>
+
+<p style={{fontSize: '0.85em', marginTop: '0.8em'}}>
+If it changed: **what moved you?** If it did not: **what would it take?**
+</p>
+
+</div>
+
+<aside className="notes">
+**Show both distributions (before/after) if Poll Everywhere supports it.** The shift (or lack of shift) IS the discussion.
+
+**Take 3-4 responses from the room.** Specifically seek someone who changed and someone who didn't. The best discussions come from the contrast.
+
+- If they moved toward "disagree": often the quality evidence and perception gap moved them.
+- If they moved toward "agree": often the jobs data or AI agents in production moved them.
+- If nobody moved: "What evidence would you need to see?"
+
+Then move to the closing slides.
+
+> **Transition:** Whatever your position, here's what endures...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Three Trends Worth Watching Beyond AI
+
+<div style={{fontSize: '0.7em'}}>
+
+<div style={{backgroundColor: 'rgba(200,74,74,0.15)', padding: '0.8em', borderRadius: '8px', marginBottom: '0.5em'}}>
+
+**Memory safety as policy:** The White House called out C and C++ by name. CISA lists memory-unsafe languages as a "bad practice." 45% of organizations now use Rust in production. Microsoft is rewriting Windows kernel components in Rust. Language choice is becoming a regulatory decision. ([L35](/lecture-notes/l35-safety-reliability): safety-by-design embedded in a language.)
+
+</div>
+
+<div className="fragment" style={{backgroundColor: 'rgba(50,205,50,0.15)', padding: '0.8em', borderRadius: '8px', marginBottom: '0.5em'}}>
+
+**Formal verification + AI:** Kleppmann argues AI will make formal verification mainstream — not by replacing it, but by making proof generation cheap enough to be practical. If AI generates code we cannot fully review, *proving* correctness becomes more valuable than *testing* for it. Extends [L15](/lecture-notes/l15-testing): unit tests → integration → E2E → formal proofs.
+
+</div>
+
+<div className="fragment" style={{backgroundColor: 'rgba(100,149,237,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+**WebAssembly beyond the browser:** Wasm is quietly becoming a third runtime. Zero cold-start, ~1/10th memory of Node.js. Write in Rust/Go/TypeScript, compile to Wasm, run anywhere. [L6](/lecture-notes/l6-immutability-abstraction) (information hiding) at the runtime level. [L21](/lecture-notes/l21-serverless) (sub-millisecond serverless). [L36](/lecture-notes/l36-sustainability) (10x less energy per request — but Jevons asks: 10x more requests?).
+
+</div>
+
+</div>
+
+<aside className="notes">
+**Move quickly — this is a tour, not a deep dive.** Each box connects to a course lecture. The goal: the field is heading in directions where this course's concepts are directly relevant.
+
+> **Transition:** Let's see the whole course in one view...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Every Lecture Sustains Something That AI Does Not Replace
+
+<div style={{fontSize: '0.55em'}}>
+
+| Lecture Arc | What It Taught | What It Sustains |
+|------------|---------------|-----------------|
+| L1-L4: Java, contracts, specifications | Write code that means what it says | Correctness over time |
+| L5-L8: Readability, coupling, SOLID | Write code others can change | Maintainability over years |
+| L9, L12: Requirements, domain modeling | Build the right thing | Value over project lifetime |
+| L13: AI agents | Use tools without outsourcing judgment | Competence over career |
+| L15-L16: Testing, testability | Know when code is wrong | Confidence over every commit |
+| L18-L21: Architecture, networks, serverless | Build systems that survive change | Adaptability over organizational lifetime |
+| L22-L23: Teams, open source | Work with humans and communities | Collaboration over industry lifetime |
+| L28-L30: Accessibility, GUI, MVVM | Build for all users | Inclusivity over societal timescale |
+| L31-L33: Concurrency, async, events | Handle complexity at scale | Scalability under load |
+| L34-L36: Performance, safety, sustainability | Do not harm users | Responsibility over consequences |
+| L37: MapReduce | See it all in one real system | Synthesis |
+| **L38: Today** | **What endures when everything else changes** | **Learning agility over career** |
+
+</div>
+
+<aside className="notes">
+**Let this slide breathe.** Don't read every row. Let students scan it.
+
+**The L13 row is pivotal:** "Use tools without outsourcing judgment" — that's the thesis of this lecture in seven words.
+
+**The L38 row closes the loop.** Learning agility — the ability to learn new things quickly — is the meta-skill that makes all the other rows possible.
+
+> **Transition:** One last thing...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* CLOSING */}
+{/* ============================================ */}
+
+<Slide>
+
+## The Future Is Unwritten — But You Are Not Unprepared
+
+<div style={{fontSize: '0.9em', marginTop: '1em'}}>
+
+We do not know what programming will look like in 10 years.
+
+</div>
+
+<div className="fragment" style={{fontSize: '0.85em', marginTop: '1em'}}>
+
+What we do know: the people who thrive will be those who can **learn what is needed**, **adapt when things change**, **work effectively with others**, and **bring clear thinking to complex problems**.
+
+</div>
+
+<div className="fragment" style={{fontSize: '0.85em', marginTop: '1em'}}>
+
+Those are not "soft skills" separate from "real" technical work.
+
+</div>
+
+<p className="fragment" style={{fontSize: '0.95em', color: '#9370DB', marginTop: '1.5em', fontWeight: 'bold'}}>
+They ARE technical work, viewed over time.
+</p>
+
+<aside className="notes">
+**This is the true final slide of the semester's content.** Let the fragments build slowly.
+
+The final line echoes L1: "software engineering is the integral of programming over time."
+
+**Pause after the purple text.** Let the room be quiet for a moment.
+
+"What is one thing you learned this semester that you did not expect to learn? You don't have to share — just think about it."
+
+**After 15 seconds of silence:** "Thank you. See you Thursday for review."
+
+End on the idea, not on a deadline.
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Looking Ahead
+
+<div style={{fontSize: '0.85em'}}>
+
+**L39 (Thursday): Review** — exam preparation, course synthesis, your questions.
+
+</div>
+
+<div style={{fontSize: '0.8em', marginTop: '1em', backgroundColor: 'rgba(200,74,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+**GA2: Feature Buffet due Thursday April 16.** Process over product — a well-documented partial feature scores higher than a complete feature with no documentation.
+
+</div>
+
+<div style={{fontSize: '0.8em', marginTop: '1em', backgroundColor: 'rgba(50,205,50,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+**[Final Report](/assignments/cyb13-final-report) due Monday April 20.** Written report (architecture, team reflection, sustainability assessment), infographic poster, demo video, individual reflection. Mostly assembling things you've already done — but don't leave it all for the very last moment.
+
+</div>
+
+<div style={{fontSize: '0.8em', marginTop: '1em', backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+**Final Exam:** Check the schedule. Covers the full semester, emphasis on final third (architecture through sustainability).
+
+</div>
+
+<div style={{fontSize: '0.65em', marginTop: '1em'}}>
+
+| If you are interested in... | Take... | Why |
+|---------------------------|---------|-----|
+| Distributed systems, consensus | [CS 4730](https://4730.network/) | Formalize L31-L33 |
+| Systems programming, memory safety | [CS 3650](https://course.khoury.northeastern.edu/cs3650/) | What Java hides — and why Rust exists |
+| Security, supply chain | [CS 3700](https://3700.network/) | Extend L20 to network attacks |
+| AI/ML systems engineering | [CS 4100](https://catalog.northeastern.edu/search/?P=CS+4100) | Understand the tools from inside |
+| Open source at scale | [CS 4535](https://neu-se.github.io/cs4535-public-resources/) | Apply everything to Pawtograder |
+
+</div>
+
+<aside className="notes">
+**Keep this to 1 minute.** The emotional close already happened. This is logistics.
+
+> That's it for content. Thank you.
+</aside>
+
+</Slide>
+
+</RevealJS>

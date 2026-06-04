@@ -86,16 +86,16 @@ By the end of this lab, you will be able to:
 
 - Identify what belongs in the **domain** versus **infrastructure** within a feature area, and explain *why* mixing them hurts testability
 - Design **port interfaces** that use only domain types and can be trivially stubbed for tests
-- Critically evaluate code (whether AI-generated or manually written) using [L16](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l16-testing2) vocabulary: observability, controllability, ports, adapters
+- Critically evaluate code (whether AI-generated or manually written) using [L16](https://neu-pdi.github.io/CS3100-Spring-2026/lecture-notes/l16-testing2) vocabulary: observability, controllability, ports, adapters
 - Explain how **dependency injection** eliminates the `DatabaseConnection` singleton and what the resulting composition root looks like
 - Communicate design decisions using a structured narrative: *"I chose X because Y. I considered Z, but X is better for this situation because..."*
 
 ## Before You Begin
 
 **Prerequisites:** Complete Lectures 16 and 17. You should be familiar with:
-- Observability, controllability, and hexagonal architecture ([Lecture 16](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l16-testing2))
-- Separating infrastructure from domain code ([Lecture 16](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l16-testing2))
-- Dependency injection, singleton anti-pattern, and composition roots ([Lecture 17](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l17-creation-patterns))
+- Observability, controllability, and hexagonal architecture ([Lecture 16](https://neu-pdi.github.io/CS3100-Spring-2026/lecture-notes/l16-testing2))
+- Separating infrastructure from domain code ([Lecture 16](https://neu-pdi.github.io/CS3100-Spring-2026/lecture-notes/l16-testing2))
+- Dependency injection, singleton anti-pattern, and composition roots ([Lecture 17](https://neu-pdi.github.io/CS3100-Spring-2026/lecture-notes/l17-creation-patterns))
 
 **Clone the Lab Repository:** Clone your lab8 repository from Pawtograder.
 
@@ -177,7 +177,7 @@ public class AutomationRuleEngine {
 
 - This is a **single deployable application** — one JAR, one `main()`. We're not splitting into separate servers.
 - The codebase must be **testable without real IoT hardware** — you need to be able to test business logic (e.g., "should this automation rule fire?") with test doubles, not a live Zigbee network.
-- All dependencies between modules should flow through **interfaces**, not concrete classes or singletons (DIP from [L8](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l8-design-for-change-2), DI from [L17](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l17-creation-patterns)).
+- All dependencies between modules should flow through **interfaces**, not concrete classes or singletons (DIP from [L8](https://neu-pdi.github.io/CS3100-Spring-2026/lecture-notes/l8-design-for-change-2), DI from [L17](https://neu-pdi.github.io/CS3100-Spring-2026/lecture-notes/l17-creation-patterns)).
 
 ---
 
@@ -192,7 +192,7 @@ Look at the `AutomationRuleEngine.evaluate()` code above. Annotate each block ma
 1. Which lines are **domain logic** — the actual business decision being made?
 2. Which lines are **infrastructure** — database access, hardware calls, HTTP?
 3. The `conditionMet(state)` method is on `AutomationRule`. Is that domain or infrastructure? Why?
-4. What makes this code **hard to test**? Apply the [L16](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l16-testing2) vocabulary: which parts hurt *controllability*? Which parts hurt *observability*?
+4. What makes this code **hard to test**? Apply the [L16](https://neu-pdi.github.io/CS3100-Spring-2026/lecture-notes/l16-testing2) vocabulary: which parts hurt *controllability*? Which parts hurt *observability*?
 
 Record your annotations in `REFLECTION.md` (Question 1). **Do this before pairing up** — having your own analysis first is how you'll know what's worth discussing with your partner.
 
@@ -301,8 +301,8 @@ Take note of how many files reference this method — you'll use this observatio
 
 With your partner discuss these three questions **before designing any replacement**:
 
-1. From [L17](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l17-creation-patterns): what are the **three problems** with singletons? Give a concrete example of each in the context of `DatabaseConnection`.
-2. From [L16](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l16-testing2): does this singleton hurt **observability**, **controllability**, or both? Explain specifically.
+1. From [L17](https://neu-pdi.github.io/CS3100-Spring-2026/lecture-notes/l17-creation-patterns): what are the **three problems** with singletons? Give a concrete example of each in the context of `DatabaseConnection`.
+2. From [L16](https://neu-pdi.github.io/CS3100-Spring-2026/lecture-notes/l16-testing2): does this singleton hurt **observability**, **controllability**, or both? Explain specifically.
 3. If two tests run concurrently and both call `DatabaseConnection.getInstance()`, what could go wrong?
 
 ### Exercise 2.3: Design Repository Interfaces — Manual First (8 minutes)
@@ -392,7 +392,7 @@ Now that you've tackled the `DatabaseConnection` singleton (which affects data a
 
 In this part, you'll use **Copilot as your primary design tool** and practice evaluating AI-generated output against hexagonal principles.
 
-### What Makes a Good Port (Review from [L16](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l16-testing2))
+### What Makes a Good Port (Review from [L16](https://neu-pdi.github.io/CS3100-Spring-2026/lecture-notes/l16-testing2))
 
 ```java
 // Good port: uses domain types, defined by what the DOMAIN needs
@@ -456,7 +456,7 @@ Save your diagram in `diagrams/automation-rules.md`.
 
 ### Exercise 3.3: Design the Composition Root (5 minutes)
 
-If we inject all these dependencies, *someone* has to wire them up. In [L17](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l17-creation-patterns) we called this the **composition root**.
+If we inject all these dependencies, *someone* has to wire them up. In [L17](https://neu-pdi.github.io/CS3100-Spring-2026/lecture-notes/l17-creation-patterns) we called this the **composition root**.
 
 Use Copilot:
 > *"Show me what `SceneItAllApplication.main()` should look like after applying dependency injection throughout. It should create all the production adapter implementations for DeviceManager and AutomationRuleEngine, then wire them in via constructor injection. There should be no calls to any `getInstance()` methods anywhere."*
@@ -464,9 +464,9 @@ Use Copilot:
 Evaluate the result:
 - Does it still contain any `getInstance()` calls? (Flag them if so.)
 - Is it clear that this is the **only** place in the codebase that knows about concrete implementations?
-- Does it look like the [L17](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l17-creation-patterns) composition root pattern?
+- Does it look like the [L17](https://neu-pdi.github.io/CS3100-Spring-2026/lecture-notes/l17-creation-patterns) composition root pattern?
 
-Verify the composition root has no `getInstance()` calls and matches the [L17](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l17-creation-patterns) pattern.
+Verify the composition root has no `getInstance()` calls and matches the [L17](https://neu-pdi.github.io/CS3100-Spring-2026/lecture-notes/l17-creation-patterns) pattern.
 
 ### 🔄 Sync Point 3 (5 minutes)
 
@@ -563,7 +563,7 @@ Was writing the test easier or harder with the new port-based design than it wou
 
 ### Stretch Goal 2: Extend to Notification System
 
-Apply what you learned to the **Notification System** feature area. In [Lab 4](https://neu-pdi.github.io/cs3100-public-resources/labs/lab4-changeability), you analyzed three implementations of SceneItAll's notification logic:
+Apply what you learned to the **Notification System** feature area. In [Lab 4](https://neu-pdi.github.io/CS3100-Spring-2026/labs/lab4-changeability), you analyzed three implementations of SceneItAll's notification logic:
 - A "big ball of mud" with all logic in one class (`NotificationManager` with conditional statements)
 - A class-based Strategy pattern (`NotificationStrategy` interface with `ImmediateNotificationStrategy`, etc.)
 - A functional/lambda-based approach using `Predicate` and `BiConsumer`
@@ -596,7 +596,7 @@ public interface NotificationPort {
 // where AlertRequest contains userId, message, channel, priority, quietHoursOverride, ...
 ```
 
-Which better follows Interface Segregation ([L8](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l8-design-for-change-2))? Which creates data coupling vs. stamp coupling ([L7](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l7-design-for-change))? If you ask Copilot to generate a `NotificationPort`, which style does it gravitate toward?
+Which better follows Interface Segregation ([L8](https://neu-pdi.github.io/CS3100-Spring-2026/lecture-notes/l8-design-for-change-2))? Which creates data coupling vs. stamp coupling ([L7](https://neu-pdi.github.io/CS3100-Spring-2026/lecture-notes/l7-design-for-change))? If you ask Copilot to generate a `NotificationPort`, which style does it gravitate toward?
 
 ---
 

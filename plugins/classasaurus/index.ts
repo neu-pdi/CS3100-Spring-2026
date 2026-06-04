@@ -598,7 +598,7 @@ sidebar: false
                 // Try multiple possible paths
                 const possiblePaths = [
                     path.join(outDir, 'overview', 'index.html'), // Standard path
-                    path.join(outDir, 'cs3100-public-resources', 'overview', 'index.html'), // With baseUrl
+                    path.join(outDir, 'CS3100-Spring-2026', 'overview', 'index.html'), // With baseUrl
                     path.join(outDir, 'overview.html'), // Alternative format
                 ];
                 
@@ -649,6 +649,6 @@ sidebar: false
 }
 
 // Export types for use in other files
-export type { ClassasaurusPluginOptions, CourseConfig, CourseSchedule } from './types';
+export type { ClassasaurusPluginOptions, CourseConfig, CourseSchedule, ShowcaseGroupEntry } from './types';
 // Export utilities
 export * from './utils';

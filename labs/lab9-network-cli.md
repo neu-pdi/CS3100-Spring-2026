@@ -92,7 +92,7 @@ By the end of this lab, you will be able to:
 ## Before You Begin
 
 **Prerequisites:** Complete
-[L20 (Distributed Architecture)](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l20-networks).
+[L20 (Distributed Architecture)](https://neu-pdi.github.io/CS3100-Spring-2026/lecture-notes/l20-networks).
 You should be familiar with:
 
 - The Eight Fallacies of Distributed Computing
@@ -325,7 +325,7 @@ A single timeout is better than hanging forever, but many real failures are _tra
 was briefly busy, the network had a momentary hiccup. Retrying after a short wait often succeeds.
 
 From
-[L20](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l20-networks#designing-for-an-unreliable-world),
+[L20](https://neu-pdi.github.io/CS3100-Spring-2026/lecture-notes/l20-networks#designing-for-an-unreliable-world),
 the pattern is:
 
 ```java
@@ -531,7 +531,7 @@ owns both its _execution_ logic and its _completion_ logic.
 **Key insight to leave students with:** The Command pattern makes the CLI extensible — adding a new
 command never touches existing commands. Just as `execute()` lets each command define its behavior,
 `getCompleter()` lets each command define its tab-completion. This is the Open/Closed Principle from
-[L8](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l8-design-for-change-2) in
+[L8](https://neu-pdi.github.io/CS3100-Spring-2026/lecture-notes/l8-design-for-change-2) in
 action.
 
 :::
@@ -668,7 +668,7 @@ Compare the two approaches:
 - What would it take to add a new command in each approach? How many files would you need to touch?
 - What would it take to _test_ a single command in isolation in each approach?
 - Which coupling type from
-  [L7](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l7-design-for-change) does
+  [L7](https://neu-pdi.github.io/CS3100-Spring-2026/lecture-notes/l7-design-for-change) does
   the if/else chain exhibit? What about the Command pattern?
 - Is there any situation where you'd prefer the if/else approach?
 
@@ -701,7 +701,7 @@ In your `status` command:
 
 - _Connections:_ How does one pattern you implemented (timeout, retry, exponential backoff, graceful
   degradation) connect to a specific concept from
-  [L20](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l20-networks)? Be
+  [L20](https://neu-pdi.github.io/CS3100-Spring-2026/lecture-notes/l20-networks)? Be
   specific—quote or reference the lecture material.
 - _Real-world parallel:_ Describe a situation outside of programming where you had to adapt when
   something didn't go as planned. What's similar to what you did today?
@@ -716,7 +716,7 @@ The retry approach you implemented still tries every command, even when a device
 continuously failing for minutes. This wastes time and could overwhelm a struggling device.
 
 The **circuit breaker** pattern (introduced briefly in
-[L20](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l20-networks#reliability-fault-tolerance-availability-and-recoverability))
+[L20](https://neu-pdi.github.io/CS3100-Spring-2026/lecture-notes/l20-networks#reliability-fault-tolerance-availability-and-recoverability))
 addresses this:
 
 - **Closed** (normal): requests pass through, failures are counted

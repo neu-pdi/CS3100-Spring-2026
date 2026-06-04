@@ -16,7 +16,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/neu-pdi/cs3100-public-resources"
+    "url": "https://github.com/neu-pdi/CS3100-Spring-2026"
   },
   "files": [
     "index.ts",

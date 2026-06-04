@@ -7,7 +7,7 @@ import BrowserOnly from '@docusaurus/BrowserOnly';
 
 <BrowserOnly>
   {() => {
-    window.location.replace("https://neu-pdi.github.io/cs3100-public-resources/lecture-slides-spertus/l36-kotlin-pm");
+    window.location.replace("https://neu-pdi.github.io/CS3100-Spring-2026/lecture-slides-spertus/l36-kotlin-pm");
     return null;
   }}
 </BrowserOnly>

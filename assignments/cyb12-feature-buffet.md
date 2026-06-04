@@ -36,33 +36,6 @@ AI tools are **encouraged**, but remember: we're grading process, not just produ
 
 Use AI as a tool, but ensure the *thinking* is yours. If you use AI assistance for implementation, you must be able to explain the code and design decisions in your own words during TA meetings.
 
-## TA Mentor Meetings
-
-Throughout GA2, your team will have **weekly 30-minute meetings** with your assigned TA mentor. **These meetings are an accountability mechanism, not just a scheduling requirement.** If you cannot attend, notify your TA *before* the meeting and provide a written update on your work status—this demonstrates accountability. Missing a meeting without prior notice signals a lack of accountability and will likely result in a penalty for that week's individual accountability component. These meetings serve multiple purposes:
-
-- **Code walks:** Each team member explains what they worked on and their design choices
-- **Progress check-ins:** Are you on track? Stuck anywhere?
-- **Collaboration verification:** Is the team working well together?
-- **Debugging support:** Your TA can help unblock technical issues
-
-**Meeting schedule for GA2:**
-
-| Meeting | Target Dates | Focus |
-|---------|-------------|-------|
-| 4 | Apr 13–14 | Feature buffet and integration — buffet feature progress, architecture deep dive, integration maturity, final sprint planning |
-
-Each student earns up to **10 points** at the graded meeting using the same rubric as GA1:
-
-| Category | Points | What your TA is looking for |
-|----------|--------|-----------------------------|
-| **Code Comprehension** | 4 | Can you explain your own code at both a high level and in detail? Can you articulate design decisions and trade-offs? |
-| **Process & Workflow** | 3 | Are you using feature branches, opening PRs with meaningful descriptions, and participating in code review? |
-| **Collaboration Evidence** | 2 | Have you reviewed teammates' PRs? Can you describe what your teammates are working on? |
-| **Forward Planning** | 1 | Do you have a concrete plan for what you're doing next? |
-
-Your TA will use a **top-down questioning approach**: starting with general questions and drilling into specifics. The goal is to assess comprehension, not to quiz you on syntax. If you used AI tools to help with implementation, you must still be able to explain how the code works and why you made certain design decisions.
-
-**Weekly collaboration surveys** are due each Monday (Mar 23, Mar 30, Apr 6, Apr 13) via Pawtograder. These brief check-ins ask you to reflect on team dynamics, your contributions, and any blockers. They are visible to your TA mentor and directly inform the individual accountability adjustment.
 
 ## The Feature Buffet
 
@@ -157,7 +130,7 @@ Each feature is scored out of 40 points. If your team implements 2–3 features,
 | Component | Points | Excellent | Satisfactory | Needs Improvement |
 |-----------|--------|-----------|--------------|-------------------|
 | **Design Rationale** | 5 | Clear user need, thoughtful alternatives considered | User need stated | Generic or missing rationale |
-| **Design Artifacts** | 11 | 3+ versions with clearly documented evolution | 2 versions shown | Single design, no iteration |
+| **Design Artifacts** | 11 | 2 versions with clearly documented evolution | 2 versions shown | Single design, no iteration |
 | **Implementation Journal** | 9 | Regular commits, quality PRs, decisions documented | Some commits, basic PRs | Large commits, no discussion |
 | **Testing & Quality** | 10 | Comprehensive tests; known limitations documented | Basic tests present | Minimal or no testing |
 | **Feature Summary** | 5 | Clear screenshots, integration well-explained, honest status assessment | Screenshots or status present | No summary provided |

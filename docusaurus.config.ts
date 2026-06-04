@@ -7,7 +7,7 @@ import path from 'path';
 import fs from 'fs';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
-const baseUrl = process.env.BASE_URL || '/cs3100-public-resources/';
+const baseUrl = process.env.BASE_URL || '/CS3100-Spring-2026/';
 const courseConfigPath = path.resolve(__dirname, 'course.config.json');
 type CourseConfigLite = { lectures?: { lectureId: string }[] };
 
@@ -46,7 +46,7 @@ const config: Config = {
 
   // GitHub pages deployment config.
   organizationName: 'neu-pdi', // Usually your GitHub org/user name.
-  projectName: 'cs3100-public-resources', // Usually your repo name.
+  projectName: 'CS3100-Spring-2026', // Usually your repo name.
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -75,7 +75,7 @@ const config: Config = {
         id: 'labs',
         path: 'labs',
         routeBasePath: 'labs',
-        editUrl: 'https://github.com/neu-pdi/cs3100-public-resources/edit/main/',
+        editUrl: 'https://github.com/neu-pdi/CS3100-Spring-2026/edit/main/',
         sidebarPath: './sidebars.ts',
         remarkPlugins: [remarkMath],
         rehypePlugins: [rehypeKatex],
@@ -87,7 +87,7 @@ const config: Config = {
         id: 'assignments',
         path: 'assignments',
         routeBasePath: 'assignments',
-        editUrl: 'https://github.com/neu-pdi/cs3100-public-resources/edit/main/',
+        editUrl: 'https://github.com/neu-pdi/CS3100-Spring-2026/edit/main/',
         sidebarPath: './sidebars.ts',
         remarkPlugins: [remarkMath],
         rehypePlugins: [rehypeKatex],
@@ -99,7 +99,7 @@ const config: Config = {
         id: 'lecture-slides',
         path: 'lecture-slides',
         routeBasePath: 'lecture-slides',
-        editUrl: 'https://github.com/neu-pdi/cs3100-public-resources/edit/main/',
+        editUrl: 'https://github.com/neu-pdi/CS3100-Spring-2026/edit/main/',
         sidebarPath: './sidebars.ts',
         remarkPlugins: [remarkMath],
         rehypePlugins: [rehypeKatex],
@@ -165,7 +165,7 @@ const config: Config = {
           routeBasePath: 'lecture-notes',
           include: lectureNotesIncludePatterns,
           sidebarPath: './sidebars.ts',
-          editUrl: 'https://github.com/neu-pdi/cs3100-public-resources/edit/main/',
+          editUrl: 'https://github.com/neu-pdi/CS3100-Spring-2026/edit/main/',
           remarkPlugins: [remarkMath],
           rehypePlugins: [rehypeKatex],
         },
@@ -235,7 +235,12 @@ const config: Config = {
           to: '/staff',
           position: 'left',
           label: 'Staff',
-        }
+        },
+        {
+          to: '/showcase',
+          position: 'left',
+          label: 'Project Gallery',
+        },
       ],
     },
     footer: {

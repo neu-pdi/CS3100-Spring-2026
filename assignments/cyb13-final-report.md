@@ -135,7 +135,7 @@ This is a great opportunity to build your portfolio and share your work with fut
 
 ## Grading Rubric
 
-**Total: 50 points.** The individual reflection is a mandatory submission gate (grades not released until submitted) but is not scored separately. These deliverables and point values apply equally to 3-person and 4-person teams.
+**Total: 50 points.** The end-of-semester course survey is a mandatory submission gate (grades not released until completed) but is not scored separately. These deliverables and point values apply equally to 3-person and 4-person teams.
 
 ### Written Report (30 points)
 
@@ -164,33 +164,17 @@ This is a great opportunity to build your portfolio and share your work with fut
 
 ### Individual Accountability Adjustment
 
-TA meeting observations, weekly collaboration surveys, and the peer evaluation survey (submitted with this final report) can adjust an individual's final grade by up to **-20 points** or award an **upward adjustment of up to +20 points**. The upward adjustment exists for a specific scenario: if your team's project isn't fully complete, but you went above and beyond to support struggling teammates, you can still earn full marks. This is **not an extra credit mechanism**; simply doing your own work well is the expected baseline.
+TA meeting observations and weekly collaboration surveys can adjust an individual's final grade by up to **-20 points** or award an **upward adjustment of up to +20 points**. The upward adjustment exists for a specific scenario: if your team's project isn't fully complete, but you went above and beyond to support struggling teammates, you can still earn full marks. This is **not an extra credit mechanism**; simply doing your own work well is the expected baseline.
 
 ---
 
-## Individual Reflection (submitted separately)
+## End-of-Semester Course Survey (submitted separately)
 
-Each team member submits a personal reflection via Pawtograder. **This is a mandatory gate: your individual and team grades for this assignment will not be released until your reflection is submitted.** Write 1–2 paragraphs per question; be honest and specific—generic answers don't demonstrate growth.
+Each team member completes the **end-of-semester course survey** via Qualtrics. **This is a mandatory gate: your individual grade for this assignment will not be released until the survey is submitted.** This applies only to you — a teammate's missing survey does not delay your grade.
 
-### 1. Collaboration and Feedback
+You will receive the survey link via email. The survey covers your experience with the course overall, AI tools, the group project, and feedback on new course content. It takes approximately 10–12 minutes.
 
-Describe a specific moment of collaboration during the group project—a code review, a design discussion, or a moment where you had to give or receive difficult feedback. What happened, and what did you learn from it? If collaboration was difficult at any point, reflect honestly on why and what you'd do differently.
-
-### 2. Navigating Conflict and Change
-
-Describe a moment when something didn't go according to plan: a disagreement with a teammate, a blocked technical approach, or a scope that proved too ambitious. How did you handle it? Do you think you made the right call, and why?
-
-### 3. Working Across Perspectives
-
-Your team members owned different features and brought different ideas and working styles. Describe a moment when someone else's perspective changed how you thought about your own work—or a moment when you wish you'd sought out a different perspective sooner.
-
-### 4. Reflection and Growth
-
-Looking back at the full semester: what's one professional or collaboration skill that this project pushed you to develop? What would you do differently in your next team project, and what concrete habit or practice would you carry forward?
-
-### 5. Feedback on the Project
-
-Give us specific, actionable feedback on the group project: what worked well and should be kept, and what should change? Think about the assignment structure, timeline, grading criteria, provided materials, or anything else. For each piece of feedback, explain the problem it solves and any tradeoffs—just like the feedback you'd want to receive on a code review.
+Your responses are **anonymous** — we can see whether you completed the survey (to release your grades), but we cannot see which responses are yours. We will share aggregate results with the class.
 
 ---
 
@@ -203,16 +187,7 @@ Merge to `main` (team deliverables — automatically submitted to Pawtograder):
 3. **Demo Video** (MP4 or link to unlisted YouTube/Vimeo)
 4. **Public showcase opt-in** (if desired, include statement in report)
 
-Submit via Pawtograder (individual):
+Submit via Qualtrics (individual, link sent by email):
 
-5. **Peer Evaluation Survey** (rate each teammate's contributions and collaboration)
-6. **Individual Reflection** (answers to the 5 questions above)
+5. **End-of-Semester Course Survey** 
 
-### Checklist
-
-- [ ] Written report includes all 5 sections: Project Summary, Architecture Highlights, "Our Feature" Design Concept, Team Reflection, Sustainability Assessment
-- [ ] Infographic is single landscape page with required elements
-- [ ] Demo video is 2-3 minutes showing key functionality
-- [ ] All team members contributed to and reviewed the deliverables
-- [ ] Peer evaluation survey submitted by each team member via Pawtograder
-- [ ] Individual reflection submitted separately by each team member

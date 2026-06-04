@@ -704,4 +704,4 @@ If you're having trouble with SSH authentication:
 - [Java 21 Documentation](https://docs.oracle.com/en/java/javase/21/)
 - [JUnit 5 User Guide](https://junit.org/junit5/docs/current/user-guide/)
 - [VS Code Java Guide](https://code.visualstudio.com/docs/java/java-tutorial)
-- [Course Website](https://neu-pdi.github.io/cs3100-public-resources/)
+- [Course Website](https://neu-pdi.github.io/CS3100-Spring-2026/)

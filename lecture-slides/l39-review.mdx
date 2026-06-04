@@ -1,0 +1,572 @@
+---
+sidebar_position: 39
+title: "Final Review"
+---
+
+import RevealJS, { Slide } from '@site/src/components/RevealJS';
+
+<RevealJS transition="slide">
+
+{/* ============================================ */}
+{/* TITLE */}
+{/* ============================================ */}
+
+<Slide>
+
+# CS 3100: Program Design and Implementation II
+
+## Lecture 39: Final Review
+
+<p style={{marginTop: '2em', fontSize: '0.8em', color: '#666'}}>
+  &copy;2026 Jonathan Bell, CC-BY-SA
+</p>
+
+<aside className="notes">
+**Structure (~60 min):**
+- Exam format + warm-up poll (~5 min)
+- Walk through representative practice problems (~10 min)
+- Student Q&A (~15 min)
+- Course retrospective + closing poll (~20 min)
+- Final words (~5 min)
+
+**Tone:** This is the last class. Relaxed, reflective, forward-looking. Students are anxious about the final — address that first, then pivot to looking back at the semester together.
+</aside>
+
+</Slide>
+
+<Slide>
+
+## This deck reflects one section’s final
+
+Final exam **structure** and **topics** can differ by instructor. What follows is specific to **Prof. Bell’s** section—other sections should follow their instructor’s guidance.
+
+<aside className="notes">
+Say this plainly up front so students in other sections do not assume this deck is universal. If anyone is cross-enrolled or comparing notes, they should verify expectations with their own instructor.
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* EXAM FORMAT */}
+{/* ============================================ */}
+
+<Slide>
+
+## Before We Start: Assignment Reminders
+
+<div style={{fontSize: '0.75em'}}>
+
+<div style={{backgroundColor: 'rgba(200,74,74,0.15)', padding: '0.8em', borderRadius: '8px', marginBottom: '0.5em'}}>
+
+**GA2: Feature Buffet — due TONIGHT at 23:59.** Process over product. A well-documented partial feature with meaningful PRs, design evolution, and thoughtful reflection scores higher than a complete feature with no documentation. Submit what you have.
+
+</div>
+
+<div style={{backgroundColor: 'rgba(255,165,0,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+**GA3: Final Report — due Monday April 20 at 23:59.** This is your team's final submission: demo video, final reflection, sustainability assessment, and individual reflections. The reflection questions must be in your own words (not AI-generated). Start the video and reflections this weekend — don't leave it to Monday.
+
+</div>
+
+</div>
+
+<aside className="notes">
+**GA2:** If students are stressed about tonight's deadline, reassure them: "Submit what you have. Process over product. If your PR history shows genuine iteration — design decisions, code review, responding to feedback — that matters more than a polished feature. A half-done feature with a great ADR scores better than a complete feature with no documentation."
+
+**GA3:** The final report has several components. Walk through briefly:
+- Demo video (show your features working)
+- Design evolution (how did your architecture change?)
+- Sustainability assessment (four dimensions applied to your project)
+- Individual reflections (5 questions — must be YOUR words, not AI)
+- Team reflection (how did collaboration work?)
+
+Emphasize: the individual reflections are the part most students leave to the last minute. They take thought, not just time. Start them this weekend.
+
+> **Transition:** Now let's talk about the final exam...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Final Exam: What to Expect
+
+<div style={{fontSize: '0.75em'}}>
+
+| | Details |
+|--|--------|
+| **When** | April 22, 1:00–3:00 PM |
+| **Where** | West Village F 020 |
+| **Format** | 25 multiple choice + 3 open-ended case studies |
+| **Coverage** | Cumulative (L1–L36), emphasis on material since Exam 2 (L23–L36) |
+| **What to bring** | Just a pen or pencil. No notes, no devices. |
+
+</div>
+
+<div className="fragment" style={{fontSize: '0.75em', marginTop: '0.5em'}}>
+
+**Multiple choice:** Same style as Exam 1 and Exam 2. One best answer. Designed to test understanding, not memorization — you won't need to know exact API signatures.
+
+</div>
+
+<div className="fragment" style={{fontSize: '0.75em', marginTop: '0.5em'}}>
+
+**Case studies:** Extended scenarios (like the practice exam). You read code, analyze designs, propose improvements. Partial credit for reasoning — show your thinking.
+
+</div>
+
+<div className="fragment" style={{fontSize: '0.75em', marginTop: '0.5em'}}>
+
+**Parsons problems:** Some questions give you scrambled lines of code and ask you to put them in the correct order. You don't need to write code from scratch.
+
+</div>
+
+<aside className="notes">
+**DRC reminder:** If you have DRC accommodations, you should have already scheduled your testing appointment. If you haven't, contact DRC and email me today.
+
+**Conflicts:** If you have a conflict with another exam at the same time, you should have already contacted me. If not, do so after class.
+
+**The practice exam is the best preparation.** The format is identical. If you can do the practice exam comfortably, you're prepared.
+
+> **Transition:** Let's start with a warm-up to see where the room stands...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* WARM-UP POLL */}
+{/* ============================================ */}
+
+<Slide>
+
+## Warm-Up: Where Do You Need Help?
+
+<p style={{fontSize: '1em', textAlign: 'center', marginTop: '2em'}}>
+Open Poll Everywhere.
+</p>
+
+<aside className="notes">
+**4-5 warm-up questions. Show results after each. ~5 min total.**
+
+**Q1: How confident are you feeling about the final?**
+- Very confident — I've studied and feel ready
+- Somewhat confident — I know most of it but have gaps
+- Nervous — there's a lot of material
+- Very nervous — I don't know where to start
+
+*Use this to calibrate your tone. If most say nervous/very nervous, spend more time on exam strategy and reassurance. If most say confident, you can go deeper on practice problems.*
+
+**Q2: Which topic are you MOST worried about?**
+*(Select one)*
+- Concurrency / Async / Events
+- Architecture / Monoliths / Serverless
+- Safety / Sustainability
+- GUI / MVC / MVVM
+- Testing / Test Doubles
+- Coupling / Cohesion / SOLID
+- Performance
+- Open Source / Licensing
+- I feel okay about all of them
+
+*This determines which practice problems to walk through. Go where the anxiety is.*
+
+**Q3: Which part of the exam FORMAT are you most nervous about?**
+- Multiple choice
+- Case studies (open-ended writing)
+- Parsons problems (code ordering)
+- Time pressure (2 hours for everything)
+- None — I feel prepared
+
+*If most say "case studies," spend more time on the case study template (name concept → define → apply → contrast). If "time pressure," reassure: "25 MC at ~2 min each = 50 min. 3 case studies at ~20 min each = 60 min. You have 120 min. That's 10 min of buffer."*
+
+**Q4: Have you completed the practice exam?**
+- Yes, all of it
+- Most of it
+- Started but didn't finish
+- Haven't started yet
+
+*If many haven't started, strongly encourage them to do it this weekend. The format is identical to the real exam.*
+
+**Q5: What's one concept from L23-L36 you'd like me to review today?**
+*(Open response / word cloud)*
+
+*This gives you a live reading list. Show the cloud. Pick the top 2-3 and address them during the walkthrough or Q&A.*
+
+> **Transition:** Let's walk through some representative problems based on what you told me...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* PRACTICE PROBLEM WALKTHROUGH (~10 min) */}
+{/* ============================================ */}
+
+<Slide>
+
+## Practice Exam Walkthrough
+
+<div style={{fontSize: '0.8em'}}>
+
+Let's work through a few problems together. These are representative of the kinds of reasoning the exam tests.
+
+</div>
+
+<div style={{fontSize: '0.75em', marginTop: '1em', backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+**Strategy:** For multiple choice, eliminate wrong answers first. For case studies, name the concept before applying it — "this is a coupling problem" or "this violates LSP" — then explain why.
+
+</div>
+
+<aside className="notes">
+**Pick 3-4 problems based on the poll results.** Suggested defaults if the poll is evenly split:
+
+**MC default picks:**
+- **Q15 (deviceCount++ race condition):** Tests concurrency fundamentals. Walk through the three steps (read, increment, write) and show the interleaving. Students often get this conceptually but struggle with WHY the result is less than 10.
+- **Q22 (latency budget):** Tests "measure, don't guess." The Zigbee commands dominate at 3000ms. Optimizing 5ms of computation is negligible. This tests whether students can read a profile and identify the bottleneck.
+- **Q24 (Jevons' paradox):** Tests sustainability. Easier per-device setup → more devices → more total resources. The per-unit savings is real, but total consumption grows.
+
+**Case study default pick:**
+- **Case Study 1, parts (c) and (d):** MVVM trace (what happens when the slider moves) + testability (observability and controllability). These are the most common concepts students struggle to articulate clearly.
+
+> **Transition:** [After walking through problems] What questions do you have?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Example: The Race Condition (Practice Q15)
+
+<div style={{fontSize: '0.72em'}}>
+
+```java
+private int deviceCount = 0;
+public void registerDevice() { deviceCount++; }
+// 10 threads each call registerDevice() once
+```
+
+</div>
+
+<div className="fragment" style={{fontSize: '0.72em', marginTop: '0.5em'}}>
+
+`deviceCount++` is **three operations:** read → increment → write.
+
+</div>
+
+<div className="fragment" style={{fontSize: '0.62em', marginTop: '0.5em'}}>
+
+| Step | Thread A | Thread B | deviceCount |
+|------|----------|----------|-------------|
+| 1 | reads 3 | | 3 |
+| 2 | | reads 3 | 3 |
+| 3 | writes 4 | | 4 |
+| 4 | | writes 4 | **4 (not 5!)** |
+
+</div>
+
+<div className="fragment" style={{fontSize: '0.75em', marginTop: '0.5em', backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+**Answer: D.** Two threads read the same stale value → one increment is lost. Fix: `AtomicInteger` or `synchronized`.
+
+</div>
+
+<aside className="notes">
+**Walk through the table step by step.** The key insight is that both threads read 3 BEFORE either writes. This is the exact same `deviceCount++` example from L31 and Lab 13.
+
+**Connect to the exam:** "If you see a question about shared mutable state, think: is the operation atomic? If not, draw the interleaving."
+
+> **Transition:** Next problem...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Example: The Latency Budget (Practice Q22)
+
+<div style={{fontSize: '0.68em'}}>
+
+A profile shows: hub computation **5ms**, 15 sequential Zigbee commands **3000ms**, state update **2ms**, network round-trip **50ms**. A developer proposes optimizing hub computation from O(n) to O(log n).
+
+</div>
+
+<div className="fragment" style={{fontSize: '0.68em', marginTop: '0.5em'}}>
+
+| Component | Time | % of total |
+|-----------|------|-----------|
+| Hub computation | 5ms | **0.16%** |
+| Zigbee commands | 3000ms | **98.1%** |
+| State update | 2ms | 0.07% |
+| Network round-trip | 50ms | 1.64% |
+
+</div>
+
+<div className="fragment" style={{fontSize: '0.75em', marginTop: '0.5em', backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+**Answer: D.** Zigbee commands dominate at 98%. Optimizing 5ms → 2ms saves 3ms out of 3057ms. The developer is optimizing the wrong thing. **Profile before you optimize (L34).**
+
+</div>
+
+<aside className="notes">
+**This is the "measure, don't guess" lesson from L34.** Students who memorized "optimize the Big-O" will pick A. Students who understood the latency budget will pick D.
+
+**The exam strategy:** Always look at the actual numbers. Don't assume the algorithmic improvement matters until you check where the time actually goes.
+
+> **Transition:** One more, then questions...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Example: Case Study Approach (Practice CS1, Part D)
+
+<div style={{fontSize: '0.72em'}}>
+
+"Explain why the MVVM ViewModel is more testable than the MVC Controller, using the terms **observability** and **controllability.**"
+
+</div>
+
+<div className="fragment" style={{fontSize: '0.72em', marginTop: '0.8em'}}>
+
+**Template for answering case study questions:**
+
+1. **Name the concept:** "Testability requires observability and controllability (L16)."
+2. **Define it briefly:** "Observability = can I see the output? Controllability = can I set the inputs?"
+3. **Apply it:** "The ViewModel exposes `servingsProperty()` (controllable — set it to any value) and `getFormattedIngredients()` (observable — read the result). No JavaFX needed."
+4. **Contrast:** "The MVC Controller requires a running JavaFX Application Thread to access `@FXML` fields — low controllability, low observability."
+
+</div>
+
+<div className="fragment" style={{fontSize: '0.75em', marginTop: '0.5em', backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+**On the exam:** Name the concept → define it → apply it → contrast if asked. Partial credit comes from the first two even if you get the application wrong.
+
+</div>
+
+<aside className="notes">
+**This template works for every case study question.** Students who name the concept and define it get partial credit even if the application is imperfect. Students who jump straight to the application without naming the concept often lose points because the grader can't tell if they understand the principle.
+
+**Practice this pattern:** Pick any case study question from the practice exam, write your answer, and check: did I name the concept? Did I define it? Did I apply it to the specific scenario?
+
+> **Transition:** What questions do you have?
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* STUDENT Q&A (~15 min) */}
+{/* ============================================ */}
+
+<Slide>
+
+## Your Questions
+
+<div style={{fontSize: '1em', textAlign: 'center', marginTop: '2em'}}>
+
+What do you want to go over?
+
+</div>
+
+<p style={{fontSize: '0.8em', textAlign: 'center', marginTop: '2em', color: '#666'}}>
+Ask about specific practice problems, concepts, or exam strategy.
+</p>
+
+<aside className="notes">
+**This is the most valuable part of the review for students.** Let them drive. If nobody asks, prompt with:
+
+- "Who got a practice problem wrong and wants to understand why?"
+- "What concept from the second half of the semester feels shakiest?"
+- "Does anyone want to practice talking through a case study answer out loud?"
+
+**Common questions to prepare for:**
+- "What's the difference between sequential and eventual consistency?" → Door lock vs brightness display
+- "When do I use synchronized vs AtomicInteger?" → synchronized for multi-statement critical sections, AtomicInteger for single atomic operations
+- "How do I know which coupling type something is?" → What's being shared? Primitive = data, complex type = stamp, control flag = control, shared global = common, reflection = content
+- "What's the difference between fail-safe and fail-operational?" → Fail-safe stops (thermostat reverts to 68°F), fail-operational continues degraded (airplane on one engine)
+- "What's Jevons' paradox in one sentence?" → Efficiency lowers per-unit cost, which expands usage, so total consumption goes up
+
+**If a question goes deep into one topic, offer to continue after class.** Don't let one topic consume all 15 minutes.
+
+> **Transition:** Let's shift gears. I want to look back at the semester with you...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* COURSE RETROSPECTIVE (~20 min) */}
+{/* ============================================ */}
+
+<Slide>
+
+## Course Retrospective: Help Us Build Next Year's Version
+
+<div style={{fontSize: '0.8em'}}>
+
+This was the first semester of CS 3100. Nearly everything was new — lectures, labs, assignments, tools. We want to tell you what we're considering changing, and hear what you think.
+
+</div>
+
+<div className="fragment" style={{fontSize: '0.8em', marginTop: '0.8em', backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+**This is not hypothetical.** We will use your input to decide what changes for next year. The end-of-semester survey gives us data. This conversation gives us context.
+
+</div>
+
+<aside className="notes">
+**Set the tone:** This is a genuine conversation, not a lecture. You're asking students to help you improve the course. Be honest about what you think worked and didn't work. Students appreciate transparency.
+
+**Frame it:** "We made a LOT of bets this semester. Some paid off. Some didn't. I want to share what we're thinking about changing and hear whether you agree."
+
+> **Transition:** Here's what we're considering...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Ideas We're Considering — React to These
+
+<div style={{fontSize: '0.62em'}}>
+
+| What we might change | Why we're considering it | What we'd lose |
+|---------------------|------------------------|----------------|
+| Make A2–A5 **pair-optional** (work alone or with a partner) | Solo assignments are isolating; pair work builds collaboration skills earlier | Individual accountability — harder to ensure both partners learn |
+| Start the **group project 2 weeks earlier** | Teams felt rushed; more time for design sprint and iteration | Something else gets cut or compressed — what? |
+| Rework **Labs 1–3** to better prepare for assignments | Too many students hit avoidable issues (`.Java` vs `.java`, project structure, tooling) | Current lab content (polymorphism exploration, dev toolkit) |
+| Add a **"checkpoint" system** for individual assignments | Catch struggling students earlier; provide feedback before final submission | Grading load increases; may feel like micromanagement |
+| Reduce the number of **individual assignments** from 5 to 4 | Free up a week for the group project or for a deeper architecture exercise | Less individual practice before team work |
+
+</div>
+
+<aside className="notes">
+**Don't present all 5 at once.** Pick 2-3 that you care most about and discuss those. Save the rest for the survey.
+
+**Pair-optional assignments:** This is probably the biggest potential change. Pros: mirrors real work, builds collaboration early, reduces isolation. Cons: free-riding, one partner does all the work, harder to assess individual learning. Ask: "How many of you would have preferred to work with a partner on A3 or A4?"
+
+**Group project earlier:** The current timeline is tight. GA0 design sprint was only one week. Students felt like they jumped from individual work to team work with no ramp. But starting earlier means cutting something from the first half — what?
+
+**Labs 1-3:** The `.Java` vs `.java` debacle is a real example. TAs and even instructors were stumped by students who named files with capital-J `.Java` and got mysterious compilation errors. A lab that explicitly walks through "here's how Java file naming works, here's how packages work, here's how to read a compiler error" would prevent hours of debugging. But the current labs (polymorphism, dev toolkit) have value too.
+
+> **Transition:** What else should we change?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## What Else Should Change?
+
+<div style={{backgroundColor: 'rgba(255,165,0,0.15)', padding: '2em', borderRadius: '12px', marginTop: '0.5em'}}>
+
+<p style={{fontSize: '0.95em', fontWeight: 'bold', marginTop: '0.5em'}}>
+Open floor: what worked, what didn't, what should we add, what should we cut?
+</p>
+
+<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+Some prompts if you're not sure where to start:
+</p>
+
+<div style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+
+- What was the most useful lab? The least useful?
+- Was there a lecture that clicked — or one that felt like wasted time?
+- How did the AI policy progression (restricted → structured → encouraged) work for you?
+- Was the CookYourBooks domain interesting enough to sustain 5 assignments?
+- What do you wish we'd told you in Week 1?
+
+</div>
+
+</div>
+
+<aside className="notes">
+**Let students talk.** This is their chance. If the room is quiet, cold-call: "What was one thing that surprised you about this course — something you didn't expect?"
+
+**Take notes visibly** (on the board or a shared doc). Students are more candid when they see you writing down what they say.
+
+**Common themes you might hear:**
+- "The jump from A5 to GA0 was too steep"
+- "I wish we'd had more time on the group project"
+- "The concurrency lectures were the hardest"
+- "Lab 11 (paper prototyping) was surprisingly useful / felt like busywork" (you'll get both)
+- "I liked the AI policy progression but wish I'd had AI earlier / later"
+- "CookYourBooks got boring by A4"
+
+**Be honest about your own assessment.** "I agree, the transition from individual to team was too abrupt. That's why we're considering starting the project earlier." Students trust instructors who acknowledge mistakes.
+
+> **Transition:** One last poll...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* CLOSING POLL */}
+{/* ============================================ */}
+
+<Slide>
+
+## Final Poll: The Semester in Review
+
+<p style={{fontSize: '0.85em'}}>
+Open Poll Everywhere. Last time this semester.
+</p>
+
+<div style={{fontSize: '0.72em', marginTop: '0.5em'}}>
+
+**Q1: What was the single most valuable thing you learned in CS 3100?**
+*(Word cloud — type one thing)*
+
+**Q2: If you could go back to Week 1, what advice would you give yourself?**
+*(Open response)*
+
+**Q3: Would you recommend CS 3100 to a friend?**
+- Absolutely — one of the best CS courses I've taken
+- Yes, with caveats — good content but [something] needs work
+- Neutral — it was fine
+- Probably not — I didn't get much out of it
+
+</div>
+
+<aside className="notes">
+**Q1 word cloud:** Let it build on screen. Common entries will be: testing, design patterns, architecture, teamwork, Git/GitHub, debugging, "thinking about tradeoffs." The cloud becomes a visual summary of the semester.
+
+**Q2 open responses:** Read a few aloud if students are comfortable. Common ones: "Start assignments earlier," "Go to office hours," "Don't be afraid to ask questions," "Read the spec more carefully." But occasionally you get gems: "Don't underestimate the group project" or "The concepts from the first half matter way more in the second half than you think."
+
+**Q3 recommendation:** This is your net promoter score. Show the distribution. If it skews positive, celebrate. If mixed, acknowledge it: "We hear you. That's why we're making changes."
+
+> **Transition:** Thank you...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* CLOSING */}
+{/* ============================================ */}
+
+<Slide>
+
+<div style={{marginTop: '2em', textAlign: 'center'}}>
+
+Thank you.
+
+You built software that works. You learned to think about software that lasts.
+
+That's software engineering.
+
+Good luck on the final. You're ready.
+
+End-of-semester survey: please complete it — your feedback builds next year's course. Please consider completing TRACE, too.
+
+</div>
+
+<aside className="notes">
+**Keep this short.** 30 seconds. Let the room be quiet for a moment.
+
+**If you want to add a personal note:** "This was the first time teaching this course. I learned a lot from you — what worked, what didn't, what I need to do better. Thank you for being the first cohort and for being honest with me along the way."
+
+**After class:** Stay for questions. Students will come up — some about the exam, some just to say thanks. Be available.
+</aside>
+
+</Slide>
+
+</RevealJS>
