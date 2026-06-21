@@ -450,7 +450,7 @@ export default function RevealJS({
         maxScale: 2.0,
         margin: 0.04,  // Margin around slides
         slideNumber: 'c/t',
-        plugins: [RevealNotes],
+        plugins: [],
       } as any);
 
       reveal.initialize().then(() => {
@@ -626,7 +626,7 @@ export default function RevealJS({
         maxScale: 1.5,
         margin: 0.04,  // Margin around slides for dead space
         slideNumber: 'c/t',
-        plugins: [RevealNotes],
+        plugins: [RevealNotes], // Notes only when fullscreen
       } as any);
 
       reveal.initialize().then(() => {
